@@ -1,0 +1,2 @@
+include colcon_bundle/verb/assets/*
+include colcon_bundle/installer/assets/*
