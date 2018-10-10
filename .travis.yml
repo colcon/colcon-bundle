@@ -1,0 +1,18 @@
+language: python
+python: "3.5"
+dist: trusty
+sudo: true
+before_install:
+  - sudo apt update && sudo apt install -y enchant
+install:
+  - pip install -U setuptools
+  # install_requires
+  - pip install -U git+https://github.com/colcon/colcon-core
+  - pip install -U git+https://github.com/colcon/colcon-python-setup-py
+  # tests_require
+  - pip install -U flake8-blind-except flake8-builtins flake8-class-newline flake8-comprehensions flake8-deprecated flake8-docstrings flake8-quotes pep8-naming pyenchant pylint pytest pytest-cov
+script:
+  # invoke pytest
+  - pytest --cov=colcon_bundle --cov-branch
+notifications:
+  email: false
