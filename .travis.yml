@@ -1,6 +1,6 @@
 language: python
 python: "3.5"
-dist: trusty
+dist: xenial
 sudo: true
 before_install:
   - sudo apt update && sudo apt install -y enchant
