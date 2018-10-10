@@ -53,7 +53,7 @@ To view stdout from a test while running `pytest` use the `-s` flag.
 
 ## Running on OSX
 
-I run these packages inside of docker containers since I'm running OSX and we are supporting Ubuntu to start.
+I run these packages inside of docker containers since I'm running OSX and this only supports Ubuntu currently.
 
 Build Container: `docker run -it -v $(pwd):/workspace ros:kinetic-ros-base /bin/bash`
 
@@ -69,26 +69,23 @@ I generally `cd` into my workspace which has the package folders and then start 
 1. `/usr/local/bin/pip3 install --editable ./colcon-bundle`
 1. `/usr/local/bin/pip3 install --editable ./colcon-ros-bundle`
 
-In `colcon-ros-bundle/test/assets/catkin_ws` there is a valid ros workspace. To build and bundle go inside of the
-`catkin_ws` directory and execute the following:
+Inside of a ROS1 workspace execute the following:
 
 1. `rosdep install --from-paths src --ignore-src -r -y`
 1. `colcon build`
-With ROS:
-    `colcon bundle --bundle-base=bundle_with_ros --include-ros-base`
-Without ROS:
-    `colcon bundle --bundle-base=bundle_without_ros`  
-
-I use `--base-paths` because I haven't updated the bundle to include a COLCON_IGNORE yet. You can change the name
-of the `build` folder with `--build-base=` and the `install` folder with `--install-base=`.
+1. `colcon bundle`
 
 ## Running the bundle
 
-To run the bundle you should start up a Xenial docker container with the bundle mounted. You will need
-to make some changes to the bundle if you are including ros-base.
+To run the bundle you should start up a Xenial docker container with the bundle mounted. 
+Set BUNDLE_CURRENT_PREFIX equal to the location of your extracted bundle
+folder. Then source `setup.sh` located at the top level of the bundle.
 
-To execute inside the bundle you need to set BUNDLE_CURRENT_PREFIX equal to the location of your extracted bundle
-folder. Then run `run_command.sh` within the bundle. This is in flux, and may be changed in the future.
+## Packaging
+
+To create a tarball of this python package run: `python setup.py sdist`
+
+This will create a tarball in the `dist/` directory.
 
 ### Package Blacklist
 
@@ -96,9 +93,3 @@ When we create the bundle we choose not to include certain packages that are inc
 Linuxd distributions. To create this blacklist for Ubuntu I ran the following on a ubuntu:xenial container.
 
 `apt list --installed | sed 's/^\(.*\)\/.*$/\1/'` on a base image.
-
-# Packaging
-
-To create a tarball of this python package run: `python setup.py sdist`
-
-This will create a tarball in the `dist/` directory.
