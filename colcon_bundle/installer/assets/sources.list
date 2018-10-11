@@ -1,15 +1,15 @@
-deb http://archive.ubuntu.com/ubuntu/ xenial main restricted
-deb http://archive.ubuntu.com/ubuntu/ xenial-updates main restricted
-deb http://archive.ubuntu.com/ubuntu/ xenial universe
-deb-src http://archive.ubuntu.com/ubuntu/ xenial universe
-deb http://archive.ubuntu.com/ubuntu/ xenial-updates universe
-deb-src http://archive.ubuntu.com/ubuntu/ xenial-updates universe
-deb http://archive.ubuntu.com/ubuntu/ xenial multiverse
-deb http://archive.ubuntu.com/ubuntu/ xenial-updates multiverse
-deb http://archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe multiverse
-deb http://security.ubuntu.com/ubuntu/ xenial-security main restricted
-deb http://security.ubuntu.com/ubuntu/ xenial-security universe
-deb-src http://security.ubuntu.com/ubuntu/ xenial-security universe
-deb http://security.ubuntu.com/ubuntu/ xenial-security multiverse
+# x86 Support
+deb [arch=amd64,i386] http://archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse
+deb [arch=amd64,i386] http://archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe multiverse
+deb [arch=amd64,i386] http://archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe multiverse
+deb [arch=amd64,i386] http://security.ubuntu.com/ubuntu/ xenial-security main restricted universe multiverse
+
+# ARM Support
+
+deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial main restricted universe multiverse
+deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-updates main restricted universe multiverse
+deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-backports main restricted
+deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-security main restricted universe multiverse
+
 # ROS
 deb http://packages.ros.org/ros/ubuntu xenial main
