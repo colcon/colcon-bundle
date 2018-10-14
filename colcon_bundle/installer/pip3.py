@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
-from subprocess import check_call
+import subprocess
 
 from colcon_bundle.installer import BundleInstallerExtensionPoint
 from colcon_bundle.verb import logger
@@ -51,29 +51,10 @@ class Pip3BundleInstallerExtensionPoint(BundleInstallerExtensionPoint):
             logger.info('No pip dependencies to install.')
             return {'message': 'No dependencies installed...'}
 
-        print('Installing pip3 dependencies...')
-
-        # pip uses urllib to make the connection to PyPI. urllib uses
-        # OpenSSL which hard codes the paths to certificates. This breaks in
-        # the bundle because we don't have certificates installed in the
-        # right place (we can't, we are portable and can't depend on /)
-        # To fix this we use the --cert flag with the path to a certificate
-        # bundle we generate from the Ubuntu ca-certificates package. This
-        # contains the major CA's
-        ca_certs_path = os.path.join(
-            self.context.prefix_path, 'usr', 'share', 'ca-certificates',
-            'mozilla')
-
-        with open(os.path.join(self._cache_path, 'ca_bundle'), 'w') as bundle:
-            for root, subdirs, files in os.walk(ca_certs_path):
-                for file in files:
-                    cert_path = os.path.join(root, file)
-                    with open(cert_path, 'r') as cert:
-                        bundle.write(cert.read())
-                        bundle.write('\n')
+        logger.info('Installing pip3 dependencies...')
         python_path = os.path.join(self.context.prefix_path, 'usr', 'bin',
                                    'python3')
-        check_call(
+        subprocess.check_call(
             [python_path, '-m', 'pip', 'install', '-U', 'pip', 'setuptools'])
 
         requirements = os.path.join(self._cache_path, 'requirements')
@@ -81,7 +62,7 @@ class Pip3BundleInstallerExtensionPoint(BundleInstallerExtensionPoint):
             for name in self._packages:
                 req.write(name.strip() + '\n')
 
-        check_call(
+        subprocess.check_call(
             [python_path, '-m', 'pip', 'install', '--ignore-installed',
              '-r', requirements])
 
