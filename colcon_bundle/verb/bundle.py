@@ -52,7 +52,6 @@ class BundlePackageArguments:
         self.bundle_base = os.path.abspath(
             os.path.join(os.getcwd(), args.bundle_base))
         self.installers = installers
-        self.runtime_dependencies = pkg.dependencies['run']
 
         # set additional arguments from the command line or package metadata
         for dest in (additional_destinations or []):

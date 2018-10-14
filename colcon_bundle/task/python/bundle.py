@@ -23,7 +23,7 @@ class PythonBundleTask(TaskExtensionPoint):
             'Bundling python package in "{args.path}" with build type "python"'
             .format_map(locals()))
 
-        for dependency in self.context.args.runtime_dependencies:
+        for dependency in self.context.pkg.dependencies['run']:
             if not isinstance(dependency, DependencyDescriptor):
                 continue
 
