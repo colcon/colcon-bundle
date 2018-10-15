@@ -38,8 +38,8 @@ To setup my workspace I generally pull down:
 
 * `colcon-core` (https://github.com/colcon/colcon-core.git)
 * `colcon-ros` (https://github.com/colcon/colcon-ros.git)
-* `colcon-bundle` (ssh://git.amazon.com/pkg/Colcon-bundle)
-* `colcon-ros-bundle` (ssh://git.amazon.com/pkg/Colcon-ros-bundle)
+* `colcon-bundle` (https://github.com/colcon/colcon-bundle)
+* `colcon-ros-bundle` (https://github.com/colcon/colcon-ros-bundle)
 
 There are many more colcon packages, it can be useful to pull them down to look at how different extensions and other
 functionality is implemented.
