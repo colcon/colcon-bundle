@@ -38,12 +38,12 @@ class PythonBundleTask(TaskExtensionPoint):
                 pip.add_to_install_list(
                     dependency.name + '==' + dependency.metadata['version_eq'])
             else:
-                logger.warn('Currently only support version locked packages.'
-                            ' {dependency}'.format(dependency=dependency))
-                return 1  # Stop the bundling process
+                logger.warning('Currently only support version locked '
+                               'packages. Skipping: {dependency}'
+                               .format(dependency=dependency))
+                continue
 
             # TODO: The Pip managers should be doing this
             apt = args.installers['apt']
             apt.add_to_install_list('libpython3-dev')
             apt.add_to_install_list('python3-pip')
-            apt.add_to_install_list('ca-certificates')
