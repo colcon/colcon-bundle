@@ -69,7 +69,7 @@ class BundleInstallerExtensionPoint:
         """
         raise RuntimeError('This should be implemented in the subclass')
 
-    def add_to_install_list(self, name, metadata=None):
+    def add_to_install_list(self, name, *, metadata=None):
         """
         Add item to the list of items to install with this installer.
 
@@ -82,7 +82,7 @@ class BundleInstallerExtensionPoint:
         """
         raise RuntimeError('This should be implemented in a subclass')
 
-    def remove_from_install_list(self, name, metadata=None):
+    def remove_from_install_list(self, name, *, metadata=None):
         """
         Remove an item from the installation list based on name or metadata.
 

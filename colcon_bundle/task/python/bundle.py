@@ -20,8 +20,8 @@ class PythonBundleTask(TaskExtensionPoint):
         args = self.context.args
         verbose = False
         logger.info(
-            'Bundling python package in "{args.path}" with build type "python"'
-            .format_map(locals()))
+            'Bundling python package in "{self.context.pkg.path}" with build '
+            'type "python"'.format_map(locals()))
 
         for dependency in self.context.pkg.dependencies['run']:
             if not isinstance(dependency, DependencyDescriptor):
@@ -29,8 +29,8 @@ class PythonBundleTask(TaskExtensionPoint):
 
             if dependency.name in self.context.dependencies:
                 logger.info(
-                    'Skipping {dependency} of {args.path} because '
-                    'it is in the workspace'.format_map(locals()))
+                    'Skipping {dependency} dependency of {self.context.pkg} '
+                    'because it is in the workspace'.format_map(locals()))
                 continue
 
             if 'version_eq' in dependency.metadata:

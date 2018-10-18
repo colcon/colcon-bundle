@@ -42,7 +42,6 @@ class BundlePackageArguments:
           arguments
         """
         super().__init__()
-        self.path = os.path.abspath(os.path.join(os.getcwd(), str(pkg.path)))
         self.build_base = os.path.abspath(
             os.path.join(os.getcwd(), args.build_base, pkg.name))
         self.install_base = os.path.abspath(
