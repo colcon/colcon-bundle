@@ -3,9 +3,8 @@
 This code is in active development and **should not** be considered stable.
 
 This package is a plugin to [colcon-core](https://github.com/colcon/colcon-core.git). It provides functionality to bundle a built
-workspace. The bundle is essentially a portable environment which can be moved to a different linux system and executed
-as if the contents of the bundle was installed locally. A bundle should work on any Linux system with a kernel version
-equal to or later than the kernel version that the bundle was built on. 
+workspace. A bundle is a portable environment which can be moved to a different linux system and executed
+as if the contents of the bundle was installed locally.
 
 Currently, ROS Kinetic is supported by installing the `colcon-ros-bundle` package.
 
@@ -26,10 +25,9 @@ follow the following steps:
 
 1. Extract the main archive.
 1. Extract bundle.tar into your desired directory.
-1. Set the environment variable BUNDLE_CURRENT_PREFIX to the location you extracted bundle.tar to.
-1. Source `setup.sh` located in the folder you extracted your bundle in.
-1. Everything in your bundle is now in PATH and LD_LIBRARY_PATH so that you can use it as if it were installed on
-the system.
+1. Set the environment variable BUNDLE_CURRENT_PREFIX to the location of your extracted bundle.tar.
+1. Source `$BUNDLE_CURRENT_PREFIX/setup.sh`.
+1. The bundle is now activated in your shell's environment. You can execute commands contained within the bundle.
 
 
 # Development
