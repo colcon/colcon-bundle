@@ -1,4 +1,4 @@
-# colcon-bundle
+# colcon-bundle [![Build Status](https://travis-ci.org/colcon/colcon-bundle.svg?branch=master)](https://travis-ci.org/colcon/colcon-bundle)
 
 This code is in active development and **should not** be considered stable.
 
