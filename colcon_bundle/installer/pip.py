@@ -53,7 +53,7 @@ class PipBundleInstallerExtensionPoint(BundleInstallerExtensionPoint):
 
         logger.info('Installing pip dependencies...')
         python_path = os.path.join(self.context.prefix_path, 'usr', 'bin',
-                                   'python')
+                                   'python2')
         subprocess.check_call(
             [python_path, '-m', 'pip', 'install', '-U', 'pip', 'setuptools'])
 
