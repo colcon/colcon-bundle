@@ -142,7 +142,7 @@ def add_installer_arguments(parser):
             logger.error(
                 'Exception in task extension '
                 "'{extension.TASK_NAME}.{extension.PACKAGE_TYPE}': {e}\n{exc}"
-                .format_map(locals()))
+                .format(e=e, exc=exc))
             # skip failing extension, continue with next one
 
 

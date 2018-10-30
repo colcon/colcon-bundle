@@ -49,5 +49,3 @@ def test_install(check_call):
     finally:
         shutil.rmtree(cache_dir)
         shutil.rmtree(prefix)
-
-
