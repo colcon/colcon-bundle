@@ -26,9 +26,8 @@ def update_shebang(path):
     """
     # TODO: We should handle scripts that have parameters in the shebang
     # TODO: We should hangle scripts that are doing other /usr/bin executables
-    py3_shebang_regex = re.compile(r'#!\s*/usr/bin/python3')
-    py_shebang_regex = re.compile(r'#!\s*/usr/bin/python')
-    shebang_with_parameters_regex = re.compile(r'#!\s*/usr/bin/python\s(.+)')
+    py3_shebang_regex = re.compile(r'#!\s*.+python3')
+    py_shebang_regex = re.compile(r'#!\s*.+python')
     logger.info('Starting shebang update...')
     for (root, dirs, files) in os.walk(path):
         for file in files:
