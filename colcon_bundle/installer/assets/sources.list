@@ -11,5 +11,13 @@ deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-updates main restr
 deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-backports main restricted
 deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-security main restricted universe multiverse
 
+# Source Repositories
+
+deb-src http://us.archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse
+deb-src http://us.archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe multiverse
+deb-src http://us.archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe multiverse
+deb-src http://us.archive.ubuntu.com/ubuntu/ xenial-security main restricted universe multiverse
+
 # ROS
 deb http://packages.ros.org/ros/ubuntu xenial main
+
