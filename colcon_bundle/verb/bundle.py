@@ -82,6 +82,11 @@ class BundleVerb(VerbExtensionPoint):
         parser.add_argument('--bundle-base', default='bundle',
                             help='The base path for all bundle prefixes ('
                                  'default: bundle)')
+        parser.add_argument(
+            '--include-sources', action='store_true',
+            help='If included all the sources for bundled apt packages'
+                 'will be put into sources.tar.gz in the bundle base '
+                 'directory')
 
         add_executor_arguments(parser)
         add_event_handler_arguments(parser)
@@ -152,7 +157,8 @@ class BundleVerb(VerbExtensionPoint):
         shellscript_path = os.path.join(assets_directory, 'setup.sh')
         shutil.copy2(shellscript_path, staging_path)
 
-        self._generate_archive(bundle_base, staging_path)
+        self._generate_archive(
+            bundle_base, staging_path, context.args.include_sources)
         return rc
 
     def _setup_installers(self, context):
@@ -162,8 +168,10 @@ class BundleVerb(VerbExtensionPoint):
             os.path.join(bundle_base, 'bundle_staging'))
 
         installers = get_bundle_installer_extensions()
+        self.installer_cache_dirs = {}
         for name, installer in installers.items():
             installer_cache_dir = os.path.join(cache_path, name)
+            self.installer_cache_dirs[name] = installer_cache_dir
             os.makedirs(installer_cache_dir, exist_ok=True)
             context = BundleInstallerContext(
                 args=context.args,
@@ -172,13 +180,27 @@ class BundleVerb(VerbExtensionPoint):
             installer.initialize(context)
         return installers
 
-    def _generate_archive(self, bundle_base, staging_path):
+    def _generate_archive(self, bundle_base, staging_path, include_sources):
         logger.info('Archiving the bundle output')
         print('Creating bundle archive...')
 
         bundle_tar_path = os.path.join(bundle_base, 'bundle.tar')
         metadata_tar_path = os.path.join(bundle_base, 'metadata.tar')
         archive_tar_gz_path = os.path.join(bundle_base, 'output.tar.gz')
+        sources_tar_gz_path = os.path.join(bundle_base, 'sources.tar.gz')
+
+        with tarfile.open(
+                sources_tar_gz_path, 'w:gz', compresslevel=5) as archive:
+            for name, directory in self.installer_cache_dirs.items():
+                sources_path = os.path.join(directory, 'sources')
+                if not os.path.exists(sources_path):
+                    continue
+                for filename in os.listdir(sources_path):
+                    file_path = os.path.join(sources_path, filename)
+                    archive.add(
+                        file_path,
+                        arcname=os.path.join(
+                            name, os.path.basename(file_path)))
 
         with tarfile.open(metadata_tar_path, 'w') as archive:
             archive.add(os.path.join(bundle_base, 'installer_metadata.json'),

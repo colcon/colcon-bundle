@@ -18,6 +18,8 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         self._cache = None
         self._cache_dir = None
         self.context = None
+        self.include_sources = False
+        self.sources_path = None
         satisfies_version(
             BundleInstallerExtensionPoint.EXTENSION_POINT_VERSION, '^1.0')
 
@@ -64,6 +66,8 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         self._cache_dir = context.cache_path
         self._cache = apt.Cache(
             rootdir=self._cache_dir, progress=apt.progress.text.OpProgress())
+        self.include_sources = self.context.args.include_sources
+        self.sources_path = os.path.join(self._cache_dir, 'sources')
         self.setup()
 
     def setup(self):  # noqa: D102
@@ -85,6 +89,10 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
             os.path.dirname(os.path.realpath(__file__)), 'assets')
         bundled_sources_list = os.path.join(asset_path, 'sources.list')
         os.makedirs(os.path.dirname(sources_list_file), exist_ok=True)
+
+        if self.include_sources:
+            os.makedirs(self.sources_path, exist_ok=True)
+
         # TODO Make this a plugin
         with open(sources_list_file, 'w') as f:
             with open(bundled_sources_list, 'r') as sources:
@@ -119,6 +127,15 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         packages = []
         for package in self._cache:
             if package.marked_install:
+                if self.include_sources:
+                    package_version = package.versions[0]
+                    try:
+                        package_version.fetch_source(
+                            destdir=self.sources_path, unpack=False)
+                    except ValueError:
+                        logger.info('No sources available for {}'.format(
+                            package.name
+                        ))
                 packages.append(package.name)
         logger.info('Fetching packages: {packages}'.format_map(locals()))
         self._cache.fetch_archives()
