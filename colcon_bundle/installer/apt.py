@@ -6,6 +6,8 @@ import json
 import os
 import subprocess
 
+from apt.cache import FetchFailedException
+from apt.package import FetchError
 from colcon_bundle.installer import BundleInstallerExtensionPoint
 from colcon_bundle.verb import logger
 from colcon_core.plugin_system import satisfies_version
@@ -125,6 +127,7 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
 
     def _fetch_packages(self):  # noqa: D102
         packages = []
+        source_fetch_failures = []
         for package in self._cache:
             if package.marked_install:
                 if self.include_sources:
@@ -133,12 +136,29 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
                         package_version.fetch_source(
                             destdir=self.sources_path, unpack=False)
                     except ValueError:
+                        source_fetch_failures.append(package.name)
                         logger.info('No sources available for {}'.format(
                             package.name
                         ))
+                    except FetchFailedException as e:
+                        source_fetch_failures.append(package.name)
+                        logger.error('Failed to fetch sources for {}'.format(
+                            package.name))
+                        logger.error(e)
+                    except FetchError as e:
+                        source_fetch_failures.append(package.name)
+                        logger.error('Failed to fetch sources for {}'.format(
+                            package.name
+                        ))
+                        logger.error(e)
                 packages.append(package.name)
         logger.info('Fetching packages: {packages}'.format_map(locals()))
         self._cache.fetch_archives()
+
+        if len(source_fetch_failures) > 0:
+            with open(os.path.join(
+                    self._cache_dir, 'missing_sources.txt'), 'w') as out:
+                out.writelines(source_fetch_failures)
 
     def install(self):  # noqa: D102
         # There are certain packages we don't want to install because they
