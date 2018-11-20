@@ -84,9 +84,8 @@ class BundleVerb(VerbExtensionPoint):
                                  'default: bundle)')
         parser.add_argument(
             '--include-sources', action='store_true',
-            help='If included all the sources for bundled apt packages'
-                 'will be put into sources.tar.gz in the bundle base '
-                 'directory')
+            help='Include a sources tarball for all packages installed into '
+                 'the bundle via apt')
 
         add_executor_arguments(parser)
         add_event_handler_arguments(parser)
@@ -187,20 +186,21 @@ class BundleVerb(VerbExtensionPoint):
         bundle_tar_path = os.path.join(bundle_base, 'bundle.tar')
         metadata_tar_path = os.path.join(bundle_base, 'metadata.tar')
         archive_tar_gz_path = os.path.join(bundle_base, 'output.tar.gz')
-        sources_tar_gz_path = os.path.join(bundle_base, 'sources.tar.gz')
 
-        with tarfile.open(
-                sources_tar_gz_path, 'w:gz', compresslevel=5) as archive:
-            for name, directory in self.installer_cache_dirs.items():
-                sources_path = os.path.join(directory, 'sources')
-                if not os.path.exists(sources_path):
-                    continue
-                for filename in os.listdir(sources_path):
-                    file_path = os.path.join(sources_path, filename)
-                    archive.add(
-                        file_path,
-                        arcname=os.path.join(
-                            name, os.path.basename(file_path)))
+        if include_sources:
+            sources_tar_gz_path = os.path.join(bundle_base, 'sources.tar.gz')
+            with tarfile.open(
+                    sources_tar_gz_path, 'w:gz', compresslevel=5) as archive:
+                for name, directory in self.installer_cache_dirs.items():
+                    sources_path = os.path.join(directory, 'sources')
+                    if not os.path.exists(sources_path):
+                        continue
+                    for filename in os.listdir(sources_path):
+                        file_path = os.path.join(sources_path, filename)
+                        archive.add(
+                            file_path,
+                            arcname=os.path.join(
+                                name, os.path.basename(file_path)))
 
         with tarfile.open(metadata_tar_path, 'w') as archive:
             archive.add(os.path.join(bundle_base, 'installer_metadata.json'),
