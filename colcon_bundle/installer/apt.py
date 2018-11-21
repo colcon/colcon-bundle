@@ -34,11 +34,17 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
             os.path.dirname(os.path.realpath(__file__)), 'assets')
         blacklist_path = os.path.join(
             assets_directory, 'apt_package_blacklist.txt')
+        sources_list_path = os.path.join(assets_directory, 'sources.list')
 
         parser.add_argument(
             '--apt-package-blacklist', default=blacklist_path,
             help='A file with newline separated names of packages that should'
                  'not be installed into the bundle')
+
+        parser.add_argument(
+            '--apt-sources-list', default=sources_list_path,
+            help='Path to the apt sources list that should be used for package'
+                 'installation in the bundle.')
 
     def should_load(self):  # noqa: D102
         try:
@@ -84,21 +90,16 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
                                    'Dir::Etc::TrustedParts'))
         apt.apt_pkg.config.clear('APT::Update::Post-Invoke-Success')
 
-        # Should we grab the sources from the system?
         sources_list_file = os.path.join(self._cache_dir, 'etc', 'apt',
                                          'sources.list')
-        asset_path = os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), 'assets')
-        bundled_sources_list = os.path.join(asset_path, 'sources.list')
         os.makedirs(os.path.dirname(sources_list_file), exist_ok=True)
+
+        with open(sources_list_file, 'w') as f:
+            with open(self.context.args.apt_sources_list, 'r') as sources:
+                f.write(sources.read())
 
         if self.include_sources:
             os.makedirs(self.sources_path, exist_ok=True)
-
-        # TODO Make this a plugin
-        with open(sources_list_file, 'w') as f:
-            with open(bundled_sources_list, 'r') as sources:
-                f.write(sources.read())
 
         # We need to open and close the cache before calling update because
         # of a bug
