@@ -26,14 +26,17 @@ class Pip3BundleInstallerExtensionPoint(BundleInstallerExtensionPoint):
 
     def add_arguments(self, *, parser):  # noqa: D102
         parser.add_argument(
-            '--pip3-argument', default='build',
-            help='The base path for all build directories (default: build)')
+            '--pip3-args',
+            nargs='*', metavar='*', type=str.lstrip,
+            help='Pass arguments to CMake projects. '
+            'Arguments matching other options in colcon must be prefixed '
+            'by a space,\ne.g. --pip3-args " --help"')
 
     def initialize(self, context):  # noqa: D102
         self.context = context
         self._cache_path = context.cache_path
 
-    def add_to_install_list(self, name, metadata=None):
+    def add_to_install_list(self, name, *, metadata=None):
         """
         Mark the python package for installation.
 
@@ -43,7 +46,7 @@ class Pip3BundleInstallerExtensionPoint(BundleInstallerExtensionPoint):
         """
         self._packages.append(name)
 
-    def remove_from_install_list(self, name, metadata=None):  # noqa: D102
+    def remove_from_install_list(self, name, *, metadata=None):  # noqa: D102
         self._packages.remove(name)
 
     def install(self):  # noqa: D102
@@ -62,8 +65,9 @@ class Pip3BundleInstallerExtensionPoint(BundleInstallerExtensionPoint):
             for name in self._packages:
                 req.write(name.strip() + '\n')
 
-        subprocess.check_call(
-            [python_path, '-m', 'pip', 'install', '--ignore-installed',
-             '-r', requirements])
+        pip3_args = [python_path, '-m', 'pip', 'install', '--ignore-installed']
+        pip3_args += (self.context.args.pip3_args or [])
+        pip3_args += ['-r', requirements]
+        subprocess.check_call(pip3_args)
 
         return {'requirements': self._packages}
