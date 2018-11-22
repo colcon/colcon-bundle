@@ -210,6 +210,16 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
 
         with open(installed_cache_path, 'w') as f:
             f.write(json.dumps(list(installed)))
-        self.metadata['installed_packages'] = list(installed)
+
+        installed_packages_metadata = []
+        for package in self._cache:
+            if package.marked_install:
+                installed_packages_metadata.append(
+                    {
+                        'name': package.shortname,
+                        'version': package.candidate.version
+                    }
+                )
+        self.metadata['installed_packages'] = installed_packages_metadata
 
         return self.metadata
