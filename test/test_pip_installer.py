@@ -4,11 +4,11 @@ import shutil
 import os
 
 from colcon_bundle.installer import BundleInstallerContext
-from colcon_bundle.installer.pip3 import Pip3BundleInstallerExtensionPoint
+from colcon_bundle.installer.pip import PipBundleInstallerExtensionPoint
 
 
 def test_install_nothing():
-    installer = Pip3BundleInstallerExtensionPoint()
+    installer = PipBundleInstallerExtensionPoint()
     context = BundleInstallerContext(
         args=None, cache_path=None, prefix_path=None)
     installer.initialize(context)
@@ -18,12 +18,12 @@ def test_install_nothing():
 
 @patch('subprocess.check_call')
 def test_install(check_call):
-    installer = Pip3BundleInstallerExtensionPoint()
+    installer = PipBundleInstallerExtensionPoint()
     cache_dir = mkdtemp()
     prefix = mkdtemp()
-    python_path = os.path.join(prefix, 'usr', 'bin', 'python3')
+    python_path = os.path.join(prefix, 'usr', 'bin', 'python2')
     context_args = Mock()
-    context_args.pip3_args = []
+    context_args.pip_args = []
     context = BundleInstallerContext(
         args=context_args, cache_path=cache_dir, prefix_path=prefix)
     try:
@@ -55,12 +55,12 @@ def test_install(check_call):
 
 @patch('subprocess.check_call')
 def test_install_with_additional_arguments(check_call):
-    installer = Pip3BundleInstallerExtensionPoint()
+    installer = PipBundleInstallerExtensionPoint()
     cache_dir = mkdtemp()
     prefix = mkdtemp()
-    python_path = os.path.join(prefix, 'usr', 'bin', 'python3')
+    python_path = os.path.join(prefix, 'usr', 'bin', 'python2')
     context_args = Mock()
-    context_args.pip3_args = [' --test-arg-1', '--test-arg-2']
+    context_args.pip_args = [' --test-arg-1', '--test-arg-2']
     context = BundleInstallerContext(
         args=context_args, cache_path=cache_dir, prefix_path=prefix)
     try:

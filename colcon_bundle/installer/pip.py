@@ -26,8 +26,11 @@ class PipBundleInstallerExtensionPoint(BundleInstallerExtensionPoint):
 
     def add_arguments(self, *, parser):  # noqa: D102
         parser.add_argument(
-            '--pip-argument', default='build',
-            help='The base path for all build directories (default: build)')
+            '--pip-args',
+            nargs='*', metavar='*', type=str.lstrip,
+            help='Pass arguments to CMake projects. '
+            'Arguments matching other options in colcon must be prefixed '
+            'by a space,\ne.g. --pip-args " --help"')
 
     def initialize(self, context):  # noqa: D102
         self.context = context
@@ -61,9 +64,9 @@ class PipBundleInstallerExtensionPoint(BundleInstallerExtensionPoint):
         with open(requirements, 'w') as req:
             for name in self._packages:
                 req.write(name.strip() + '\n')
-
-        subprocess.check_call(
-            [python_path, '-m', 'pip', 'install', '--ignore-installed',
-             '-r', requirements])
+        pip_args = [python_path, '-m', 'pip', 'install', '--ignore-installed']
+        pip_args += (self.context.args.pip_args or [])
+        pip_args += ['-r', requirements]
+        subprocess.check_call(pip_args)
 
         return {'requirements': self._packages}
