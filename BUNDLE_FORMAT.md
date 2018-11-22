@@ -24,10 +24,10 @@ installers.json
 
     {
       "apt": {
-        "installed_packages": ['ros-kinetic-rosbag-1.2.3']
+        "installed_packages": ['package=2.11.94']
       },
       "pip3": {
-        "installed_packages": ['flake8==3.5.0']
+        "installed_packages": ['pypackage1==3.5.0', 'pypackage2>=3.5]
       }
     }
     
@@ -42,23 +42,12 @@ signatures.json
     }
     
       
-### dependencies.tar
+### bundle.tar
 
 This contains all the dependencies of the built packages. 
 It contains `setup.sh` at the root which can be sourced to add
 all the dependencies to the current environment.
 
 When sourcing this `setup.sh` it expects `COLCON_BUNDLE_PREFIX` to
-be set to the folder where the contents of `dependencies.tar` have 
+be set to the folder where the contents of `bundle.tar` have 
 been extracted.
-
-### install.tar
-
-This contains the packages built in the workspace. In general
-this will match the contents of the install directory for a normal
-`colcon build` meaning there will be a `setup.sh` that can be sourced
-to add the packages to the environment.
-
-When sourcing `setup.sh` it will expect `COLCON_CURRENT_PREFIX`
-to be set to the root locaiton where the contents of `install.tar`
-have been extracted
