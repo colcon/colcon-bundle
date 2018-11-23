@@ -10,8 +10,6 @@ from colcon_bundle.installer.base_pip_installer import \
 class PipBundleInstallerExtensionPoint(BasePipInstallerExtensionPoint):
     """Python 2 pip installer."""
 
-    PRIORITY = 10
-
     def add_arguments(self, *, parser):  # noqa: D102
         parser.add_argument(
             '--pip-args',

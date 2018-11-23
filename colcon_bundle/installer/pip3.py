@@ -8,9 +8,7 @@ from colcon_bundle.installer.base_pip_installer import \
 
 
 class Pip3BundleInstallerExtensionPoint(BasePipInstallerExtensionPoint):
-    """Python 2 pip installer."""
-
-    PRIORITY = 10
+    """Python 3 pip installer."""
 
     def add_arguments(self, *, parser):  # noqa: D102
         parser.add_argument(

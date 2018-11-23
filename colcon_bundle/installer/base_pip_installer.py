@@ -9,7 +9,7 @@ from colcon_bundle.verb import logger
 
 
 class BasePipInstallerExtensionPoint(BundleInstallerExtensionPoint):
-    """Base class for pip2/3 installers"""
+    """Base class for pip2/3 installers."""
 
     __slots__ = (
         'context',
@@ -47,8 +47,10 @@ class BasePipInstallerExtensionPoint(BundleInstallerExtensionPoint):
 
     def install(self):  # noqa: D102
         if len(self._packages) == 0:
-            logger.info('No pip dependencies to install.')
-            return {'message': 'No dependencies installed...'}
+            logger.info('No dependencies to install for {}'.format(
+                os.path.basename(self._python_path)
+            ))
+            return {'installed_packages': []}
 
         logger.info('Installing pip3 dependencies...')
         python_pip_args = [self._python_path, '-m', 'pip']
@@ -87,8 +89,6 @@ class BasePipInstallerExtensionPoint(BundleInstallerExtensionPoint):
 
     @staticmethod
     def split_package_version(package_version):
-        """Splits package==3.2.3 pip freeze output."""
-        print(package_version)
+        """Split package==3.2.3 pip freeze output."""
         split_string = package_version.split('==')
-        print(split_string)
         return {'name': split_string[0], 'version': split_string[1]}
