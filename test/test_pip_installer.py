@@ -9,15 +9,18 @@ from colcon_bundle.installer.pip import PipBundleInstallerExtensionPoint
 
 def test_install_nothing():
     installer = PipBundleInstallerExtensionPoint()
+    cache_dir = mkdtemp()
+    prefix = mkdtemp()
     context = BundleInstallerContext(
-        args=None, cache_path=None, prefix_path=None)
+        args=Mock(), cache_path=cache_dir, prefix_path=prefix)
     installer.initialize(context)
     result = installer.install()
-    assert result == {'message': 'No dependencies installed...'}
+    assert result == {'installed_packages': []}
 
 
 @patch('subprocess.check_call')
-def test_install(check_call):
+@patch('subprocess.check_output')
+def test_install(check_output, check_call):
     installer = PipBundleInstallerExtensionPoint()
     cache_dir = mkdtemp()
     prefix = mkdtemp()
@@ -26,6 +29,7 @@ def test_install(check_call):
     context_args.pip_args = []
     context = BundleInstallerContext(
         args=context_args, cache_path=cache_dir, prefix_path=prefix)
+    check_output.return_value = 'pkg1==3.4.5\npkg2==3.1.2\n'
     try:
         installer.initialize(context)
         installer.add_to_install_list('pkg1==3.4.5')
@@ -46,7 +50,16 @@ def test_install(check_call):
             '-m', 'pip', 'install', '--ignore-installed', '-r']
 
         assert result == {
-            'requirements': ['pkg1==3.4.5', 'pkg2>=3.1.2']
+            'installed_packages': [
+                {
+                    'name': 'pkg1',
+                    'version': '3.4.5'
+                },
+                {
+                    'name': 'pkg2',
+                    'version': '3.1.2'
+                }
+            ]
         }
     finally:
         shutil.rmtree(cache_dir)
@@ -54,7 +67,8 @@ def test_install(check_call):
 
 
 @patch('subprocess.check_call')
-def test_install_with_additional_arguments(check_call):
+@patch('subprocess.check_output')
+def test_install_with_additional_arguments(check_output, check_call):
     installer = PipBundleInstallerExtensionPoint()
     cache_dir = mkdtemp()
     prefix = mkdtemp()
@@ -63,6 +77,7 @@ def test_install_with_additional_arguments(check_call):
     context_args.pip_args = [' --test-arg-1', '--test-arg-2']
     context = BundleInstallerContext(
         args=context_args, cache_path=cache_dir, prefix_path=prefix)
+    check_output.return_value = 'pkg1==3.4.5\npkg2==3.1.2\n'
     try:
         installer.initialize(context)
         installer.add_to_install_list('pkg1==3.4.5')
@@ -80,11 +95,20 @@ def test_install_with_additional_arguments(check_call):
         args = args_list[1][0][0]
         assert args[0] == python_path
         assert args[1:-1] == [
-            '-m', 'pip', 'install', '--ignore-installed', ' --test-arg-1',
-            '--test-arg-2', '-r']
+            '-m', 'pip', 'install', ' --test-arg-1',
+            '--test-arg-2', '--ignore-installed', '-r']
 
         assert result == {
-            'requirements': ['pkg1==3.4.5', 'pkg2>=3.1.2']
+            'installed_packages': [
+                {
+                    'name': 'pkg1',
+                    'version': '3.4.5'
+                },
+                {
+                    'name': 'pkg2',
+                    'version': '3.1.2'
+                }
+            ]
         }
     finally:
         shutil.rmtree(cache_dir)
