@@ -22,6 +22,7 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         self.context = None
         self.include_sources = False
         self.sources_path = None
+        self.metadata = {}
         satisfies_version(
             BundleInstallerExtensionPoint.EXTENSION_POINT_VERSION, '^1.0')
 
@@ -138,7 +139,7 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
                             destdir=self.sources_path, unpack=False)
                     except ValueError:
                         source_fetch_failures.append(package.name)
-                        logger.info('No sources available for {}'.format(
+                        logger.error('No sources available for {}'.format(
                             package.name
                         ))
                     except FetchFailedException as e:
@@ -157,9 +158,7 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         self._cache.fetch_archives()
 
         if len(source_fetch_failures) > 0:
-            with open(os.path.join(
-                    self._cache_dir, 'missing_sources.txt'), 'w') as out:
-                out.writelines(source_fetch_failures)
+            self.metadata['missing_sources'] = source_fetch_failures
 
     def install(self):  # noqa: D102
         # There are certain packages we don't want to install because they
@@ -212,4 +211,15 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         with open(installed_cache_path, 'w') as f:
             f.write(json.dumps(list(installed)))
 
-        return list(installed)
+        installed_packages_metadata = []
+        for package in self._cache:
+            if package.marked_install:
+                installed_packages_metadata.append(
+                    {
+                        'name': package.shortname,
+                        'version': package.candidate.version
+                    }
+                )
+        self.metadata['installed_packages'] = installed_packages_metadata
+
+        return self.metadata
