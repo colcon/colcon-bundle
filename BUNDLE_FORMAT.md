@@ -1,4 +1,4 @@
-# Bundle Format
+# Bundle Format V1
 
 ## Summary
 
@@ -23,28 +23,35 @@ archive.
 installers.json
 
     {
-      "apt": {
-        "installed_packages": ['package=2.11.94']
-      },
-      "pip3": {
-        "installed_packages": ['pypackage1==3.5.0', 'pypackage2>=3.5]
-      }
+	  "apt": {
+		"installed_packages": [
+		  {
+			"version": "2.26.1",
+			"name": "pacakge1"
+		  },
+		  {
+			"version": "1.0.6-8",
+			"name": "package2"
+		  }
+		]
+	  }
+	  "pip3": {
+		"installed_packages": [
+		  {
+			"version": "1.11.13",
+			"name": "package1"
+		  },
+		  {
+			"version": "1.8.3",
+			"name": "package2"
+		  }
+		]
+	  }
     }
-    
-signatures.json
-
-    {
-      "bundle.tar": {
-        "md5": "7e2ca4cc8f282cd4268833a941b9c062",
-        "sha1": "b41db935ec6f41e5fe18f880b198e33ebc823831",
-        "sha256": "41ba0de4a3b7c6b9371ff069d7dfc8b15348c885c45c4658e8e2ace79b764300"
-      }
-    }
-    
       
 ### bundle.tar
 
-This contains all the dependencies of the built packages. 
+This contains the built packages and all of their dependencies.
 It contains `setup.sh` at the root which can be sourced to add
 all the dependencies to the current environment.
 
