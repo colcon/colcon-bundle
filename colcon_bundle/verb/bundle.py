@@ -1,15 +1,18 @@
 # Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
-
 from collections import OrderedDict
 import json
 import os
 from pathlib import Path
+import shutil
 import tarfile
 
 from colcon_bundle.installer import add_installer_arguments, \
     BundleInstallerContext, get_bundle_installer_extensions
-from colcon_bundle.verb._archive_generators import generate_archive
+from colcon_bundle.verb._archive_generators import generate_archive_v1, \
+    generate_archive_v2
+from colcon_bundle.verb.utilities import rewrite_catkin_package_path, \
+    update_shebang, update_symlinks
 from colcon_core.argument_parser.destination_collector import \
     DestinationCollectorDecorator
 from colcon_core.event_handler import add_event_handler_arguments
@@ -20,8 +23,7 @@ from colcon_core.package_selection import \
 from colcon_core.plugin_system import satisfies_version
 from colcon_core.task import add_task_arguments, get_task_extension, \
     TaskContext
-from colcon_core.verb import check_and_mark_build_tool, \
-    check_and_mark_install_layout, VerbExtensionPoint
+from colcon_core.verb import check_and_mark_install_layout, VerbExtensionPoint
 from colcon_core.verb.build import update_object
 
 from . import check_and_mark_bundle_tool, logger
@@ -85,6 +87,16 @@ class BundleVerb(VerbExtensionPoint):
             '--include-sources', action='store_true',
             help='Include a sources tarball for all packages installed into '
                  'the bundle via apt')
+        parser.add_argument(
+            '--bundle-version', default=1, type=int,
+            help='Version of bundle to generate')
+
+        parser.add_argument(
+            '--use-cached-dependencies', action='store_true',
+            help='Use this to skip download and installation of '
+                 'dependencies for quicker development cycles. This requires '
+                 'that you have already run "colcon bundle" successfully '
+                 'and all intermediate artifacts have been generated')
 
         add_executor_arguments(parser)
         add_event_handler_arguments(parser)
@@ -97,14 +109,44 @@ class BundleVerb(VerbExtensionPoint):
 
     def main(self, *, context):  # noqa: D102
         print('Bundling workspace...')
-        build_base = context.args.build_base
+        use_cached_deps = context.args.use_cached_dependencies
         install_base = os.path.abspath(context.args.install_base)
         bundle_base = os.path.abspath(context.args.bundle_base)
+        installer_metadata_path = os.path.join(
+            bundle_base, 'installer_metadata.json')
 
         if not os.path.exists(install_base):
             raise RuntimeError(
                 'You must build your workspace before bundling it.')
-        check_and_mark_build_tool(build_base)
+
+        if use_cached_deps \
+           and not os.path.exists(bundle_base) \
+           and not os.path.exists(installer_metadata_path):
+            raise RuntimeError(
+                'You must bundle your workspace once before using the '
+                '--use-cached-dependencies flag.')
+
+        dependencies_changed = False
+
+        staging_path = os.path.join(bundle_base, 'bundle_staging')
+        if not use_cached_deps:
+            dependencies_changed = self._manage_dependencies(
+                context, install_base, bundle_base,
+                staging_path, installer_metadata_path)
+
+        if context.args.bundle_version == 2:
+            generate_archive_v2(install_base, staging_path, bundle_base,
+                                [installer_metadata_path],
+                                dependencies_changed)
+        else:
+            generate_archive_v1(install_base, staging_path, bundle_base)
+
+        return 0
+
+    def _manage_dependencies(self, context,
+                             install_base, bundle_base,
+                             staging_path, installer_metadata_path):
+
         check_and_mark_install_layout(
             install_base, merge_install=context.args.merge_install)
         self._create_path(bundle_base)
@@ -124,29 +166,24 @@ class BundleVerb(VerbExtensionPoint):
             return rc
 
         print('Fetching and installing dependencies...')
-        staging_path = os.path.join(bundle_base, 'bundle_staging')
-
         installer_metadata = {}
         for name, installer in installers.items():
             installer_metadata[name] = installer.install()
 
-        installer_metadata_path = os.path.join(
-            bundle_base, 'installer_metadata.json')
-
         installer_metadata_string = json.dumps(installer_metadata,
                                                sort_keys=True)
 
-        # Check to see if we can skip dependency archiving
+        dependencies_changed = True
         if os.path.exists(installer_metadata_path):
             with open(installer_metadata_path, 'r') as f:
                 previous_metadata = f.read()
                 if previous_metadata == installer_metadata_string:
-                    pass
+                    dependencies_changed = False
 
         with open(installer_metadata_path, 'w') as f:
             f.write(installer_metadata_string)
 
-        if context.args.include_sources:
+        if context.args.include_sources and dependencies_changed:
             sources_tar_gz_path = os.path.join(bundle_base, 'sources.tar.gz')
             with tarfile.open(
                     sources_tar_gz_path, 'w:gz', compresslevel=5) as archive:
@@ -161,8 +198,21 @@ class BundleVerb(VerbExtensionPoint):
                             arcname=os.path.join(
                                 name, os.path.basename(file_path)))
 
-        generate_archive(install_base, staging_path, bundle_base)
-        return 0
+        # Prepare staging directory
+        # TODO: Make this a plugin
+        assets_directory = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), 'assets')
+        shellscript_path = os.path.join(assets_directory, 'setup.sh')
+        shutil.copy2(shellscript_path, staging_path)
+
+        if dependencies_changed:
+            update_symlinks(staging_path)
+            # TODO: Update pkgconfig files?
+            update_shebang(staging_path)
+            # TODO: Move this to colcon-ros-bundle
+            rewrite_catkin_package_path(staging_path)
+
+        return dependencies_changed
 
     def _setup_installers(self, context):
         bundle_base = context.args.bundle_base
