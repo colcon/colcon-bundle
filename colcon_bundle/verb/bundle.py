@@ -5,12 +5,11 @@ from collections import OrderedDict
 import json
 import os
 from pathlib import Path
-import shutil
 import tarfile
 
 from colcon_bundle.installer import add_installer_arguments, \
     BundleInstallerContext, get_bundle_installer_extensions
-from colcon_bundle.verb._utilities import update_shebang, update_symlinks
+from colcon_bundle.verb._archive_generators import generate_archive
 from colcon_core.argument_parser.destination_collector import \
     DestinationCollectorDecorator
 from colcon_core.event_handler import add_event_handler_arguments
@@ -133,32 +132,37 @@ class BundleVerb(VerbExtensionPoint):
 
         installer_metadata_path = os.path.join(
             bundle_base, 'installer_metadata.json')
+
+        installer_metadata_string = json.dumps(installer_metadata,
+                                               sort_keys=True)
+
+        # Check to see if we can skip dependency archiving
+        if os.path.exists(installer_metadata_path):
+            with open(installer_metadata_path, 'r') as f:
+                previous_metadata = f.read()
+                if previous_metadata == installer_metadata_string:
+                    pass
+
         with open(installer_metadata_path, 'w') as f:
-            f.write(json.dumps(installer_metadata))
+            f.write(installer_metadata_string)
 
-        logger.info('Copying {} into bundle...'.format(install_base))
-        bundle_workspace_install_path = os.path.join(
-            staging_path, 'opt', 'install')
-        if os.path.exists(bundle_workspace_install_path):
-            shutil.rmtree(bundle_workspace_install_path)
-        shutil.copytree(install_base, bundle_workspace_install_path)
+        if context.args.include_sources:
+            sources_tar_gz_path = os.path.join(bundle_base, 'sources.tar.gz')
+            with tarfile.open(
+                    sources_tar_gz_path, 'w:gz', compresslevel=5) as archive:
+                for name, directory in self.installer_cache_dirs.items():
+                    sources_path = os.path.join(directory, 'sources')
+                    if not os.path.exists(sources_path):
+                        continue
+                    for filename in os.listdir(sources_path):
+                        file_path = os.path.join(sources_path, filename)
+                        archive.add(
+                            file_path,
+                            arcname=os.path.join(
+                                name, os.path.basename(file_path)))
 
-        update_symlinks(staging_path)
-        # TODO: Update pkgconfig files?
-        update_shebang(staging_path)
-        # TODO: Move this to colcon-ros-bundle
-        self._rewrite_catkin_package_path(staging_path)
-
-        # Bundle setup shell scripts
-        # TODO: Make this a plugin
-        assets_directory = os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), 'assets')
-        shellscript_path = os.path.join(assets_directory, 'setup.sh')
-        shutil.copy2(shellscript_path, staging_path)
-
-        self._generate_archive(
-            bundle_base, staging_path, context.args.include_sources)
-        return rc
+        generate_archive(install_base, staging_path, bundle_base)
+        return 0
 
     def _setup_installers(self, context):
         bundle_base = context.args.bundle_base
@@ -178,59 +182,6 @@ class BundleVerb(VerbExtensionPoint):
                 prefix_path=prefix_path)
             installer.initialize(context)
         return installers
-
-    def _generate_archive(self, bundle_base, staging_path, include_sources):
-        logger.info('Archiving the bundle output')
-        print('Creating bundle archive...')
-
-        bundle_tar_path = os.path.join(bundle_base, 'bundle.tar')
-        metadata_tar_path = os.path.join(bundle_base, 'metadata.tar')
-        archive_tar_gz_path = os.path.join(bundle_base, 'output.tar.gz')
-
-        if include_sources:
-            sources_tar_gz_path = os.path.join(bundle_base, 'sources.tar.gz')
-            with tarfile.open(
-                    sources_tar_gz_path, 'w:gz', compresslevel=5) as archive:
-                for name, directory in self.installer_cache_dirs.items():
-                    sources_path = os.path.join(directory, 'sources')
-                    if not os.path.exists(sources_path):
-                        continue
-                    for filename in os.listdir(sources_path):
-                        file_path = os.path.join(sources_path, filename)
-                        archive.add(
-                            file_path,
-                            arcname=os.path.join(
-                                name, os.path.basename(file_path)))
-
-        with tarfile.open(metadata_tar_path, 'w') as archive:
-            archive.add(os.path.join(bundle_base, 'installer_metadata.json'),
-                        arcname='installers.json')
-
-        if os.path.exists(bundle_tar_path):
-            os.remove(bundle_tar_path)
-
-        with tarfile.open(bundle_tar_path, 'w') as bundle_tar:
-            logger.info(
-                'Creating tar of {path}'.format(path=staging_path))
-            for name in os.listdir(staging_path):
-                some_path = os.path.join(staging_path, name)
-                bundle_tar.add(some_path, arcname=os.path.basename(some_path))
-
-        with tarfile.open(
-                archive_tar_gz_path, 'w:gz', compresslevel=5) as archive:
-            assets_directory = os.path.join(
-                os.path.dirname(os.path.realpath(__file__)), 'assets')
-            archive.add(
-                os.path.join(assets_directory, 'version'), arcname='version')
-            archive.add(
-                metadata_tar_path, arcname=os.path.basename(metadata_tar_path))
-            archive.add(
-                bundle_tar_path, arcname=os.path.basename(bundle_tar_path))
-
-        os.remove(metadata_tar_path)
-        os.remove(bundle_tar_path)
-
-        logger.info('Archiving complete')
 
     def _create_path(self, path):
         path = Path(os.path.abspath(path))
@@ -289,31 +240,3 @@ class BundleVerb(VerbExtensionPoint):
 
             jobs[pkg.name] = job
         return jobs
-
-    def _rewrite_catkin_package_path(self, base_path):
-        # TODO: This should be in the ros package
-        import re
-        python_regex = re.compile('/usr/bin/python')
-        logger.info('Starting shebang update...')
-        profiled_path = os.path.join(
-            base_path, 'opt', 'ros', 'kinetic', 'etc', 'catkin', 'profile.d',
-            '1.ros_package_path.sh')
-        if os.path.isfile(profiled_path):
-            with open(profiled_path, 'rb+') as file_handle:
-                contents = file_handle.read()
-                try:
-                    str_contents = contents.decode()
-                except UnicodeError:
-                    logger.error(
-                        '{profiled_path} should be a text file'.format_map(
-                            locals()))
-                    return
-                replacement_tuple = python_regex.subn('python', str_contents,
-                                                      count=1)
-                if replacement_tuple[1] > 0:
-                    logger.info(
-                        'Found direct python invocation in {profiled_path}'
-                        .format_map(locals()))
-                    file_handle.seek(0)
-                    file_handle.truncate()
-                    file_handle.write(replacement_tuple[0].encode())
