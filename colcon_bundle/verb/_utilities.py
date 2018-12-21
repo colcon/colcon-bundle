@@ -9,7 +9,6 @@ import shutil
 import subprocess
 import sys
 
-
 from colcon_bundle.verb import logger
 
 
@@ -22,7 +21,6 @@ def update_shebang(path):
     else if python is invoked with parameters
 
     :param path: Path to file to replace shebang in
-    :return: None
     """
     # TODO: We should handle scripts that have parameters in the shebang
     # TODO: We should hangle scripts that are doing other /usr/bin executables
@@ -68,6 +66,8 @@ def update_symlinks(base_path):
     the libraries we are bundling. We do not bundle libc and want to use the
     system's version, so we should not update those. Copy any other libraries,
     not found in the bundle, into the bundle so that relative symlinks work.
+
+    :param base_path: Directory that will be recursed
     """
     logger.info('Updating symlinks in {base_path}'.format_map(locals()))
     encoding = sys.getfilesystemencoding()
@@ -119,3 +119,37 @@ def update_symlinks(base_path):
                             bundle_library_path, relative_path))
                     os.remove(symlink_path)
                     os.symlink(relative_path, symlink_path)
+
+
+def rewrite_catkin_package_path(base_path):
+    """
+    Update catkin/profile.d to use correct shebangs.
+
+    :param base_path: Path to the bundle staging directory
+    """
+    # TODO: This should be in the ros package
+    import re
+    python_regex = re.compile('/usr/bin/python')
+    logger.info('Starting shebang update...')
+    profiled_path = os.path.join(
+        base_path, 'opt', 'ros', 'kinetic', 'etc', 'catkin', 'profile.d',
+        '1.ros_package_path.sh')
+    if os.path.isfile(profiled_path):
+        with open(profiled_path, 'rb+') as file_handle:
+            contents = file_handle.read()
+            try:
+                str_contents = contents.decode()
+            except UnicodeError:
+                logger.error(
+                    '{profiled_path} should be a text file'.format_map(
+                        locals()))
+                return
+            replacement_tuple = python_regex.subn('python', str_contents,
+                                                  count=1)
+            if replacement_tuple[1] > 0:
+                logger.info(
+                    'Found direct python invocation in {profiled_path}'
+                    .format_map(locals()))
+                file_handle.seek(0)
+                file_handle.truncate()
+                file_handle.write(replacement_tuple[0].encode())
