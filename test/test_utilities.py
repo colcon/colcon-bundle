@@ -6,7 +6,7 @@ import os
 import shutil
 import tempfile
 
-from colcon_bundle.verb._utilities import update_shebang
+from colcon_bundle.verb.utilities import update_shebang
 
 
 class TestUtilities:
