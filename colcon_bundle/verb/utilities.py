@@ -15,7 +15,7 @@ from colcon_bundle.verb import logger
 
 def get_ros_distribution_version():
     """
-    Discover and return ROS distribution version
+    Discover and return ROS distribution version.
 
     :return: the ROS distribution version to be used.
     example: kinetic, melodic
@@ -28,7 +28,7 @@ def get_ros_distribution_version():
 
 def get_ubuntu_distribution_version():
     """
-    Discover and return Ubuntu distribution version
+    Discover and return Ubuntu distribution version.
 
     :return: the Ubuntu distribution version of the build server.
     example: xenial, bionic
