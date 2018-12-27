@@ -14,12 +14,20 @@ from colcon_bundle.verb import logger
 
 
 def get_ros_distribution_version():
+    """
+    :return: the ROS distribution version to be used.
+    example: kinetic, melodic
+    """
     ros_distribution_version = 'kinetic'
     if get_ubuntu_distribution_version() == 'bionic':
         ros_distribution_version = 'melodic'
-    return
+    return ros_distribution_version
 
 def get_ubuntu_distribution_version():
+    """
+    :return: the Ubuntu distribution version of the build server.
+    example: xenial, bionic
+    """
     ubuntu_distribution_version = 'xenial'
     if platform.linux_distribution:
         distribution = platform.linux_distribution()
