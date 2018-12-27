@@ -4,6 +4,7 @@
 import itertools
 import os
 from pathlib import Path
+import platform
 import re
 import shutil
 import subprocess
@@ -131,8 +132,15 @@ def rewrite_catkin_package_path(base_path):
     import re
     python_regex = re.compile('/usr/bin/python')
     logger.info('Starting shebang update...')
+
+    ros_distro = 'kinetic'
+    if platform.linux_distribution:
+        distribution = platform.linux_distribution()
+        if len(distribution) >= 3 and distribution[2] == 'bionic':
+            ros_distro = 'melodic'
+    
     profiled_path = os.path.join(
-        base_path, 'opt', 'ros', 'kinetic', 'etc', 'catkin', 'profile.d',
+        base_path, 'opt', 'ros', ros_distro, 'etc', 'catkin', 'profile.d',
         '1.ros_package_path.sh')
     if os.path.isfile(profiled_path):
         with open(profiled_path, 'rb+') as file_handle:

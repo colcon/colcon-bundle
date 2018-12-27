@@ -376,3 +376,7 @@ xkb-data
 xml-core
 zip
 zlib1g
+gazebo9
+gazebo9-common
+gazebo9-plugin-base
+libgazebo9

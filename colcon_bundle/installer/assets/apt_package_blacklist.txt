@@ -98,3 +98,7 @@ gazebo7
 gazebo7-common
 gazebo7-plugin-base
 libgazebo7
+gazebo9
+gazebo9-common
+gazebo9-plugin-base
+libgazebo9

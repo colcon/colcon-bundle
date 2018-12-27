@@ -1,0 +1,24 @@
+# x86 Support
+deb [arch=amd64,i386] http://us.archive.ubuntu.com/ubuntu/ bionic main restricted universe multiverse
+deb [arch=amd64,i386] http://us.archive.ubuntu.com/ubuntu/ bionic-updates main restricted universe multiverse
+deb [arch=amd64,i386] http://us.archive.ubuntu.com/ubuntu/ bionic-backports main restricted universe multiverse
+deb [arch=amd64,i386] http://us.archive.ubuntu.com/ubuntu/ bionic-security main restricted universe multiverse
+
+
+# ARM Support
+
+deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic main restricted universe multiverse
+deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic-updates main restricted universe multiverse
+deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic-backports main restricted
+deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic-security main restricted universe multiverse
+
+# Source Repositories
+
+deb-src http://us.archive.ubuntu.com/ubuntu/ bionic main restricted universe multiverse
+deb-src http://us.archive.ubuntu.com/ubuntu/ bionic-updates main restricted universe multiverse
+deb-src http://us.archive.ubuntu.com/ubuntu/ bionic-backports main restricted universe multiverse
+deb-src http://us.archive.ubuntu.com/ubuntu/ bionic-security main restricted universe multiverse
+
+# ROS
+deb http://packages.ros.org/ros/ubuntu bionic main
+

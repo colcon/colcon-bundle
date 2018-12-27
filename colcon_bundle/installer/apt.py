@@ -4,6 +4,7 @@
 import glob
 import json
 import os
+import platform
 import subprocess
 
 from apt.cache import FetchFailedException
@@ -35,7 +36,12 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
             os.path.dirname(os.path.realpath(__file__)), 'assets')
         blacklist_path = os.path.join(
             assets_directory, 'apt_package_blacklist.txt')
-        sources_list_path = os.path.join(assets_directory, 'sources.list')
+        sources_list_path = os.path.join(assets_directory, 'xenial.sources.list')
+
+        if platform.linux_distribution:
+            distribution = platform.linux_distribution()
+            if len(distribution) >= 3 and distribution[2] == 'bionic':
+                sources_list_path = os.path.join(assets_directory, 'bionic.sources.list')
 
         parser.add_argument(
             '--apt-package-blacklist', default=blacklist_path,
