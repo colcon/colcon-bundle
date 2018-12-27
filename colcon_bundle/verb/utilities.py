@@ -15,6 +15,8 @@ from colcon_bundle.verb import logger
 
 def get_ros_distribution_version():
     """
+    Discover and return ROS distribution version
+
     :return: the ROS distribution version to be used.
     example: kinetic, melodic
     """
@@ -23,8 +25,11 @@ def get_ros_distribution_version():
         ros_distribution_version = 'melodic'
     return ros_distribution_version
 
+
 def get_ubuntu_distribution_version():
     """
+    Discover and return Ubuntu distribution version
+
     :return: the Ubuntu distribution version of the build server.
     example: xenial, bionic
     """
@@ -35,6 +40,7 @@ def get_ubuntu_distribution_version():
             ubuntu_distribution_version = distribution[2]
 
     return ubuntu_distribution_version
+
 
 def update_shebang(path):
     """
@@ -158,8 +164,8 @@ def rewrite_catkin_package_path(base_path):
 
     ros_distribution_version = get_ros_distribution_version()
     profiled_path = os.path.join(
-        base_path, 'opt', 'ros', ros_distribution_version, 'etc', 'catkin', 'profile.d',
-        '1.ros_package_path.sh')
+        base_path, 'opt', 'ros', ros_distribution_version, 'etc', 'catkin',
+        'profile.d', '1.ros_package_path.sh')
     if os.path.isfile(profiled_path):
         with open(profiled_path, 'rb+') as file_handle:
             contents = file_handle.read()

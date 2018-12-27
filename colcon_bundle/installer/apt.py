@@ -36,10 +36,12 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
             os.path.dirname(os.path.realpath(__file__)), 'assets')
         blacklist_path = os.path.join(
             assets_directory, 'apt_package_blacklist.txt')
-        sources_list_path = os.path.join(assets_directory, 'xenial.sources.list')
+        sources_list_path = os.path.join(assets_directory,
+                                         'xenial.sources.list')
 
         if get_ubuntu_distribution_version() == 'bionic':
-            sources_list_path = os.path.join(assets_directory, 'bionic.sources.list')
+            sources_list_path = os.path.join(assets_directory,
+                                             'bionic.sources.list')
 
         parser.add_argument(
             '--apt-package-blacklist', default=blacklist_path,
