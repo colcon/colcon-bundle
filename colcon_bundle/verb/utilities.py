@@ -34,12 +34,12 @@ def get_ubuntu_distribution_version():
     example: xenial, bionic
     """
     distribution = distro.linux_distribution()
-    if distribution[0] == "Ubuntu" and distribution[1] == '16.04':
+    if distribution[0] == 'Ubuntu' and distribution[1] == '16.04':
         return 'xenial'
-    elif distribution[0] == "Ubuntu" and distribution[1] == '18.04':
+    elif distribution[0] == 'Ubuntu' and distribution[1] == '18.04':
         return 'bionic'
     else:
-        raise ValueError("Unsupported distribution", distribution)
+        raise ValueError('Unsupported distribution', distribution)
 
 
 def update_shebang(path):
