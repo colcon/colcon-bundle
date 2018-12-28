@@ -10,6 +10,7 @@ from apt.cache import FetchFailedException
 from apt.package import FetchError
 from colcon_bundle.installer import BundleInstallerExtensionPoint
 from colcon_bundle.verb import logger
+from colcon_bundle.verb.utilities import get_ubuntu_distribution_version
 from colcon_core.plugin_system import satisfies_version
 
 
@@ -35,7 +36,12 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
             os.path.dirname(os.path.realpath(__file__)), 'assets')
         blacklist_path = os.path.join(
             assets_directory, 'apt_package_blacklist.txt')
-        sources_list_path = os.path.join(assets_directory, 'sources.list')
+        sources_list_path = os.path.join(assets_directory,
+                                         'xenial.sources.list')
+
+        if get_ubuntu_distribution_version() == 'bionic':
+            sources_list_path = os.path.join(assets_directory,
+                                             'bionic.sources.list')
 
         parser.add_argument(
             '--apt-package-blacklist', default=blacklist_path,

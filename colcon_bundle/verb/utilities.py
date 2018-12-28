@@ -4,12 +4,42 @@
 import itertools
 import os
 from pathlib import Path
+import distro
 import re
 import shutil
 import subprocess
 import sys
 
 from colcon_bundle.verb import logger
+
+
+def get_ros_distribution_version():
+    """
+    Discover and return ROS distribution version.
+
+    :return: the ROS distribution version to be used.
+    example: kinetic, melodic
+    """
+    ros_distribution_version = 'kinetic'
+    if get_ubuntu_distribution_version() == 'bionic':
+        ros_distribution_version = 'melodic'
+    return ros_distribution_version
+
+
+def get_ubuntu_distribution_version():
+    """
+    Discover and return Ubuntu distribution version.
+
+    :return: the Ubuntu distribution version of the build server.
+    example: xenial, bionic
+    """
+    distribution = distro.linux_distribution()
+    if distribution[0] == 'Ubuntu' and distribution[1] == '16.04':
+        return 'xenial'
+    elif distribution[0] == 'Ubuntu' and distribution[1] == '18.04':
+        return 'bionic'
+    else:
+        raise ValueError('Unsupported distribution', distribution)
 
 
 def update_shebang(path):
@@ -131,9 +161,11 @@ def rewrite_catkin_package_path(base_path):
     import re
     python_regex = re.compile('/usr/bin/python')
     logger.info('Starting shebang update...')
+
+    ros_distribution_version = get_ros_distribution_version()
     profiled_path = os.path.join(
-        base_path, 'opt', 'ros', 'kinetic', 'etc', 'catkin', 'profile.d',
-        '1.ros_package_path.sh')
+        base_path, 'opt', 'ros', ros_distribution_version, 'etc', 'catkin',
+        'profile.d', '1.ros_package_path.sh')
     if os.path.isfile(profiled_path):
         with open(profiled_path, 'rb+') as file_handle:
             contents = file_handle.read()

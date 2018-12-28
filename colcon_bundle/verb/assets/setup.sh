@@ -8,6 +8,8 @@ export LC_ALL=C.UTF-8
 
 if [ -f $BUNDLE_CURRENT_PREFIX/opt/ros/kinetic/setup.sh ]; then
   _CATKIN_SETUP_DIR=$BUNDLE_CURRENT_PREFIX/opt/ros/kinetic . $BUNDLE_CURRENT_PREFIX/opt/ros/kinetic/setup.sh
+elif [ -f $BUNDLE_CURRENT_PREFIX/opt/ros/melodic/setup.sh ]; then
+  _CATKIN_SETUP_DIR=$BUNDLE_CURRENT_PREFIX/opt/ros/melodic . $BUNDLE_CURRENT_PREFIX/opt/ros/melodic/setup.sh
 fi
 
 COLCON_CURRENT_PREFIX=$BUNDLE_CURRENT_PREFIX/opt/install . $BUNDLE_CURRENT_PREFIX/opt/install/setup.sh

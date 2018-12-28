@@ -3,7 +3,7 @@ import shutil
 import tarfile
 
 from colcon_bundle.verb import logger
-from colcon_bundle.verb._utilities import rewrite_catkin_package_path, \
+from colcon_bundle.verb.utilities import rewrite_catkin_package_path, \
     update_shebang, update_symlinks
 
 
