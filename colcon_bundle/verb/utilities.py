@@ -4,7 +4,7 @@
 import itertools
 import os
 from pathlib import Path
-import platform
+import distro
 import re
 import shutil
 import subprocess
@@ -33,13 +33,13 @@ def get_ubuntu_distribution_version():
     :return: the Ubuntu distribution version of the build server.
     example: xenial, bionic
     """
-    ubuntu_distribution_version = 'xenial'
-    if platform.linux_distribution:
-        distribution = platform.linux_distribution()
-        if len(distribution) >= 3:
-            ubuntu_distribution_version = distribution[2]
-
-    return ubuntu_distribution_version
+    distribution = distro.linux_distribution()
+    if distribution[0] == "Ubuntu" and distribution[1] == '16.04':
+        return 'xenial'
+    elif distribution[0] == "Ubuntu" and distribution[1] == '18.04':
+        return 'bionic'
+    else:
+        raise ValueError("Unsupported distribution", distribution)
 
 
 def update_shebang(path):
