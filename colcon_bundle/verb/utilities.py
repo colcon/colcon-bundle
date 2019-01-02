@@ -4,7 +4,6 @@
 import itertools
 import os
 from pathlib import Path
-import distro
 import re
 import shutil
 import subprocess
@@ -33,6 +32,7 @@ def get_ubuntu_distribution_version():
     :return: the Ubuntu distribution version of the build server.
     example: xenial, bionic
     """
+    import distro
     distribution = distro.linux_distribution()
     if distribution[0] == 'Ubuntu' and distribution[1] == '16.04':
         return 'xenial'
