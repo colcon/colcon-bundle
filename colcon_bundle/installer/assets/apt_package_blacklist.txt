@@ -102,3 +102,7 @@ gazebo9
 gazebo9-common
 gazebo9-plugin-base
 libgazebo9
+libignition-fuel-tools1-1
+libignition-math4
+libignition-msgs
+libignition-transport4
