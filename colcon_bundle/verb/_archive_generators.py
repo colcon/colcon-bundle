@@ -22,6 +22,10 @@ def generate_archive_v1(install_base,
     :param bundle_base: Directory to place the output of this function
     """
     logger.info('Copying {} into bundle...'.format(install_base))
+    assets_directory = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), 'assets')
+    shellscript_path = os.path.join(assets_directory, 'v1_setup.sh')
+    shutil.copy2(shellscript_path, os.path.join(staging_path, 'setup.sh'))
     bundle_workspace_install_path = os.path.join(
         staging_path, 'opt', 'install')
     if os.path.exists(bundle_workspace_install_path):
@@ -81,7 +85,8 @@ def generate_archive_v2(install_base,
     |- workspace.tar.gz
 
     :param install_base: Directory with built artifacts from the workspace
-    :param dependencies_staging_path: Directory where all dependencies have been installed
+    :param dependencies_staging_path: Directory where all dependencies
+    have been installed
     :param bundle_base: Directory to place the output of this function
     :param metadata_paths: [str] paths to files which should be included
     in the metadata archive
@@ -96,17 +101,17 @@ def generate_archive_v2(install_base,
 
     # Install directory
     workspace_staging_path = os.path.join(bundle_base, 'workspace_staging')
-    workspace_path = os.path.join(
+    workspace_install_path = os.path.join(
         workspace_staging_path, 'opt', 'built_workspace')
     shutil.rmtree(workspace_staging_path, ignore_errors=True)
     assets_directory = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), 'assets')
 
-    shellscript_path = os.path.join(assets_directory, 'workspace_setup.sh')
+    shellscript_path = os.path.join(assets_directory, 'v2_workspace_setup.sh')
     os.mkdir(workspace_staging_path)
     shutil.copy2(shellscript_path,
                  os.path.join(workspace_staging_path, 'setup.sh'))
-    shutil.copytree(install_base, workspace_path)
+    shutil.copytree(install_base, workspace_install_path)
     _recursive_tar_in_path(workspace_tar_gz_path, workspace_staging_path,
                            mode='w:gz')
 
@@ -116,6 +121,11 @@ def generate_archive_v2(install_base,
         logger.info('Dependencies changed, updating {}'.format(
             dependencies_tar_gz_path
         ))
+        assets_directory = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), 'assets')
+        shellscript_path = os.path.join(assets_directory, 'v2_setup.sh')
+        shutil.copy2(shellscript_path,
+                     os.path.join(dependencies_staging_path, 'setup.sh'))
         if os.path.exists(dependencies_tar_gz_path):
             os.remove(dependencies_tar_gz_path)
         _recursive_tar_in_path(dependencies_tar_gz_path,

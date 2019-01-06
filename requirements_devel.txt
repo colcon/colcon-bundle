@@ -1,4 +1,4 @@
-pycodestyle==2.3.0
+pycodestyle
 flake8
 flake8-blind-except
 flake8-builtins
@@ -12,6 +12,6 @@ mock
 pep8-naming
 pyenchant
 pylint
-pytest
+pytest==4.0.0
 pytest-cov
 distro>=1.3.0

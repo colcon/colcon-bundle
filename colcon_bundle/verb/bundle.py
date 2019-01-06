@@ -4,7 +4,6 @@ from collections import OrderedDict
 import json
 import os
 from pathlib import Path
-import shutil
 import tarfile
 
 from colcon_bundle.installer import add_installer_arguments, \
@@ -197,13 +196,6 @@ class BundleVerb(VerbExtensionPoint):
                             file_path,
                             arcname=os.path.join(
                                 name, os.path.basename(file_path)))
-
-        # Prepare staging directory
-        # TODO: Make this a plugin
-        assets_directory = os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), 'assets')
-        shellscript_path = os.path.join(assets_directory, 'setup.sh')
-        shutil.copy2(shellscript_path, staging_path)
 
         if dependencies_changed:
             update_symlinks(staging_path)
