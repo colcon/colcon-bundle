@@ -7,7 +7,7 @@ find_package(catkin REQUIRED COMPONENTS ${CATKIN_DEPS})
 
 catkin_package()
 
-catkin_install_python(PROGRAMS src/talker.py src/listener.py src/test-pip-install.py
+catkin_install_python(PROGRAMS src/test-pip-install.py
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 install(DIRECTORY launch/

@@ -16,23 +16,12 @@ link_directories("${AWSSDK_LIB_DIR}")
 
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES beginner_tutorials
-#  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
 )
 
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  ${AWSSDK_INCLUDE_DIR}
 )
-
-add_executable(talker src/talker.cpp)
-target_link_libraries(talker ${catkin_LIBRARIES})
-
-add_executable(listener src/listener.cpp)
-target_link_libraries(listener ${catkin_LIBRARIES})
 
 add_executable(helloworld src/helloworld.cpp)
 target_link_libraries(helloworld ${catkin_LIBRARIES})
@@ -42,7 +31,7 @@ target_link_libraries(helloworld_dynamic ${catkin_LIBRARIES} ${AWS_LIBS})
 
 
 ## Install scripts
-install(TARGETS talker listener helloworld helloworld_dynamic
+install(TARGETS helloworld helloworld_dynamic
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
