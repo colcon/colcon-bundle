@@ -47,7 +47,8 @@ def test_install(check_output, check_call):
         args = args_list[1][0][0]
         assert args[0] == python_path
         assert args[1:-1] == [
-            '-m', 'pip', 'install', '--ignore-installed', '-r']
+            '-m', 'pip', 'install', '--default-timeout=100',
+            '--ignore-installed', '-r']
 
         assert result == {
             'installed_packages': [
@@ -96,7 +97,8 @@ def test_install_with_additional_arguments(check_output, check_call):
         assert args[0] == python_path
         assert args[1:-1] == [
             '-m', 'pip', 'install', ' --test-arg-1',
-            '--test-arg-2', '--ignore-installed', '-r']
+            '--test-arg-2',  '--default-timeout=100',
+            '--ignore-installed', '-r']
 
         assert result == {
             'installed_packages': [
@@ -144,7 +146,8 @@ def test_install_not_required(check_output, check_call):
         args = args_list[1][0][0]
         assert args[0] == python_path
         assert args[1:-1] == [
-            '-m', 'pip', 'install', '--ignore-installed', '-r']
+            '-m', 'pip', 'install',  '--default-timeout=100',
+            '--ignore-installed', '-r']
 
         assert result == {
             'installed_packages': [

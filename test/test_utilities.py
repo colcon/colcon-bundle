@@ -10,7 +10,6 @@ from colcon_bundle.verb.utilities import update_shebang
 
 
 class TestUtilities:
-
     def setup_method(self, method):
         self.tmpdir = tempfile.mkdtemp()
 
@@ -30,8 +29,6 @@ class TestUtilities:
         actual_file = os.path.join(self.tmpdir, regular_python_shebang_script)
         expected_file = os.path.join(assets_directory,
                                      'regular_python_shebang_expected.sh')
-        print(actual_file)
-
         assert filecmp.cmp(actual_file, expected_file)
 
     def test_replaces_py3_shebang(self):
@@ -47,8 +44,6 @@ class TestUtilities:
         actual_file = os.path.join(self.tmpdir, regular_python_shebang_script)
         expected_file = os.path.join(assets_directory,
                                      'regular_python3_shebang_expected.sh')
-        print(actual_file)
-
         assert filecmp.cmp(actual_file, expected_file)
 
     def test_ignores_symlinks(self):

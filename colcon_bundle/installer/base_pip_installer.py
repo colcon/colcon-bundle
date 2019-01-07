@@ -79,6 +79,7 @@ class BasePipInstallerExtensionPoint(BundleInstallerExtensionPoint):
         pip_args = []
         pip_args += pip_install_args
         pip_args += (self._pip_args or [])
+        pip_args += ['--default-timeout=100']
         pip_args += ['--ignore-installed', '-r', requirements_file]
         subprocess.check_call(pip_args)
 

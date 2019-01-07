@@ -1,6 +1,6 @@
 # Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
-
+import hashlib
 import itertools
 import os
 from pathlib import Path
@@ -185,3 +185,38 @@ def rewrite_catkin_package_path(base_path):
                 file_handle.seek(0)
                 file_handle.truncate()
                 file_handle.write(replacement_tuple[0].encode())
+
+
+def filechecksum(filename, algorithm='sha256', printing=False):
+    """
+    Generate hash of file.
+
+    :param filename: path to file to generate hash from
+    :param algorithm: Choose one of sha256, sha512, sha1, md5
+    :param printing: print to stdout
+    :return: the hash
+    :rtype: str
+    """
+    if algorithm == 'sha256':
+        hasher = hashlib.sha256()
+    elif algorithm == 'sha512':
+        hasher = hashlib.sha512()
+    elif algorithm == 'sha1':
+        hasher = hashlib.sha1()
+    elif algorithm == 'md5':
+        hasher = hashlib.md5()
+    else:
+        raise RuntimeError('Unsupported hash algorithm')
+    try:
+        with open(filename, 'rb') as afile:
+            FILE_READER_CHUNK_SIZE = 65536  # noqa: N806
+            buf = afile.read(FILE_READER_CHUNK_SIZE)
+            while len(buf) > 0:
+                hasher.update(buf)
+                buf = afile.read(FILE_READER_CHUNK_SIZE)
+        checksum = hasher.hexdigest()
+        if printing:
+            print(filename + ' - ' + checksum)
+        return checksum
+    except Exception as e:
+        raise RuntimeError(e)
