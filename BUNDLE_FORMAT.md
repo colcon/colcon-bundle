@@ -124,13 +124,13 @@ size is bytes.
 		"overlays": [
 			{
 				"file_name": "bundle.tar.gz",
-				"sha256": "3c0f891fa2e98c125198afe250054609fd26e7462570ff6d3f6654625627cbf4"
+				"sha256": "3c0f891fa2e98c125198afe250054609fd26e7462570ff6d3f6654625627cbf4",
 				"offset": 1000,
 				"size": 10000
 			},
 			{
 				"file_name": "install.tar.gz",
-				"sha256": "650d05f59bc3d19c3871994e0261f7dfe790b050d5baf7c42a2c11f86ee39690"
+				"sha256": "650d05f59bc3d19c3871994e0261f7dfe790b050d5baf7c42a2c11f86ee39690",
 				"offset": 11000,
 				"size": 1000
 			}
