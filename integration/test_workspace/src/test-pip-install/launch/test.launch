@@ -1,4 +1,0 @@
-<launch>
-  <node pkg="test-pip-install" name="talker" type="talker.py" output="screen" />
-  <node pkg="test-pip-install" name="listener" type="listener.py" output="screen" />
-</launch>

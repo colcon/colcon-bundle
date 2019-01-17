@@ -1,3 +1,0 @@
-<launch>
-  <node name="helloworld" pkg="test-nodes" type="helloworld" required="true" />
-</launch>
