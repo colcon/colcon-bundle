@@ -14,9 +14,8 @@ RUN	rosdep update && \
 	rosdep install --from-paths integration/test_workspace --ignore-src -r -y
 
 RUN pip3 install --upgrade pip setuptools
-RUN pip3 install -U colcon-common-extensions
 RUN pip3 install .
-RUN pip3 install colcon-ros-bundle
+RUN pip3 install -e git+https://github.com/colcon/colcon-ros-bundle.git#0.0.9#egg=colcon-ros-bundle
 
 WORKDIR /opt/package/integration/test_workspace
 RUN source /opt/ros/kinetic/setup.sh; colcon build
