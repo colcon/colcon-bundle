@@ -9,7 +9,7 @@ before_install:
 install:
   - pip install -U setuptools
   # install_requires
-  - pip install -U git+https://github.com/colcon/colcon-core
+  - pip install -e .
   # tests_require
   - pip install -r requirements_devel.txt
 script:
