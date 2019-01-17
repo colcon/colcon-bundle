@@ -22,8 +22,8 @@ from colcon_core.package_selection import \
 from colcon_core.plugin_system import satisfies_version
 from colcon_core.task import add_task_arguments, get_task_extension, \
     TaskContext
-from colcon_core.verb import check_and_mark_install_layout, VerbExtensionPoint
-from colcon_core.verb.build import update_object
+from colcon_core.verb import check_and_mark_install_layout, update_object,\
+    VerbExtensionPoint
 
 from . import check_and_mark_bundle_tool, logger
 
@@ -56,11 +56,12 @@ class BundlePackageArguments:
         for dest in (additional_destinations or []):
             if hasattr(args, dest):
                 update_object(
-                    self, dest, getattr(args, dest), pkg.name, 'command line')
+                    self, dest, getattr(args, dest),
+                    pkg.name, 'bundle', 'command line')
             if dest in pkg.metadata:
                 update_object(
-                    self, dest, pkg.metadata[dest], pkg.name,
-                    'package metadata')
+                    self, dest, pkg.metadata[dest],
+                    pkg.name, 'bundle', 'package metadata')
 
 
 class BundleVerb(VerbExtensionPoint):
