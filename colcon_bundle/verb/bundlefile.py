@@ -1,9 +1,13 @@
 import json
+import math
 import os
 import tarfile
 import tempfile
 
 from .utilities import filechecksum
+
+# Size in bytes
+MAX_METADATA_SIZE = 4 * 1024 * 1024
 
 
 class Bundle:
@@ -46,7 +50,6 @@ class Bundle:
 
     def close(self):  # noqa: N806
         """Close the archive."""
-        MAX_METADATA_SIZE = 4 * 1024 * 1024  # noqa: N806
         if 'w' in self.mode:
             self._check('w')
             tempdir = tempfile.mkdtemp()
@@ -64,14 +67,14 @@ class Bundle:
                 info = self.tarfile.gettarinfo(overlay, arcname=name)
                 header_size = len(info.tobuf())
                 file_size = os.stat(overlay).st_size
-                total = header_size + file_size
                 overlay_metadata.append({
                     'name': name,
                     'sha256': checksum,
                     'offset': offset + header_size,
                     'size': file_size
                 })
-                offset += total
+                num_blocks = math.ceil(file_size / tarfile.BLOCKSIZE)
+                offset = offset + header_size + num_blocks * tarfile.BLOCKSIZE
 
             metadata_path = os.path.join(tempdir, 'overlays.json')
             with open(metadata_path, 'w') as md:
@@ -91,7 +94,7 @@ class Bundle:
             if os.stat(metadata_archive_path).st_size > MAX_METADATA_SIZE:
                 raise RuntimeError('Metadata too large, must be less than 4MB')
 
-            tar_header_len = 512
+            tar_header_len = tarfile.BLOCKSIZE
             pad_size = MAX_METADATA_SIZE - self.tarfile.offset - tar_header_len
             pad_path = os.path.join(tempdir, 'pad')
             with open(pad_path, 'wb') as f:
