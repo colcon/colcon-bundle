@@ -68,7 +68,7 @@ The output of the bundle verb is a tar file containing multiple sub-files
 1. version - A file with the version of the bundle file format
 1. metadata.tar.gz - A tar archive containing various metadata
 1. pad - OPTIONAL used to write the overlays from a fixed offset
-1. N *.tar files - These tar archives contain overlay'able contents
+1. N number of *.tar.gz files - These gzipped tar archives contain overlay'able contents
 
 ** Overlay'able - The top level of each of the archives contains a setup.sh
 that can be sources to overlay this archive's contents on top of the 
