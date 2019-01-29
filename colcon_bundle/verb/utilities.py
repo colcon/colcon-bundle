@@ -56,6 +56,7 @@ def update_shebang(path):
     # TODO: We should hangle scripts that are doing other /usr/bin executables
     py3_shebang_regex = re.compile(r'#!\s*.+python3')
     py_shebang_regex = re.compile(r'#!\s*.+python')
+    sh_shebang_regex = re.compile(r'#!\s*.+sh')
     logger.info('Starting shebang update...')
     for (root, dirs, files) in os.walk(path):
         for file in files:
@@ -79,6 +80,15 @@ def update_shebang(path):
 
                     py_replacement_tuple = py_shebang_regex.subn(
                         '#!/usr/bin/env python', str_contents, count=1)
+                    if py_replacement_tuple[1] > 0:
+                        logger.info('Found shebang in {file_path}'.format_map(
+                            locals()))
+                        file_handle.seek(0)
+                        file_handle.truncate()
+                        file_handle.write(py_replacement_tuple[0].encode())
+
+                    sh_replacement_tuple = sh_shebang_regex.subn(
+                        '#!/usr/bin/env sh', str_contents, count=1)
                     if py_replacement_tuple[1] > 0:
                         logger.info('Found shebang in {file_path}'.format_map(
                             locals()))
