@@ -3,11 +3,11 @@
 import hashlib
 import itertools
 import os
-from pathlib import Path
 import re
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 from colcon_bundle.verb import logger
 
@@ -163,28 +163,29 @@ def rewrite_catkin_package_path(base_path):
     logger.info('Starting shebang update...')
 
     ros_distribution_version = get_ros_distribution_version()
-    profiled_path = os.path.join(
-        base_path, 'opt', 'ros', ros_distribution_version, 'etc', 'catkin',
-        'profile.d', '1.ros_package_path.sh')
-    if os.path.isfile(profiled_path):
-        with open(profiled_path, 'rb+') as file_handle:
-            contents = file_handle.read()
-            try:
-                str_contents = contents.decode()
-            except UnicodeError:
-                logger.error(
-                    '{profiled_path} should be a text file'.format_map(
-                        locals()))
-                return
-            replacement_tuple = python_regex.subn('python', str_contents,
-                                                  count=1)
-            if replacement_tuple[1] > 0:
-                logger.info(
-                    'Found direct python invocation in {profiled_path}'
-                    .format_map(locals()))
-                file_handle.seek(0)
-                file_handle.truncate()
-                file_handle.write(replacement_tuple[0].encode())
+    paths = [os.path.join(base_path, 'opt', 'ros', ros_distribution_version, 'etc', 'catkin',
+                          'profile.d', '1.ros_package_path.sh'),
+             os.path.join(base_path, 'opt', 'ros', ros_distribution_version, 'etc', 'catkin',
+                          'profile.d', '10.ros.sh')]
+    for path in paths:
+        if os.path.isfile(path):
+            with open(path, 'rb+') as file_handle:
+                contents = file_handle.read()
+                try:
+                    str_contents = contents.decode()
+                except UnicodeError:
+                    logger.error(
+                        '{path} should be a text file'.format_map(
+                            locals()))
+                    return
+                replacement_tuple = python_regex.subn('python', str_contents)
+                if replacement_tuple[1] > 0:
+                    logger.info(
+                        'Found direct python invocation in {path}'
+                            .format_map(locals()))
+                    file_handle.seek(0)
+                    file_handle.truncate()
+                    file_handle.write(replacement_tuple[0].encode())
 
 
 def filechecksum(filename, algorithm='sha256', printing=False):
