@@ -56,11 +56,12 @@ def update_shebang(path):
     # TODO: We should hangle scripts that are doing other /usr/bin executables
     py3_shebang_regex = re.compile(r'#!\s*.+python3')
     py_shebang_regex = re.compile(r'#!\s*.+python')
+    sh_shebang_regex = re.compile(r'#!\s*.+sh')
     logger.info('Starting shebang update...')
     for (root, dirs, files) in os.walk(path):
         for file in files:
             file_path = os.path.join(root, file)
-            if not os.path.islink(file_path):
+            if not os.path.islink(file_path) and '.so' not in file_path:
                 with open(file_path, 'rb+') as file_handle:
                     contents = file_handle.read()
                     try:
@@ -80,6 +81,14 @@ def update_shebang(path):
                     py_replacement_tuple = py_shebang_regex.subn(
                         '#!/usr/bin/env python', str_contents, count=1)
                     if py_replacement_tuple[1] > 0:
+                        logger.info('Found shebang in {file_path}'.format_map(
+                            locals()))
+                        file_handle.seek(0)
+                        file_handle.truncate()
+                        file_handle.write(py_replacement_tuple[0].encode())
+                    sh_replacement_tuple = sh_shebang_regex.subn(
+                        '#!/usr/bin/env sh', str_contents, count=1)
+                    if sh_replacement_tuple[1] > 0:
                         logger.info('Found shebang in {file_path}'.format_map(
                             locals()))
                         file_handle.seek(0)
@@ -136,8 +145,14 @@ def update_symlinks(base_path):
                             # Create directory (permissions?)
                             os.makedirs(os.path.dirname(bundle_library_path),
                                         exist_ok=True)
-                        shutil.copy(symlink_dest_path,
-                                    bundle_library_path)
+                        if os.path.exists(symlink_dest_path):
+                            shutil.copy(symlink_dest_path,
+                                        bundle_library_path)
+                        else:
+                            logger.error('Attempted to copy {} for symlink, '
+                                         'but it does not exist. Skipping'
+                                         .format(symlink_dest_path))
+                            continue
 
                     bundle_library_path_obj = Path(bundle_library_path)
                     symlink_path_obj = Path(symlink_path)
@@ -163,28 +178,33 @@ def rewrite_catkin_package_path(base_path):
     logger.info('Starting shebang update...')
 
     ros_distribution_version = get_ros_distribution_version()
+    # These files contain references to /usr/bin/python that need
+    # to be converted to avoid errors when setting up the ROS workspace
+    files = ['1.ros_package_path.sh', '10.ros.sh']
+
     profiled_path = os.path.join(
-        base_path, 'opt', 'ros', ros_distribution_version, 'etc', 'catkin',
-        'profile.d', '1.ros_package_path.sh')
-    if os.path.isfile(profiled_path):
-        with open(profiled_path, 'rb+') as file_handle:
-            contents = file_handle.read()
-            try:
-                str_contents = contents.decode()
-            except UnicodeError:
-                logger.error(
-                    '{profiled_path} should be a text file'.format_map(
-                        locals()))
-                return
-            replacement_tuple = python_regex.subn('python', str_contents,
-                                                  count=1)
-            if replacement_tuple[1] > 0:
-                logger.info(
-                    'Found direct python invocation in {profiled_path}'
-                    .format_map(locals()))
-                file_handle.seek(0)
-                file_handle.truncate()
-                file_handle.write(replacement_tuple[0].encode())
+        base_path, 'opt', 'ros', ros_distribution_version,
+        'etc', 'catkin', 'profile.d')
+
+    for file in map(lambda s: os.path.join(profiled_path, s), files):
+        if os.path.isfile(file):
+            with open(file, 'rb+') as file_handle:
+                contents = file_handle.read()
+                try:
+                    str_contents = contents.decode()
+                except UnicodeError:
+                    logger.error(
+                        '{file} should be a text file'.format_map(
+                            locals()))
+                    continue
+                replacement_tuple = python_regex.subn('python', str_contents)
+                if replacement_tuple[1] > 0:
+                    logger.info(
+                        'Found direct python invocation in {file}'
+                        .format_map(locals()))
+                    file_handle.seek(0)
+                    file_handle.truncate()
+                    file_handle.write(replacement_tuple[0].encode())
 
 
 def filechecksum(filename, algorithm='sha256', printing=False):
