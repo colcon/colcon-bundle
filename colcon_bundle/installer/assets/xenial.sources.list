@@ -22,3 +22,6 @@ deb-src http://us.archive.ubuntu.com/ubuntu/ xenial-security main restricted uni
 # ROS
 deb http://packages.ros.org/ros/ubuntu xenial main
 
+# OSR Foundation - Gazebo
+deb http://packages.osrfoundation.org/gazebo/ubuntu-stable xenial main
+
