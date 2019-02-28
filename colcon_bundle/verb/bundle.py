@@ -1,6 +1,7 @@
 # Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 from collections import OrderedDict
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -159,6 +160,11 @@ class BundleVerb(VerbExtensionPoint):
 
         installers = self._setup_installers(context)
 
+        print('Checking if dependency has changed since last time...')
+        if self._check_dependency_hash_match(bundle_base, decorators):
+            print('Dependency not changed, skipping dependency update...')
+            return False
+
         print('Collecting dependency information...')
         jobs = self._get_jobs(context.args, installers, decorators)
         rc = execute_jobs(context, jobs)
@@ -283,3 +289,38 @@ class BundleVerb(VerbExtensionPoint):
 
             jobs[pkg.name] = job
         return jobs
+
+    def _check_dependency_hash_match(self, bundle_base, decorators):
+
+        dependency_hash = {}
+
+        for decorator in decorators:
+            if not decorator.selected:
+                continue
+            pkg = decorator.descriptor
+            dependency_list = sorted(dependency.name for dependency in
+                                     pkg.dependencies['run'])
+            dependency_hash[pkg.name] = hashlib.sha256(
+                ' '.join(dependency_list).encode('utf-8')).hexdigest()
+
+        ordered_dependency_hash = OrderedDict(sorted(dependency_hash.items()))
+        current_hash_string = json.dumps(ordered_dependency_hash)
+        logger.debug('Hash for current dependencies: '
+                     '{current_hash_string}'.format_map(locals()))
+
+        dependency_hash_path = os.path.join(
+            bundle_base, 'dependency_hash.json')
+        dependency_tar_path = os.path.join(
+            bundle_base, 'dependencies.tar.gz')
+
+        if os.path.exists(dependency_hash_path) \
+                and os.path.exists(dependency_tar_path):
+            with open(dependency_hash_path, 'r') as f:
+                previous_hash_string = f.read()
+                if previous_hash_string == current_hash_string:
+                    return True
+
+        with open(dependency_hash_path, 'w') as f:
+            f.write(current_hash_string)
+
+        return False
