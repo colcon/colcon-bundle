@@ -91,13 +91,10 @@ class BundleVerb(VerbExtensionPoint):
         parser.add_argument(
             '--bundle-version', default=1, type=int,
             help='Version of bundle to generate')
-
         parser.add_argument(
-            '--use-cached-dependencies', action='store_true',
-            help='Use this to skip download and installation of '
-                 'dependencies for quicker development cycles. This requires '
-                 'that you have already run "colcon bundle" successfully '
-                 'and all intermediate artifacts have been generated')
+            '--upgrade', action='store_true',
+            help='Upgrade dependencies to newest versions if possible'
+        )
 
         add_executor_arguments(parser)
         add_event_handler_arguments(parser)
@@ -110,7 +107,7 @@ class BundleVerb(VerbExtensionPoint):
 
     def main(self, *, context):  # noqa: D102
         print('Bundling workspace...')
-        use_cached_deps = context.args.use_cached_dependencies
+        upgrade_deps = context.args.upgrade
         install_base = os.path.abspath(context.args.install_base)
         bundle_base = os.path.abspath(context.args.bundle_base)
         installer_metadata_path = os.path.join(
@@ -120,20 +117,12 @@ class BundleVerb(VerbExtensionPoint):
             raise RuntimeError(
                 'You must build your workspace before bundling it.')
 
-        if use_cached_deps \
-           and not os.path.exists(bundle_base) \
-           and not os.path.exists(installer_metadata_path):
-            raise RuntimeError(
-                'You must bundle your workspace once before using the '
-                '--use-cached-dependencies flag.')
-
-        dependencies_changed = False
-
         staging_path = os.path.join(bundle_base, 'bundle_staging')
-        if not use_cached_deps:
-            dependencies_changed = self._manage_dependencies(
-                context, install_base, bundle_base,
-                staging_path, installer_metadata_path)
+
+        dependencies_changed = self._manage_dependencies(
+            context, install_base, bundle_base,
+            staging_path, installer_metadata_path,
+            upgrade_deps)
 
         if context.args.bundle_version == 2:
             generate_archive_v2(install_base, staging_path, bundle_base,
@@ -146,7 +135,8 @@ class BundleVerb(VerbExtensionPoint):
 
     def _manage_dependencies(self, context,
                              install_base, bundle_base,
-                             staging_path, installer_metadata_path):
+                             staging_path, installer_metadata_path,
+                             upgrade_deps):
 
         check_and_mark_install_layout(
             install_base, merge_install=context.args.merge_install)
@@ -160,36 +150,31 @@ class BundleVerb(VerbExtensionPoint):
 
         installers = self._setup_installers(context)
 
-        print('Checking if dependency has changed since last time...')
-        if self._check_dependency_hash_match(bundle_base, decorators):
-            print('Dependency not changed, skipping dependency update...')
-            return False
+        print('Checking if dependencies exist...')
+        logger.info('Checking if dependencies exist...')
+        dependencies_tar_gz_path = os.path.join(
+            bundle_base, 'dependencies.tar.gz')
 
-        print('Collecting dependency information...')
-        jobs = self._get_jobs(context.args, installers, decorators)
-        rc = execute_jobs(context, jobs)
-        if rc != 0:
-            return rc
+        if not os.path.exists(dependencies_tar_gz_path):
+            self._check_package_dependency_update(bundle_base, decorators)
+        elif upgrade_deps:
+            self._check_package_dependency_update(bundle_base, decorators)
+            if self._check_installer_dependency_update(
+                    context, decorators, installers, installer_metadata_path):
+                return False
+        else:
+            print('Checking if dependencies have changed since last bundle...')
+            logger.info(
+                'Checking if dependencies have changed since last bundle...')
+            if self._check_package_dependency_update(bundle_base, decorators):
+                print('Dependency not changed, skipping dependency update...')
+                logger.info(
+                    'Dependency not changed, skipping dependency update...')
+                return False
 
-        print('Fetching and installing dependencies...')
-        installer_metadata = {}
-        for name, installer in installers.items():
-            installer_metadata[name] = installer.install()
-
-        installer_metadata_string = json.dumps(installer_metadata,
-                                               sort_keys=True)
-
-        dependencies_changed = True
-        if os.path.exists(installer_metadata_path):
-            with open(installer_metadata_path, 'r') as f:
-                previous_metadata = f.read()
-                if previous_metadata == installer_metadata_string:
-                    dependencies_changed = False
-
-        with open(installer_metadata_path, 'w') as f:
-            f.write(installer_metadata_string)
-
-        if context.args.include_sources and dependencies_changed:
+        self._check_installer_dependency_update(
+            context, decorators, installers, installer_metadata_path)
+        if context.args.include_sources:
             sources_tar_gz_path = os.path.join(bundle_base, 'sources.tar.gz')
             with tarfile.open(
                     sources_tar_gz_path, 'w:gz', compresslevel=5) as archive:
@@ -204,14 +189,13 @@ class BundleVerb(VerbExtensionPoint):
                             arcname=os.path.join(
                                 name, os.path.basename(file_path)))
 
-        if dependencies_changed:
-            update_symlinks(staging_path)
-            # TODO: Update pkgconfig files?
-            update_shebang(staging_path)
-            # TODO: Move this to colcon-ros-bundle
-            rewrite_catkin_package_path(staging_path)
+        update_symlinks(staging_path)
+        # TODO: Update pkgconfig files?
+        update_shebang(staging_path)
+        # TODO: Move this to colcon-ros-bundle
+        rewrite_catkin_package_path(staging_path)
 
-        return dependencies_changed
+        return True
 
     def _setup_installers(self, context):
         bundle_base = context.args.bundle_base
@@ -290,7 +274,7 @@ class BundleVerb(VerbExtensionPoint):
             jobs[pkg.name] = job
         return jobs
 
-    def _check_dependency_hash_match(self, bundle_base, decorators):
+    def _check_package_dependency_update(self, bundle_base, decorators):
 
         dependency_hash = {}
 
@@ -303,24 +287,55 @@ class BundleVerb(VerbExtensionPoint):
             dependency_hash[pkg.name] = hashlib.sha256(
                 ' '.join(dependency_list).encode('utf-8')).hexdigest()
 
-        ordered_dependency_hash = OrderedDict(sorted(dependency_hash.items()))
-        current_hash_string = json.dumps(ordered_dependency_hash)
+        current_hash_string = json.dumps(dependency_hash, sort_keys=True)
         logger.debug('Hash for current dependencies: '
                      '{current_hash_string}'.format_map(locals()))
 
         dependency_hash_path = os.path.join(
             bundle_base, 'dependency_hash.json')
+        dependency_hash_cache_path = os.path.join(
+            bundle_base, 'dependency_hash_cache.json')
         dependency_tar_path = os.path.join(
             bundle_base, 'dependencies.tar.gz')
 
-        if os.path.exists(dependency_hash_path) \
-                and os.path.exists(dependency_tar_path):
+        dependency_match = False
+        if os.path.exists(dependency_hash_path):
             with open(dependency_hash_path, 'r') as f:
                 previous_hash_string = f.read()
                 if previous_hash_string == current_hash_string:
-                    return True
+                    dependency_match = True
 
-        with open(dependency_hash_path, 'w') as f:
+        with open(dependency_hash_cache_path, 'w') as f:
             f.write(current_hash_string)
 
-        return False
+        return dependency_match
+
+    def _check_installer_dependency_update(
+            self, context, decorators, installers, installer_metadata_path):
+        print('Collecting dependency information...')
+        logger.info('Collecting dependency information...')
+        jobs = self._get_jobs(context.args, installers, decorators)
+        rc = execute_jobs(context, jobs)
+        if rc != 0:
+            return rc
+
+        print('Fetching and installing dependencies...')
+        logger.info('Fetching and installing dependencies...')
+        installer_metadata = {}
+        for name, installer in installers.items():
+            installer_metadata[name] = installer.install()
+
+        installer_metadata_string = json.dumps(installer_metadata,
+                                               sort_keys=True)
+
+        dependency_match = False
+        if os.path.exists(installer_metadata_path):
+            with open(installer_metadata_path, 'r') as f:
+                previous_metadata = f.read()
+                if previous_metadata == installer_metadata_string:
+                    dependency_match = True
+
+        with open(installer_metadata_path, 'w') as f:
+            f.write(installer_metadata_string)
+
+        return dependency_match

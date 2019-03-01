@@ -132,6 +132,14 @@ def generate_archive_v2(install_base,
                                dependencies_staging_path,
                                mode='w:gz')
 
+    # Update dependencies hash
+    dependency_hash_path = os.path.join(
+        bundle_base, 'dependency_hash.json')
+    dependency_hash_cache_path = os.path.join(
+        bundle_base, 'dependency_hash_cache.json')
+    if os.path.exists(dependency_hash_cache_path):
+        os.replace(dependency_hash_cache_path, dependency_hash_path)
+
     with Bundle(name=archive_tar_path) as bundle:
         for path in metadata_paths:
             bundle.add_metadata(path)
