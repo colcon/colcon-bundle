@@ -11,6 +11,7 @@ from colcon_bundle.installer import add_installer_arguments, \
     BundleInstallerContext, get_bundle_installer_extensions
 from colcon_bundle.verb._archive_generators import generate_archive_v1, \
     generate_archive_v2
+from colcon_bundle.verb.bundlepath import BundlePath
 from colcon_bundle.verb.utilities import rewrite_catkin_package_path, \
     update_shebang, update_symlinks
 from colcon_core.argument_parser.destination_collector import \
@@ -92,8 +93,9 @@ class BundleVerb(VerbExtensionPoint):
             '--bundle-version', default=1, type=int,
             help='Version of bundle to generate')
         parser.add_argument(
-            '--upgrade', action='store_true',
-            help='Upgrade dependencies to newest versions if possible'
+            '--upgrade-dependency-graph', action='store_true',
+            help='Upgrade all dependencies in dependency graph (transitive'
+                 ' closure) to newest versions if possible'
         )
 
         add_executor_arguments(parser)
@@ -107,39 +109,35 @@ class BundleVerb(VerbExtensionPoint):
 
     def main(self, *, context):  # noqa: D102
         print('Bundling workspace...')
-        upgrade_deps = context.args.upgrade
+        upgrade_deps_graph = context.args.upgrade_dependency_graph
         install_base = os.path.abspath(context.args.install_base)
         bundle_base = os.path.abspath(context.args.bundle_base)
-        installer_metadata_path = os.path.join(
-            bundle_base, 'installer_metadata.json')
 
         if not os.path.exists(install_base):
             raise RuntimeError(
                 'You must build your workspace before bundling it.')
-
-        staging_path = os.path.join(bundle_base, 'bundle_staging')
+        bundle_path = BundlePath(bundle_base, install_base)
 
         dependencies_changed = self._manage_dependencies(
-            context, install_base, bundle_base,
-            staging_path, installer_metadata_path,
-            upgrade_deps)
+            context, bundle_path, upgrade_deps_graph)
 
         if context.args.bundle_version == 2:
-            generate_archive_v2(install_base, staging_path, bundle_base,
-                                [installer_metadata_path],
+            generate_archive_v2(bundle_path,
+                                [bundle_path.installer_metadata_path()],
                                 dependencies_changed)
         else:
-            generate_archive_v1(install_base, staging_path, bundle_base)
+            generate_archive_v1(bundle_path)
 
         return 0
 
     def _manage_dependencies(self, context,
-                             install_base, bundle_base,
-                             staging_path, installer_metadata_path,
-                             upgrade_deps):
+                             bundle_path,
+                             upgrade_deps_graph):
 
+        bundle_base = bundle_path.bundle_base()
         check_and_mark_install_layout(
-            install_base, merge_install=context.args.merge_install)
+            bundle_path.install_base(),
+            merge_install=context.args.merge_install)
         self._create_path(bundle_base)
         check_and_mark_bundle_tool(bundle_base)
 
@@ -148,34 +146,44 @@ class BundleVerb(VerbExtensionPoint):
                                   additional_argument_names=destinations,
                                   recursive_categories=('run',))
 
-        installers = self._setup_installers(context)
+        installers = self._setup_installers(context, bundle_path)
 
-        print('Checking if dependencies exist...')
-        logger.info('Checking if dependencies exist...')
-        dependencies_tar_gz_path = os.path.join(
-            bundle_base, 'dependencies.tar.gz')
+        print('Checking if dependency tarball exists...')
+        logger.info('Checking if dependency tarball exists...')
 
-        if not os.path.exists(dependencies_tar_gz_path):
-            self._check_package_dependency_update(bundle_base, decorators)
-        elif upgrade_deps:
-            self._check_package_dependency_update(bundle_base, decorators)
+        if not os.path.exists(bundle_path.dependencies_tar_gz_path()):
+            self._check_package_dependency_update(bundle_path, decorators)
+        elif upgrade_deps_graph:
+            self._check_package_dependency_update(bundle_path, decorators)
+            print('Checking if dependency graph has changed since last '
+                  'bundle...')
+            logger.info('Checking if dependency graph has changed since last'
+                        ' bundle...')
             if self._check_installer_dependency_update(
-                    context, decorators, installers, installer_metadata_path):
+                    context, decorators, installers, bundle_path):
+                print('All dependencies in dependency graph not changed, '
+                      'skipping dependencies update...')
+                logger.info('All dependencies in dependency graph not changed,'
+                            ' skipping dependencies update...')
                 return False
         else:
-            print('Checking if dependencies have changed since last bundle...')
+            print('Checking if local dependencies have changed since last'
+                  ' bundle...')
             logger.info(
-                'Checking if dependencies have changed since last bundle...')
-            if self._check_package_dependency_update(bundle_base, decorators):
-                print('Dependency not changed, skipping dependency update...')
+                'Checking if local dependencies have changed since last'
+                ' bundle...')
+            if self._check_package_dependency_update(bundle_path, decorators):
+                print('Local dependencies not changed, skipping dependencies'
+                      ' update...')
                 logger.info(
-                    'Dependency not changed, skipping dependency update...')
+                    'Local dependencies not changed, skipping dependencies'
+                    ' update...')
                 return False
 
         self._check_installer_dependency_update(
-            context, decorators, installers, installer_metadata_path)
+            context, decorators, installers, bundle_path)
         if context.args.include_sources:
-            sources_tar_gz_path = os.path.join(bundle_base, 'sources.tar.gz')
+            sources_tar_gz_path = bundle_path.sources_tar_gz_path()
             with tarfile.open(
                     sources_tar_gz_path, 'w:gz', compresslevel=5) as archive:
                 for name, directory in self.installer_cache_dirs.items():
@@ -189,6 +197,7 @@ class BundleVerb(VerbExtensionPoint):
                             arcname=os.path.join(
                                 name, os.path.basename(file_path)))
 
+        staging_path = bundle_path.staging_path()
         update_symlinks(staging_path)
         # TODO: Update pkgconfig files?
         update_shebang(staging_path)
@@ -197,11 +206,9 @@ class BundleVerb(VerbExtensionPoint):
 
         return True
 
-    def _setup_installers(self, context):
-        bundle_base = context.args.bundle_base
-        cache_path = os.path.join(bundle_base, 'installer_cache')
-        prefix_path = os.path.abspath(
-            os.path.join(bundle_base, 'bundle_staging'))
+    def _setup_installers(self, context, bundle_path):
+        cache_path = bundle_path.installer_cache_path()
+        prefix_path = os.path.abspath(bundle_path.staging_path())
 
         installers = get_bundle_installer_extensions()
         self.installer_cache_dirs = {}
@@ -274,7 +281,7 @@ class BundleVerb(VerbExtensionPoint):
             jobs[pkg.name] = job
         return jobs
 
-    def _check_package_dependency_update(self, bundle_base, decorators):
+    def _check_package_dependency_update(self, bundle_path, decorators):
 
         dependency_hash = {}
 
@@ -291,12 +298,8 @@ class BundleVerb(VerbExtensionPoint):
         logger.debug('Hash for current dependencies: '
                      '{current_hash_string}'.format_map(locals()))
 
-        dependency_hash_path = os.path.join(
-            bundle_base, 'dependency_hash.json')
-        dependency_hash_cache_path = os.path.join(
-            bundle_base, 'dependency_hash_cache.json')
-        dependency_tar_path = os.path.join(
-            bundle_base, 'dependencies.tar.gz')
+        dependency_hash_path = bundle_path.dependency_hash_path()
+        dependency_hash_cache_path = bundle_path.dependency_hash_cache_path()
 
         dependency_match = False
         if os.path.exists(dependency_hash_path):
@@ -311,7 +314,7 @@ class BundleVerb(VerbExtensionPoint):
         return dependency_match
 
     def _check_installer_dependency_update(
-            self, context, decorators, installers, installer_metadata_path):
+            self, context, decorators, installers, bundle_path):
         print('Collecting dependency information...')
         logger.info('Collecting dependency information...')
         jobs = self._get_jobs(context.args, installers, decorators)
@@ -328,6 +331,7 @@ class BundleVerb(VerbExtensionPoint):
         installer_metadata_string = json.dumps(installer_metadata,
                                                sort_keys=True)
 
+        installer_metadata_path = bundle_path.installer_metadata_path()
         dependency_match = False
         if os.path.exists(installer_metadata_path):
             with open(installer_metadata_path, 'r') as f:
