@@ -93,9 +93,9 @@ class BundleVerb(VerbExtensionPoint):
             '--bundle-version', default=1, type=int,
             help='Version of bundle to generate')
         parser.add_argument(
-            '--upgrade-dependency-graph', action='store_true',
-            help='Upgrade all dependencies in dependency graph (transitive'
-                 ' closure) to newest versions if possible'
+            '-U', '--upgrade', action='store_true',
+            help='Upgrade all dependencies in the bundle to their latest '
+                 'versions'
         )
 
         add_executor_arguments(parser)
@@ -109,7 +109,7 @@ class BundleVerb(VerbExtensionPoint):
 
     def main(self, *, context):  # noqa: D102
         print('Bundling workspace...')
-        upgrade_deps_graph = context.args.upgrade_dependency_graph
+        upgrade_deps_graph = context.args.upgrade
         install_base = os.path.abspath(context.args.install_base)
         bundle_base = os.path.abspath(context.args.bundle_base)
 
