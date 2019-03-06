@@ -6,7 +6,7 @@ from colcon_bundle.verb import logger
 from colcon_bundle.verb.bundlefile import Bundle
 
 
-def generate_archive_v1(bundle_path):
+def generate_archive_v1(path_context):
     """
     Generate bundle archive.
 
@@ -15,12 +15,12 @@ def generate_archive_v1(bundle_path):
     |- metadata.tar
     |- bundle.tar
 
-    :param bundle_path: BundlePath object including path configurations
+    :param path_context: PathContext object including path configurations
     """
     # install_base: Directory with built artifacts from the workspace
-    install_base = bundle_path.install_base()
+    install_base = path_context.install_base()
     # staging_path: Directory where all dependencies have been installed
-    staging_path = bundle_path.staging_path()
+    staging_path = path_context.staging_path()
 
     logger.info('Copying {} into bundle...'.format(install_base))
     assets_directory = os.path.join(
@@ -36,12 +36,12 @@ def generate_archive_v1(bundle_path):
     logger.info('Archiving the bundle output')
     print('Creating bundle archive...')
 
-    bundle_tar_path = bundle_path.bundle_tar_path()
-    metadata_tar_path = bundle_path.metadata_tar_path()
-    archive_tar_gz_path = bundle_path.archive_tar_gz_path()
+    bundle_tar_path = path_context.bundle_tar_path()
+    metadata_tar_path = path_context.metadata_tar_path()
+    archive_tar_gz_path = path_context.archive_tar_gz_path()
 
     with tarfile.open(metadata_tar_path, 'w') as archive:
-        archive.add(bundle_path.installer_metadata_path(),
+        archive.add(path_context.installer_metadata_path(),
                     arcname='installers.json')
 
     if os.path.exists(bundle_tar_path):
@@ -49,7 +49,7 @@ def generate_archive_v1(bundle_path):
 
     _recursive_tar_in_path(bundle_tar_path, staging_path)
 
-    version_file_path = bundle_path.version_file_path()
+    version_file_path = path_context.version_file_path()
     with open(version_file_path, 'w') as v:
         v.write('1')
 
@@ -68,7 +68,7 @@ def generate_archive_v1(bundle_path):
     logger.info('Archiving complete')
 
 
-def generate_archive_v2(bundle_path,
+def generate_archive_v2(path_context,
                         metadata_paths,
                         dependencies_changed):
     """
@@ -83,7 +83,7 @@ def generate_archive_v2(bundle_path,
     |- dependencies.tar.gz
     |- workspace.tar.gz
 
-    :param bundle_path: BundlePath object including all path configurations
+    :param path_context: PathContext object including all path configurations
     :param metadata_paths: [str] paths to files which should be included
     in the metadata archive
     :param dependencies_changed: Boolean representing whether the staging path
@@ -92,11 +92,11 @@ def generate_archive_v2(bundle_path,
     logger.info('Archiving the bundle output')
     print('Creating bundle archive V2...')
 
-    archive_tar_path = bundle_path.archive_tar_path()
-    workspace_tar_gz_path = bundle_path.workspace_tar_gz_path()
+    archive_tar_path = path_context.archive_tar_path()
+    workspace_tar_gz_path = path_context.workspace_tar_gz_path()
 
     # Install directory
-    workspace_staging_path = bundle_path.workspace_staging_path()
+    workspace_staging_path = path_context.workspace_staging_path()
     workspace_install_path = os.path.join(
         workspace_staging_path, 'opt', 'built_workspace')
     shutil.rmtree(workspace_staging_path, ignore_errors=True)
@@ -106,7 +106,7 @@ def generate_archive_v2(bundle_path,
     shellscript_path = os.path.join(assets_directory, 'v2_workspace_setup.sh')
 
     # install_base: Directory with built artifacts from the workspace
-    install_base = bundle_path.install_base()
+    install_base = path_context.install_base()
     os.mkdir(workspace_staging_path)
     shutil.copy2(shellscript_path,
                  os.path.join(workspace_staging_path, 'setup.sh'))
@@ -115,11 +115,11 @@ def generate_archive_v2(bundle_path,
                            mode='w:gz')
 
     # Dependencies directory
-    dependencies_tar_gz_path = bundle_path.dependencies_tar_gz_path()
+    dependencies_tar_gz_path = path_context.dependencies_tar_gz_path()
 
     # dependencies_staging_path: Directory where all dependencies
     # have been installed
-    dependencies_staging_path = bundle_path.staging_path()
+    dependencies_staging_path = path_context.staging_path()
     if dependencies_changed:
         logger.info('Dependencies changed, updating {}'.format(
             dependencies_tar_gz_path
@@ -136,8 +136,8 @@ def generate_archive_v2(bundle_path,
                                mode='w:gz')
 
     # Update dependencies hash
-    dependency_hash_path = bundle_path.dependency_hash_path()
-    dependency_hash_cache_path = bundle_path.dependency_hash_cache_path()
+    dependency_hash_path = path_context.dependency_hash_path()
+    dependency_hash_cache_path = path_context.dependency_hash_cache_path()
     if os.path.exists(dependency_hash_cache_path):
         os.replace(dependency_hash_cache_path, dependency_hash_path)
 

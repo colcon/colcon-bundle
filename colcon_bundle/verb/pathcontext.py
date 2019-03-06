@@ -1,7 +1,7 @@
 import os
 
 
-class BundlePath:
+class PathContext:
     """Provides path configuration for bundle."""
 
     def __init__(self, bundle_base, install_base):
