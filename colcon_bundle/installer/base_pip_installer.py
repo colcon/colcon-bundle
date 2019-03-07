@@ -111,7 +111,7 @@ class BasePipInstallerExtensionPoint(BundleInstallerExtensionPoint):
     def split_package_version(package_version):
         """Split package==3.2.3 pip freeze output."""
         split_string = package_version.split('==')
-        # TODO: This shouldn't be necessary if we fix #40 since we 
+        # TODO: This shouldn't be necessary if we fix #40 since we
         # should never install packages as editable
         if len(split_string) < 2 and '-e' in package_version:
             # Package is installed with --editable flag, and formatted
