@@ -27,7 +27,8 @@ from colcon_core.task import add_task_arguments, get_task_extension, \
 from colcon_core.verb import check_and_mark_install_layout, update_object,\
     VerbExtensionPoint
 
-from . import check_and_mark_bundle_tool, logger
+from . import check_and_mark_bundle_tool, check_and_mark_bundle_version,\
+    logger
 
 
 class BundlePackageArguments:
@@ -135,9 +136,15 @@ class BundleVerb(VerbExtensionPoint):
                              upgrade_deps_graph):
 
         bundle_base = path_context.bundle_base()
+        bundle_version = context.args.bundle_version
         check_and_mark_install_layout(
             path_context.install_base(),
             merge_install=context.args.merge_install)
+        # This must be first for backwards compatibility
+        # reasons. We assume the folder was previously
+        # used for v1 if it exists.
+        check_and_mark_bundle_version(bundle_base,
+                                      this_bundle_version=bundle_version)
         self._create_path(bundle_base)
         check_and_mark_bundle_tool(bundle_base)
 
