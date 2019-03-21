@@ -145,6 +145,17 @@ class BundleVerb(VerbExtensionPoint):
         decorators = get_packages(context.args,
                                   additional_argument_names=destinations,
                                   recursive_categories=('run',))
+        if len(decorators) == 0:
+            estr = 'We did not find any packages to add to the '\
+                   'bundle. This might be because you are not '\
+                   'in the right directory, or your workspace is '\
+                   'not setup correctly for colcon. Please see '\
+                   'https://github.com/colcon/colcon-ros-bundle/issues/13' \
+                   'for some possible suggestions. If you are still having ' \
+                   'trouble please post to our' \
+                   'issues: https://github.com/colcon/colcon-bundle/issues '\
+                   'and we will be happy to help.'
+            raise RuntimeError(estr)
 
         installers = self._setup_installers(context, path_context)
 
