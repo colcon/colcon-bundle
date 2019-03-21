@@ -62,7 +62,7 @@ def check_and_mark_bundle_version(bundle_base, *, this_bundle_version):
     The marker filename is `.bundle_version`.
 
     :param str bundle_base: The bundle directory
-    :param str this_bundle_version: The version of the bundle previously built
+    :param str this_bundle_version: The version of the bundle to be built
     :raises RuntimeError: if the bundle version does not match the passed
     in bundle version
     """
