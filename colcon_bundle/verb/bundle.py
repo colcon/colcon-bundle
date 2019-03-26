@@ -91,7 +91,7 @@ class BundleVerb(VerbExtensionPoint):
             help='Include a sources tarball for all packages installed into '
                  'the bundle via apt')
         parser.add_argument(
-            '--bundle-version', default=1, type=int,
+            '--bundle-version', default=2, type=int,
             help='Version of bundle to generate')
         parser.add_argument(
             '-U', '--upgrade', action='store_true',
