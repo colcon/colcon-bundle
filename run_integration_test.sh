@@ -8,6 +8,7 @@ rm -rf integration/v2_bundle
 rm -rf integration/v1.tar.gz
 rm -rf integration/v2.tar
 
+pip freeze > requirements.txt
 # Build bundles
 docker build -t test-container .
 # Copy bundles into local directory
