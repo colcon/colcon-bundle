@@ -14,7 +14,7 @@ RUN	rosdep update && \
 	rosdep install --from-paths integration/test_workspace --ignore-src -r -y
 
 RUN pip3 install --upgrade pip setuptools
-RUN pip3 install .
+RUN pip3 install -e .
 RUN pip3 install -r requirements.txt
 
 WORKDIR /opt/package/integration/test_workspace
