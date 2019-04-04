@@ -14,8 +14,8 @@ RUN	rosdep update && \
 	rosdep install --from-paths integration/test_workspace --ignore-src -r -y
 
 RUN pip3 install --upgrade pip setuptools
-RUN pip3 install -e .
 RUN pip3 install -r requirements.txt
+RUN pip3 install -e .
 
 WORKDIR /opt/package/integration/test_workspace
 RUN source /opt/ros/kinetic/setup.sh; colcon build
