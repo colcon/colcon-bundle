@@ -7,15 +7,8 @@ sudo: true
 before_install:
   - sudo apt update && sudo apt install -y enchant
 install:
-  - pip install -U setuptools
-  # install_requires
-  - pip install -e .
-  # tests_require
-  - pip install -r requirements_devel.txt
+  - pip install tox-travis
 script:
-  # invoke pytest
-  - pytest ./test --cov=colcon_bundle --cov-branch
-  # invoke integration test build
-  - ./run_integration_test.sh
+  - tox
 notifications:
   email: false
