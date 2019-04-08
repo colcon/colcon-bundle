@@ -20,6 +20,7 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         self._cache_dir = None
         self.context = None
         self.include_sources = False
+        self.allow_insecure = False
         self.sources_path = None
         self.metadata = {}
         satisfies_version(
@@ -50,6 +51,12 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
             '--apt-sources-list', default=sources_list_path,
             help='Path to the apt sources list that should be used for package'
                  'installation in the bundle.')
+        parser.add_argument(
+            '--apt-allow-insecure', action='store_true',
+            help='Sets Acquire::AllowInsecureRepositories and  '
+                 'Acquire::AllowDowngradeToInsecureRepositories to True. See '
+                 'apt-secure(8) manpage for more information.'
+        )
 
     def should_load(self):  # noqa: D102
         try:
@@ -80,6 +87,7 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         self._cache = apt.Cache(
             rootdir=self._cache_dir, progress=apt.progress.text.OpProgress())
         self.include_sources = self.context.args.include_sources
+        self.allow_insecure = self.context.args.apt_allow_insecure
         self.sources_path = os.path.join(self._cache_dir, 'sources')
         self.setup()
 
@@ -93,6 +101,16 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         apt.apt_pkg.config.set('Dir::Etc::TrustedParts',
                                apt.apt_pkg.config.find_file(
                                    'Dir::Etc::TrustedParts'))
+        apt.apt_pkg.config.set('Acquire::BrokenProxy', 'true')
+        apt.apt_pkg.config.set('Acquire::http::Pipeline-Depth', '0')
+        apt.apt_pkg.config.set('Acquire::http::No-Cache', 'true')
+
+        if self.allow_insecure:
+            apt.apt_pkg.config.set(
+                'Acquire::AllowInsecureRepositories', 'True')
+            apt.apt_pkg.config.set(
+                'Acquire::AllowDowngradeToInsecureRepositories', 'True')
+
         apt.apt_pkg.config.clear('APT::Update::Post-Invoke-Success')
 
         sources_list_file = os.path.join(self._cache_dir, 'etc', 'apt',

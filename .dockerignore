@@ -1,0 +1,6 @@
+integration/test_workspace/build
+integration/test_workspace/install
+integration/test_workspace/*_bundle
+integration/*/*.tar
+integration/*/*.tar.gz
+

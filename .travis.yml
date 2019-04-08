@@ -1,6 +1,12 @@
 language: python
 python: "3.5"
 dist: xenial
+env:
+  - TOXENV=unittest
+  - ROS_DISTRO=kinetic TOXENV=py35-pypi
+  - ROS_DISTRO=kinetic TOXENV=py35-github
+  - ROS_DISTRO=melodic TOXENV=py35-pypi
+  - ROS_DISTRO=melodic TOXENV=py35-github
 services:
   - docker
 sudo: true
