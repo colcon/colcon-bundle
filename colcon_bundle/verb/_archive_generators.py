@@ -91,7 +91,7 @@ def generate_archive_v2(path_context,
     """
     logger.info('Archiving the bundle output')
     print('Creating bundle archive V2...')
-
+    logger.debug('Start: workspace.tar.gz')
     archive_tar_path = path_context.archive_tar_path()
     workspace_tar_gz_path = path_context.workspace_tar_gz_path()
 
@@ -113,8 +113,9 @@ def generate_archive_v2(path_context,
     shutil.copytree(install_base, workspace_install_path)
     _recursive_tar_in_path(workspace_tar_gz_path, workspace_staging_path,
                            mode='w:gz')
-
+    logger.debug('End: workspace.tar.gz')
     # Dependencies directory
+    logger.debug('Start: dependencies.tar.gz')
     dependencies_tar_gz_path = path_context.dependencies_tar_gz_path()
 
     # dependencies_staging_path: Directory where all dependencies
@@ -134,7 +135,9 @@ def generate_archive_v2(path_context,
         _recursive_tar_in_path(dependencies_tar_gz_path,
                                dependencies_staging_path,
                                mode='w:gz')
+    logger.debug('End: dependencies.tar.gz')
 
+    logger.debug('Start: bundle.tar')
     # Update dependencies hash
     dependency_hash_path = path_context.dependency_hash_path()
     dependency_hash_cache_path = path_context.dependency_hash_cache_path()
@@ -146,6 +149,7 @@ def generate_archive_v2(path_context,
             bundle.add_metadata(path)
         bundle.add_overlay_archive(dependencies_tar_gz_path)
         bundle.add_overlay_archive(workspace_tar_gz_path)
+    logger.debug('End: bundle.tar')
 
     logger.info('Archiving complete')
     print('Archiving complete!')
