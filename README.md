@@ -8,86 +8,67 @@ as if the contents of the bundle was installed locally.
 
 Currently, ROS Kinetic is supported by installing the `colcon-ros-bundle` package.
 
-# Usage
+# Installation
 
-To use `colcon-bundle` after building your workspace execute:
+In order to use `colcon-bundle` execute the following (may or may not need `sudo` for the `pip3` commands):
+
+```
+sudo apt-get install python3-apt python3-pip
+sudo pip3 install -U setuptools pip
+sudo pip3 install colcon-ros-bundle
+```
+
+# Building a bundle with `colcon bundle`
+
+To build your ROS workspace into a bundle execute:
 
 `colcon bundle`
 
 This will parse your dependencies, download apt and pip dependencies, install the dependencies into the bundle, and
 then install your built workspace into the bundle. The final output is located at `bundle/output.tar.gz`
 
+## In Docker
 
-## Bundle Execution
+The simplest way to get up and running without affecting your local development environment is to use Docker.
 
-The bundle file specification is located [here](BUNDLE_FORMAT.md). In order to execute inside the bundle context
-follow the following steps:
+The contents of an example Dockerfile are below. Create the Dockerfile in your workspace and then execute:
+
+`docker build -t colcon-docker .` 
+
+Once your docker image is built you can then run it with your local workspace mounted into the container by executing `docker run -it -v $(pwd):/workspace colcon-docker bash` in the workspace directory. Then inside the docker container `/workspace` will contain your local directory.
+
+### Dockerfile
+
+```
+FROM ros:kinetic
+
+RUN apt-get update && apt-get install -y python3-pip python3-apt
+
+RUN pip3 install -U setuptools pip
+RUN pip3 install colcon-ros-bundle
+```
+
+# Bundle Usage
+
+When `colcon bundle` is executed in a ROS workspace it will create `bundle/output.tar` that follows the specification located [here](BUNDLE_FORMAT.md). 
+
+A bundle is an entire application. In order to execute inside the bundle context follow the following steps:
 
 1. Extract the main archive.
-1. Extract bundle.tar into your desired directory.
-1. Set the environment variable BUNDLE_CURRENT_PREFIX to the location of your extracted bundle.tar.
-1. Source `$BUNDLE_CURRENT_PREFIX/setup.sh`.
-1. The bundle is now activated in your shell's environment. You can execute commands contained within the bundle.
+1. Extract `metadata.tar.gz` and look at `overlays.json`.
+1. Extract each overlay listed in `overlays.json.
+1. In order execute `BUNDLE_CURRENT_PREFIX=<path to extracted overlay> source <path to extracted overlay>/setup.sh`
+1. The bundle is now activated in your shell's environment.
 
-
-# Development
-
-To setup my workspace I generally pull down:
-
-* `colcon-core` (https://github.com/colcon/colcon-core.git)
-* `colcon-ros` (https://github.com/colcon/colcon-ros.git)
-* `colcon-bundle` (https://github.com/colcon/colcon-bundle)
-* `colcon-ros-bundle` (https://github.com/colcon/colcon-ros-bundle)
-
-There are many more colcon packages, it can be useful to pull them down to look at how different extensions and other
-functionality is implemented.
-
-## Testing
-
-To run tests execute `pytest` in the root directory. Install dependencies using `pip3 install -r requirements_devel.txt`.
-You might need to `apt-get install enchant` to install the spellchecker.
-
-To view stdout from a test while running `pytest` use the `-s` flag.
-
-## Running on OSX
-
-I run these packages inside of docker containers since I'm running OSX and this only supports Ubuntu currently.
-
-Build Container: `docker run -it -v $(pwd):/workspace ros:kinetic-ros-base /bin/bash`
-
-Run Container: `docker run -it -v $(pwd):/workspace ubuntu:xenial /bin/bash`
-
-I generally `cd` into my workspace which has the package folders and then start the container. This docker command
- mounts `pwd` to`/workspace`. Once in the container I `cd /workspace` and then execute:
-
-1. `apt-get update`
-1. `apt-get install -y python3-pip python3-apt`
-1. `pip3 install --upgrade pip`
-1. `export PATH=/usr/local/bin/pip3:$PATH`
-1. `/usr/local/bin/pip3 install --editable ./colcon-bundle`
-1. `/usr/local/bin/pip3 install --editable ./colcon-ros-bundle`
-
-Inside of a ROS1 workspace execute the following:
-
-1. `rosdep install --from-paths src --ignore-src -r -y`
-1. `colcon build`
-1. `colcon bundle`
-
-## Running the bundle
-
-To run the bundle you should start up a Xenial docker container with the bundle mounted. 
-Set BUNDLE_CURRENT_PREFIX equal to the location of your extracted bundle
-folder. Then source `setup.sh` located at the top level of the bundle.
-
-## Packaging
-
-To create a tarball of this python package run: `python setup.py sdist`
-
-This will create a tarball in the `dist/` directory.
-
-### Package Blacklist
+# Package Blacklist
 
 When we create the bundle we choose not to include certain packages that are included by default in most
 Linuxd distributions. To create this blacklist for Ubuntu I ran the following on a ubuntu:xenial container.
 
 `apt list --installed | sed 's/^\(.*\)\/.*$/\1/'` on a base image.
+
+You can override this blacklist by using the `--apt-package-blacklist` argument.
+
+# `colcon-bundle` Development
+
+See [DEVELOPMENT.md](DEVELOPMENT.md)
