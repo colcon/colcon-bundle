@@ -25,7 +25,7 @@ To build your ROS workspace into a bundle execute:
 `colcon bundle`
 
 This will parse your dependencies, download apt and pip dependencies, install the dependencies into the bundle, and
-then install your built workspace into the bundle. The final output is located at `bundle/output.tar.gz`
+then install your built workspace into the bundle. The final output is located at `bundle/output.tar`
 
 ## In Docker
 
