@@ -56,7 +56,7 @@ A bundle is an entire application. In order to execute inside the bundle context
 
 1. Extract the main archive.
 1. Extract `metadata.tar.gz` and look at `overlays.json`.
-1. Extract each overlay listed in `overlays.json.
+1. Extract each overlay listed in `overlays.json`.
 1. In order execute `BUNDLE_CURRENT_PREFIX=<path to extracted overlay> source <path to extracted overlay>/setup.sh`
 1. The bundle is now activated in your shell's environment.
 
