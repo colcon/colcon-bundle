@@ -6,8 +6,6 @@ import json
 import os
 import subprocess
 
-from apt.cache import FetchFailedException
-from apt.package import FetchError
 from colcon_bundle.installer import BundleInstallerExtensionPoint
 from colcon_bundle.verb import logger
 from colcon_bundle.verb.utilities import get_ubuntu_distribution_version
@@ -134,6 +132,8 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         package.mark_delete(auto_fix=False)
 
     def _fetch_packages(self):  # noqa: D102
+        from apt.cache import FetchFailedException
+        from apt.package import FetchError
         packages = []
         source_fetch_failures = []
         for package in self._cache:
