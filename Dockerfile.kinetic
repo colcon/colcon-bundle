@@ -8,7 +8,7 @@ COPY . /opt/package
 WORKDIR /opt/package
 
 RUN apt-get update && \
-	apt-get install -y python3-pip python3-apt python-pip
+	apt-get install -y python3-pip python3-apt python-pip enchant
 
 RUN	rosdep update && \
 	rosdep install --from-paths integration/test_workspace --ignore-src -r -y
