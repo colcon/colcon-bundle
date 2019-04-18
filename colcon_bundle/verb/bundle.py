@@ -118,6 +118,9 @@ class BundleVerb(VerbExtensionPoint):
         merge_install = context.args.merge_install
         bundle_base = os.path.abspath(context.args.bundle_base)
         bundle_version = context.args.bundle_version
+        if context.args.pip_requirements is not None:
+            print('Using Python dependencies from {}',
+                  context.args.pip_requirements)
 
         if not os.path.exists(install_base):
             raise RuntimeError(

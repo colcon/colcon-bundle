@@ -198,6 +198,10 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         # come with the
         # base distribution of the OS. We remove them from the install list
         # here.
+
+        # TODO: REMOVE
+        self.add_to_install_list('python-pip')
+
         with open(self.context.args.apt_package_blacklist, 'rt') as blacklist:
             blacklisted_packages = [line.rstrip('\n') for line in blacklist]
 
