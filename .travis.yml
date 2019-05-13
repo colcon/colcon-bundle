@@ -3,10 +3,11 @@ python: "3.5"
 dist: xenial
 env:
   - TOXENV=unittest
-  - ROS_DISTRO=kinetic TOXENV=py35-pypi
-  - ROS_DISTRO=kinetic TOXENV=py35-github
-  - ROS_DISTRO=melodic TOXENV=py35-pypi
-  - ROS_DISTRO=melodic TOXENV=py35-github
+  - TEST=create ROS_DISTRO=kinetic TOXENV=py35-pypi
+  - TEST=create ROS_DISTRO=kinetic TOXENV=py35-github
+  - TEST=create ROS_DISTRO=melodic TOXENV=py35-pypi
+  - TEST=create ROS_DISTRO=melodic TOXENV=py35-github
+  - TEST=backwards ROS_DISTRO=kinetic TOXENV=py35-pypi
 services:
   - docker
 sudo: true

@@ -1,4 +1,5 @@
-from unittest.mock import patch, MagicMock
+import logging
+from unittest.mock import MagicMock
 import pytest
 
 from colcon_bundle.task.python.bundle import PythonBundleTask
@@ -10,6 +11,7 @@ from colcon_core.task import TaskContext
 
 @pytest.mark.asyncio
 async def test_bundle():
+    logging.disable(logging.CRITICAL)
     descriptor = PackageDescriptor('some/path')
     descriptor.name = 'python_package'
     deps = [DependencyDescriptor('pkg1', metadata={'version_eq': '1.3.2'}),
@@ -38,6 +40,7 @@ async def test_bundle():
     assert len(apt_calls) == 2
     assert apt_calls[0][0][0] == 'libpython3-dev'
     assert apt_calls[1][0][0] == 'python3-pip'
+    logging.disable(logging.CRITICAL)
 
 
 def test_add_arguments():

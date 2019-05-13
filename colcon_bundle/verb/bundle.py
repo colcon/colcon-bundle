@@ -1,22 +1,24 @@
 # Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
+
 from collections import OrderedDict
-import hashlib
-import json
 import os
-import tarfile
+from typing import Dict
 
 from colcon_bundle.installer import add_installer_arguments, \
-    BundleInstallerContext, get_bundle_installer_extensions
+    BundleInstallerExtensionPoint
 from colcon_bundle.verb._archive_generators import generate_archive_v1, \
     generate_archive_v2
+from colcon_bundle.verb._dependency_utilities import \
+    package_dependencies_changed
+from colcon_bundle.verb._installer_manager import InstallerManager
 from colcon_bundle.verb._path_context import PathContext
-from colcon_bundle.verb.utilities import rewrite_catkin_package_path, \
-    update_shebang, update_symlinks
 from colcon_core.argument_parser.destination_collector import \
     DestinationCollectorDecorator
+from colcon_core.command import CommandContext
 from colcon_core.event_handler import add_event_handler_arguments
 from colcon_core.executor import add_executor_arguments, execute_jobs, Job
+from colcon_core.package_descriptor import PackageDescriptor
 from colcon_core.package_selection import \
     add_arguments as add_package_arguments, get_packages
 from colcon_core.plugin_system import satisfies_version
@@ -31,12 +33,14 @@ from . import logger
 class BundlePackageArguments:
     """Arguments to bundle a specific package."""
 
-    def __init__(self, pkg, installers, args, *,
+    def __init__(self, pkg: PackageDescriptor,
+                 installers: Dict[str, BundleInstallerExtensionPoint],
+                 args, *,
                  additional_destinations=None):
         """
         Constructor.
 
-        :param pkg: The package descriptor
+        :param PackageDescriptor pkg: The package descriptor
         :param args: The parsed command line arguments
         :param list additional_destinations: The destinations of additional
           arguments
@@ -70,6 +74,7 @@ class BundleVerb(VerbExtensionPoint):
     def __init__(self):  # noqa: D107
         satisfies_version(VerbExtensionPoint.EXTENSION_POINT_VERSION, '^1.0')
         self._path_contex = None
+        self._installer_manager = None
 
     def add_arguments(self, *, parser):  # noqa: D102
         parser.add_argument('--build-base', default='build',
@@ -106,7 +111,7 @@ class BundleVerb(VerbExtensionPoint):
         self.task_argument_destinations = decorated_parser.get_destinations()
         add_installer_arguments(decorated_parser)
 
-    def main(self, *, context):  # noqa: D102
+    def main(self, *, context: CommandContext):  # noqa: D102
         print('Bundling workspace...')
         upgrade_deps_graph = context.args.upgrade
         install_base = os.path.abspath(context.args.install_base)
@@ -125,9 +130,12 @@ class BundleVerb(VerbExtensionPoint):
         self._path_contex = PathContext(install_base,
                                         bundle_base,
                                         bundle_version)
+        self._installer_manager = InstallerManager(self._path_contex)
 
         dependencies_changed = self._manage_dependencies(
-            context, self._path_contex, upgrade_deps_graph)
+            context,
+            self._path_contex,
+            upgrade_deps_graph)
 
         if context.args.bundle_version == 2:
             generate_archive_v2(self._path_contex,
@@ -157,23 +165,31 @@ class BundleVerb(VerbExtensionPoint):
                    'and we will be happy to help.'
             raise RuntimeError(estr)
 
-        installers = self._setup_installers(context, path_context)
+        self._installer_manager.setup_installers(context)
 
         print('Checking if dependency tarball exists...')
         logger.info('Checking if dependency tarball exists...')
 
-        if not os.path.exists(path_context.dependencies_tar_gz_path()):
-            self._check_package_dependency_update(path_context, decorators)
-            self._check_installer_dependency_update(
-                context, decorators, installers, path_context)
+        jobs = self._get_jobs(context.args,
+                              self._installer_manager.installers,
+                              decorators)
+        rc = execute_jobs(context, jobs)
+        if rc != 0:
+            return rc
+
+        direct_dependencies_changed = package_dependencies_changed(
+            path_context, decorators)
+        if not os.path.exists(path_context.dependencies_overlay_path()):
+            self._installer_manager.run_installers(
+                include_sources=context.args.include_sources)
+            return True
         elif upgrade_deps_graph:
-            self._check_package_dependency_update(path_context, decorators)
             print('Checking if dependency graph has changed since last '
                   'bundle...')
             logger.info('Checking if dependency graph has changed since last'
                         ' bundle...')
-            if self._check_installer_dependency_update(
-                    context, decorators, installers, path_context):
+            if self._installer_manager.run_installers(
+                    include_sources=context.args.include_sources):
                 print('All dependencies in dependency graph not changed, '
                       'skipping dependencies update...')
                 logger.info('All dependencies in dependency graph not changed,'
@@ -185,56 +201,16 @@ class BundleVerb(VerbExtensionPoint):
             logger.info(
                 'Checking if local dependencies have changed since last'
                 ' bundle...')
-            if self._check_package_dependency_update(path_context, decorators):
+            if not direct_dependencies_changed:
                 print('Local dependencies not changed, skipping dependencies'
                       ' update...')
                 logger.info(
                     'Local dependencies not changed, skipping dependencies'
                     ' update...')
                 return False
-            self._check_installer_dependency_update(
-                context, decorators, installers, path_context)
-
-        if context.args.include_sources:
-            sources_tar_gz_path = path_context.sources_tar_gz_path()
-            with tarfile.open(
-                    sources_tar_gz_path, 'w:gz', compresslevel=5) as archive:
-                for name, directory in self.installer_cache_dirs.items():
-                    sources_path = os.path.join(directory, 'sources')
-                    if not os.path.exists(sources_path):
-                        continue
-                    for filename in os.listdir(sources_path):
-                        file_path = os.path.join(sources_path, filename)
-                        archive.add(
-                            file_path,
-                            arcname=os.path.join(
-                                name, os.path.basename(file_path)))
-
-        staging_path = path_context.staging_path()
-        update_symlinks(staging_path)
-        # TODO: Update pkgconfig files?
-        update_shebang(staging_path)
-        # TODO: Move this to colcon-ros-bundle
-        rewrite_catkin_package_path(staging_path)
-
+            self._installer_manager.run_installers(
+                include_sources=context.args.include_sources)
         return True
-
-    def _setup_installers(self, context, path_context):
-        cache_path = path_context.installer_cache_path()
-        prefix_path = os.path.abspath(path_context.staging_path())
-
-        installers = get_bundle_installer_extensions()
-        self.installer_cache_dirs = {}
-        for name, installer in installers.items():
-            installer_cache_dir = os.path.join(cache_path, name)
-            self.installer_cache_dirs[name] = installer_cache_dir
-            os.makedirs(installer_cache_dir, exist_ok=True)
-            context = BundleInstallerContext(
-                args=context.args,
-                cache_path=installer_cache_dir,
-                prefix_path=prefix_path)
-            installer.initialize(context)
-        return installers
 
     def _get_jobs(self, args, installers, decorators):
         jobs = OrderedDict()
@@ -284,66 +260,3 @@ class BundleVerb(VerbExtensionPoint):
 
             jobs[pkg.name] = job
         return jobs
-
-    def _check_package_dependency_update(self, path_context, decorators):
-
-        dependency_hash = {}
-
-        for decorator in decorators:
-            if not decorator.selected:
-                continue
-            pkg = decorator.descriptor
-            dependency_list = sorted(str(dependency) for dependency in
-                                     pkg.dependencies['run'])
-            dependency_hash[pkg.name] = hashlib.sha256(
-                ' '.join(dependency_list).encode('utf-8')).hexdigest()
-
-        current_hash_string = json.dumps(dependency_hash, sort_keys=True)
-        logger.debug('Hash for current dependencies: '
-                     '{current_hash_string}'.format_map(locals()))
-
-        dependency_hash_path = path_context.dependency_hash_path()
-        dependency_hash_cache_path = path_context.dependency_hash_cache_path()
-
-        dependency_match = False
-        if os.path.exists(dependency_hash_path):
-            with open(dependency_hash_path, 'r') as f:
-                previous_hash_string = f.read()
-                if previous_hash_string == current_hash_string:
-                    dependency_match = True
-
-        with open(dependency_hash_cache_path, 'w') as f:
-            f.write(current_hash_string)
-
-        return dependency_match
-
-    def _check_installer_dependency_update(
-            self, context, decorators, installers, path_context):
-        print('Collecting dependency information...')
-        logger.info('Collecting dependency information...')
-        jobs = self._get_jobs(context.args, installers, decorators)
-        rc = execute_jobs(context, jobs)
-        if rc != 0:
-            return rc
-
-        print('Fetching and installing dependencies...')
-        logger.info('Fetching and installing dependencies...')
-        installer_metadata = {}
-        for name, installer in installers.items():
-            installer_metadata[name] = installer.install()
-
-        installer_metadata_string = json.dumps(installer_metadata,
-                                               sort_keys=True)
-
-        installer_metadata_path = path_context.installer_metadata_path()
-        dependency_match = False
-        if os.path.exists(installer_metadata_path):
-            with open(installer_metadata_path, 'r') as f:
-                previous_metadata = f.read()
-                if previous_metadata == installer_metadata_string:
-                    dependency_match = True
-
-        with open(installer_metadata_path, 'w') as f:
-            f.write(installer_metadata_string)
-
-        return dependency_match

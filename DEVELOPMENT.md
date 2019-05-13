@@ -36,9 +36,27 @@ Inside of a ROS1 workspace execute the following:
 
 ## Testing
 
+### Unit
+
 To run tests execute `pytest` in the root directory. Install dependencies using `pip3 install -r requirements_devel.txt`.
 You might need to `apt-get install enchant` to install the spellchecker.
 
 To view stdout from a test while running `pytest` use the `-s` flag.
 
 See `.travis.yml` for more information about what runs in the full test suite.
+
+### Integration
+
+If you have docker installed you can run tests by executing `run_integration_test.sh`. Take a look at our `travis.yml`
+for more insight on what tests run and the environment they run in. Currently we test the following:
+
+PyPI Dependencies:
+* Kinetic - Xenial - Bundle V1 & V2
+* Melodic - Bionic - Bundle V1 & V2
+
+GitHub Master Branch Dependencies:
+* Kinetic - Xenial - Bundle V1 & V2
+* Melodic - Bionic - Bundle V1 & V2
+
+We also have a backwards compatibility test that installs everything from PyPI, executes, and then installs
+the local version of `colcon-bundle` to re-bundle.
