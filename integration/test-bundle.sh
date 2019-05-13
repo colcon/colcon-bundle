@@ -2,11 +2,15 @@
 
 set -ex
 
+# test cmake
+
+hello
+
 # test-nodes
 rosrun test-nodes helloworld
 rosrun test-nodes helloworld_dynamic
 
-# test-cmake
+# test-catkin-cmake
 
 helloworld_cmake
 
