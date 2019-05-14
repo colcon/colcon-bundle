@@ -38,7 +38,7 @@ def generate_archive_v1(path_context):
 
     bundle_tar_path = path_context.bundle_tar_path()
     metadata_tar_path = path_context.metadata_tar_path()
-    archive_tar_gz_path = path_context.archive_tar_gz_path()
+    archive_tar_gz_path = path_context.bundle_v1_output_path()
 
     with tarfile.open(metadata_tar_path, 'w') as archive:
         archive.add(path_context.installer_metadata_path(),
@@ -92,7 +92,7 @@ def generate_archive_v2(path_context,
     logger.info('Archiving the bundle output')
     print('Creating bundle archive V2...')
     logger.debug('Start: workspace.tar.gz')
-    archive_tar_path = path_context.archive_tar_path()
+    archive_tar_path = path_context.bundle_v2_output_path()
     workspace_tar_gz_path = path_context.workspace_tar_gz_path()
 
     # Install directory

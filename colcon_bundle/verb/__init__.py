@@ -55,7 +55,9 @@ def check_and_mark_bundle_tool(bundle_base, *, this_build_tool='colcon'):
     marker_path.write_text(this_build_tool + '\n')
 
 
-def check_and_mark_bundle_version(bundle_base, *, this_bundle_version):
+def check_and_mark_bundle_version(bundle_base, *,
+                                  this_bundle_version: int,
+                                  previously_bundled: bool):
     """
     Check the bundle version marker file for the previous bundle version.
 
@@ -63,11 +65,13 @@ def check_and_mark_bundle_version(bundle_base, *, this_bundle_version):
 
     :param str bundle_base: The bundle directory
     :param str this_bundle_version: The version of the bundle to be built
+    :param bool previously_bundled: true if the user has previously used
+    this workspace to build a bundle
     :raises RuntimeError: if the bundle version does not match the passed
     in bundle version
     """
     marker_path = Path(bundle_base) / '.bundle_version'
-    if marker_path.parent.is_dir():
+    if previously_bundled:
         previous_bundle_version = 1
         if marker_path.is_file():
             previous_bundle_version = int(marker_path.read_text().rstrip())
@@ -82,7 +86,29 @@ def check_and_mark_bundle_version(bundle_base, *, this_bundle_version):
             'Bundle version 2 has multiple improvements to bundling speed'
             'and other optimizations, it is highly '
             'recommended.'.format_map(locals()))
-    else:
-        os.makedirs(bundle_base, exist_ok=True)
-
     marker_path.write_text(str(this_bundle_version) + '\n')
+
+
+def check_and_mark_bundle_cache_version(bundle_base: str, *,
+                                        cache_version: int,
+                                        previously_bundled: bool) -> int:
+    """
+    Check and return the bundle cache version.
+
+    The marker filename is `.bundle_cache_version`.
+
+    :param str bundle_base: The bundle directory
+    :param int cache_version: Version to mark if a version file does not exist
+    :param bool previously_bundled: true if the user has previously used
+    this workspace to build a bundle
+    :returns: the cache layout version to use
+    """
+    marker_path = Path(bundle_base) / '.bundle_cache_version'
+    bundle_cache_version = cache_version
+    if previously_bundled:
+        bundle_cache_version = 1
+        if marker_path.is_file():
+            bundle_cache_version = \
+                int(marker_path.read_text().rstrip())
+    marker_path.write_text(str(bundle_cache_version) + '\n')
+    return bundle_cache_version
