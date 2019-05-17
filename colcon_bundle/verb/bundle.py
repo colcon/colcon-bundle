@@ -309,7 +309,7 @@ class BundleVerb(VerbExtensionPoint):
             if not decorator.selected:
                 continue
             pkg = decorator.descriptor
-            dependency_list = sorted(dependency.name for dependency in
+            dependency_list = sorted(str(dependency) for dependency in
                                      pkg.dependencies['run'])
             dependency_hash[pkg.name] = hashlib.sha256(
                 ' '.join(dependency_list).encode('utf-8')).hexdigest()
