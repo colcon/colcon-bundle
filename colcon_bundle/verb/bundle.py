@@ -4,31 +4,28 @@ from collections import OrderedDict
 import hashlib
 import json
 import os
-from pathlib import Path
 import tarfile
 
 from colcon_bundle.installer import add_installer_arguments, \
     BundleInstallerContext, get_bundle_installer_extensions
 from colcon_bundle.verb._archive_generators import generate_archive_v1, \
     generate_archive_v2
-from colcon_bundle.verb.pathcontext import PathContext
+from colcon_bundle.verb._path_context import PathContext
 from colcon_bundle.verb.utilities import rewrite_catkin_package_path, \
     update_shebang, update_symlinks
 from colcon_core.argument_parser.destination_collector import \
     DestinationCollectorDecorator
 from colcon_core.event_handler import add_event_handler_arguments
 from colcon_core.executor import add_executor_arguments, execute_jobs, Job
-from colcon_core.package_identification.ignore import IGNORE_MARKER
 from colcon_core.package_selection import \
     add_arguments as add_package_arguments, get_packages
 from colcon_core.plugin_system import satisfies_version
 from colcon_core.task import add_task_arguments, get_task_extension, \
     TaskContext
-from colcon_core.verb import check_and_mark_install_layout, update_object,\
-    VerbExtensionPoint
+from colcon_core.verb import check_and_mark_install_layout, \
+    update_object, VerbExtensionPoint
 
-from . import check_and_mark_bundle_tool, check_and_mark_bundle_version,\
-    logger
+from . import logger
 
 
 class BundlePackageArguments:
@@ -72,6 +69,7 @@ class BundleVerb(VerbExtensionPoint):
 
     def __init__(self):  # noqa: D107
         satisfies_version(VerbExtensionPoint.EXTENSION_POINT_VERSION, '^1.0')
+        self._path_contex = None
 
     def add_arguments(self, *, parser):  # noqa: D102
         parser.add_argument('--build-base', default='build',
@@ -112,42 +110,37 @@ class BundleVerb(VerbExtensionPoint):
         print('Bundling workspace...')
         upgrade_deps_graph = context.args.upgrade
         install_base = os.path.abspath(context.args.install_base)
+        merge_install = context.args.merge_install
         bundle_base = os.path.abspath(context.args.bundle_base)
+        bundle_version = context.args.bundle_version
 
         if not os.path.exists(install_base):
             raise RuntimeError(
                 'You must build your workspace before bundling it.')
-        path_context = PathContext(bundle_base, install_base)
+
+        check_and_mark_install_layout(
+            install_base,
+            merge_install=merge_install)
+
+        self._path_contex = PathContext(install_base,
+                                        bundle_base,
+                                        bundle_version)
 
         dependencies_changed = self._manage_dependencies(
-            context, path_context, upgrade_deps_graph)
+            context, self._path_contex, upgrade_deps_graph)
 
         if context.args.bundle_version == 2:
-            generate_archive_v2(path_context,
-                                [path_context.installer_metadata_path()],
+            generate_archive_v2(self._path_contex,
+                                [self._path_contex.installer_metadata_path()],
                                 dependencies_changed)
         else:
-            generate_archive_v1(path_context)
+            generate_archive_v1(self._path_contex)
 
         return 0
 
     def _manage_dependencies(self, context,
                              path_context,
                              upgrade_deps_graph):
-
-        bundle_base = path_context.bundle_base()
-        bundle_version = context.args.bundle_version
-        check_and_mark_install_layout(
-            path_context.install_base(),
-            merge_install=context.args.merge_install)
-        # This must be first for backwards compatibility
-        # reasons. We assume the folder was previously
-        # used for v1 if it exists.
-        check_and_mark_bundle_version(bundle_base,
-                                      this_bundle_version=bundle_version)
-        self._create_path(bundle_base)
-        check_and_mark_bundle_tool(bundle_base)
-
         destinations = self.task_argument_destinations
         decorators = get_packages(context.args,
                                   additional_argument_names=destinations,
@@ -242,15 +235,6 @@ class BundleVerb(VerbExtensionPoint):
                 prefix_path=prefix_path)
             installer.initialize(context)
         return installers
-
-    def _create_path(self, path):
-        path = Path(os.path.abspath(path))
-        if not path.exists():
-            path.mkdir(parents=True, exist_ok=True)
-        ignore_marker = path / IGNORE_MARKER
-        if not ignore_marker.exists():
-            with ignore_marker.open('w'):
-                pass
 
     def _get_jobs(self, args, installers, decorators):
         jobs = OrderedDict()
