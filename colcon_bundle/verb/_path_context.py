@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
 
-from colcon_bundle.verb import check_and_mark_bundle_cache_version, \
-    check_and_mark_bundle_tool, \
-    check_and_mark_bundle_version
+from colcon_bundle.verb import check_and_mark_bundle_tool, \
+    check_and_mark_bundle_version, \
+    get_and_mark_bundle_cache_version
 from colcon_core.package_identification.ignore import IGNORE_MARKER
 
 
@@ -38,9 +38,8 @@ class PathContext:
         check_and_mark_bundle_version(bundle_base,
                                       this_bundle_version=bundle_version,
                                       previously_bundled=previously_bundled)
-        cache_version = check_and_mark_bundle_cache_version(
+        cache_version = get_and_mark_bundle_cache_version(
             bundle_base,
-            cache_version=2,
             previously_bundled=previously_bundled)
         check_and_mark_bundle_tool(bundle_base)
 
@@ -48,6 +47,7 @@ class PathContext:
         self._bundle_cache = self._bundle_base
         if cache_version == 2:
             self._bundle_cache = os.path.join(self._bundle_base, 'cache')
+            os.mkdir(self._bundle_cache)
         self._install_base = install_base
 
     def _create_path(self, path):
@@ -67,11 +67,11 @@ class PathContext:
         """:return: Directory with built artifacts from the workspace"""
         return self._install_base
 
-    def staging_path(self):  # noqa: D400
+    def dependencies_staging_path(self):  # noqa: D400
         """:return: Directory where all dependencies have been installed"""
         return os.path.join(self._bundle_cache, 'bundle_staging')
 
-    def dependencies_tar_gz_path(self):  # noqa: D400
+    def dependencies_overlay_path(self):  # noqa: D400
         """:return: File path for dependencies tarball"""
         return os.path.join(self._bundle_cache, 'dependencies.tar.gz')
 
@@ -101,7 +101,7 @@ class PathContext:
         """:return: Directory where all workspace files locates"""
         return os.path.join(self._bundle_cache, 'workspace_staging')
 
-    def workspace_tar_gz_path(self):  # noqa: D400
+    def workspace_overlay_path(self):  # noqa: D400
         """:return: File path for workspace tarball"""
         return os.path.join(self._bundle_cache, 'workspace.tar.gz')
 

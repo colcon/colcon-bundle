@@ -1,8 +1,14 @@
 import os
 import shutil
 import tarfile
+from typing import List
 
 from colcon_bundle.verb import logger
+from colcon_bundle.verb._dependency_utilities import update_dependencies_cache
+from colcon_bundle.verb._overlay_utilities import \
+    create_dependencies_overlay, create_workspace_overlay, \
+    recursive_tar_in_path
+from colcon_bundle.verb._path_context import PathContext
 from colcon_bundle.verb.bundlefile import Bundle
 
 
@@ -20,7 +26,7 @@ def generate_archive_v1(path_context):
     # install_base: Directory with built artifacts from the workspace
     install_base = path_context.install_base()
     # staging_path: Directory where all dependencies have been installed
-    staging_path = path_context.staging_path()
+    staging_path = path_context.dependencies_staging_path()
 
     logger.info('Copying {} into bundle...'.format(install_base))
     assets_directory = os.path.join(
@@ -47,7 +53,7 @@ def generate_archive_v1(path_context):
     if os.path.exists(bundle_tar_path):
         os.remove(bundle_tar_path)
 
-    _recursive_tar_in_path(bundle_tar_path, staging_path)
+    recursive_tar_in_path(bundle_tar_path, staging_path)
 
     version_file_path = path_context.version_file_path()
     with open(version_file_path, 'w') as v:
@@ -68,9 +74,9 @@ def generate_archive_v1(path_context):
     logger.info('Archiving complete')
 
 
-def generate_archive_v2(path_context,
-                        metadata_paths,
-                        dependencies_changed):
+def generate_archive_v2(path_context: PathContext,
+                        metadata_paths: List[str],
+                        dependencies_changed: bool):
     """
     Generate bundle archive v2.
 
@@ -92,83 +98,27 @@ def generate_archive_v2(path_context,
     logger.info('Archiving the bundle output')
     print('Creating bundle archive V2...')
     logger.debug('Start: workspace.tar.gz')
-    archive_tar_path = path_context.bundle_v2_output_path()
-    workspace_tar_gz_path = path_context.workspace_tar_gz_path()
-
-    # Install directory
-    workspace_staging_path = path_context.workspace_staging_path()
-    workspace_install_path = os.path.join(
-        workspace_staging_path, 'opt', 'built_workspace')
-    shutil.rmtree(workspace_staging_path, ignore_errors=True)
-    assets_directory = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), 'assets')
-
-    shellscript_path = os.path.join(assets_directory, 'v2_workspace_setup.sh')
-
-    # install_base: Directory with built artifacts from the workspace
-    install_base = path_context.install_base()
-    os.mkdir(workspace_staging_path)
-    shutil.copy2(shellscript_path,
-                 os.path.join(workspace_staging_path, 'setup.sh'))
-    shutil.copytree(install_base, workspace_install_path)
-    _recursive_tar_in_path(workspace_tar_gz_path, workspace_staging_path,
-                           mode='w:gz')
+    workspace_tar_gz_path = path_context.workspace_overlay_path()
+    create_workspace_overlay(path_context.install_base(),
+                             path_context.workspace_staging_path(),
+                             workspace_tar_gz_path)
     logger.debug('End: workspace.tar.gz')
-    # Dependencies directory
-    logger.debug('Start: dependencies.tar.gz')
-    dependencies_tar_gz_path = path_context.dependencies_tar_gz_path()
 
-    # dependencies_staging_path: Directory where all dependencies
-    # have been installed
-    dependencies_staging_path = path_context.staging_path()
+    logger.debug('Start: dependencies.tar.gz')
+    dependencies_overlay_path = path_context.dependencies_overlay_path()
     if dependencies_changed:
-        logger.info('Dependencies changed, updating {}'.format(
-            dependencies_tar_gz_path
-        ))
-        assets_directory = os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), 'assets')
-        shellscript_path = os.path.join(assets_directory, 'v2_setup.sh')
-        shutil.copy2(shellscript_path,
-                     os.path.join(dependencies_staging_path, 'setup.sh'))
-        if os.path.exists(dependencies_tar_gz_path):
-            os.remove(dependencies_tar_gz_path)
-        _recursive_tar_in_path(dependencies_tar_gz_path,
-                               dependencies_staging_path,
-                               mode='w:gz')
+        create_dependencies_overlay(path_context.dependencies_staging_path(),
+                                    dependencies_overlay_path)
+        update_dependencies_cache(path_context)
     logger.debug('End: dependencies.tar.gz')
 
     logger.debug('Start: bundle.tar')
-    # Update dependencies hash
-    dependency_hash_path = path_context.dependency_hash_path()
-    dependency_hash_cache_path = path_context.dependency_hash_cache_path()
-    if os.path.exists(dependency_hash_cache_path):
-        os.replace(dependency_hash_cache_path, dependency_hash_path)
-
-    with Bundle(name=archive_tar_path) as bundle:
+    with Bundle(name=path_context.bundle_v2_output_path()) as bundle:
         for path in metadata_paths:
             bundle.add_metadata(path)
-        bundle.add_overlay_archive(dependencies_tar_gz_path)
+        bundle.add_overlay_archive(dependencies_overlay_path)
         bundle.add_overlay_archive(workspace_tar_gz_path)
     logger.debug('End: bundle.tar')
 
     logger.info('Archiving complete')
     print('Archiving complete!')
-
-
-def _recursive_tar_in_path(tar_path, path, *, mode='w'):
-    """
-    Tar all files inside a directory.
-
-    This function includes all sub-folders of path in the root of the tarfile
-
-    :param tar_path: The output path
-    :param path: path to recursively collect all files and include in
-    tar
-    :param mode: mode flags passed to tarfile
-    """
-    with tarfile.open(tar_path, mode) as tar:
-        logger.info(
-            'Creating tar of {path}'.format(path=path))
-        for name in os.listdir(path):
-            some_path = os.path.join(path, name)
-            tar.add(some_path, arcname=os.path.basename(some_path))

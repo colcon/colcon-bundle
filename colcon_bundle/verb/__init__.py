@@ -9,25 +9,6 @@ from colcon_core.logging import colcon_logger
 logger = colcon_logger.getChild(__name__)
 
 
-class PostBundleActionExtensionPoint:
-    """
-    Provides a hook for executing actions after bundling is complete.
-
-    This extension point should be tied to a
-    package type, one instance of this extension will
-    be executed per package type built into the bundle.
-    """
-
-    def execute(self, path):
-        """
-        Execute any necessary actions after bundle creation.
-
-        :param path: Path to the root of the bundle
-        :return: None
-        """
-        raise RuntimeError('This should be implemented by a subclass')
-
-
 def check_and_mark_bundle_tool(bundle_base, *, this_build_tool='colcon'):
     """
     Check the marker file for the previous bundle tool, otherwise create it.
@@ -55,7 +36,7 @@ def check_and_mark_bundle_tool(bundle_base, *, this_build_tool='colcon'):
     marker_path.write_text(this_build_tool + '\n')
 
 
-def check_and_mark_bundle_version(bundle_base, *,
+def check_and_mark_bundle_version(bundle_base: str, *,
                                   this_bundle_version: int,
                                   previously_bundled: bool):
     """
@@ -89,22 +70,20 @@ def check_and_mark_bundle_version(bundle_base, *,
     marker_path.write_text(str(this_bundle_version) + '\n')
 
 
-def check_and_mark_bundle_cache_version(bundle_base: str, *,
-                                        cache_version: int,
-                                        previously_bundled: bool) -> int:
+def get_and_mark_bundle_cache_version(bundle_base: str, *,
+                                      previously_bundled: bool) -> int:
     """
     Check and return the bundle cache version.
 
     The marker filename is `.bundle_cache_version`.
 
     :param str bundle_base: The bundle directory
-    :param int cache_version: Version to mark if a version file does not exist
     :param bool previously_bundled: true if the user has previously used
     this workspace to build a bundle
     :returns: the cache layout version to use
     """
     marker_path = Path(bundle_base) / '.bundle_cache_version'
-    bundle_cache_version = cache_version
+    bundle_cache_version = 2
     if previously_bundled:
         bundle_cache_version = 1
         if marker_path.is_file():
