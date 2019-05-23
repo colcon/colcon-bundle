@@ -9,7 +9,7 @@ from colcon_bundle.installer.apt import AptBundleInstallerExtension
 
 class AptInstallerTests(unittest.TestCase):
     def setUp(self):
-        self.tmp_apt = sys.modules['apt']
+        self.tmp_apt = sys.modules.get('apt', None)
     
     def tearDown(self):
         sys.modules['apt'] = self.tmp_apt
