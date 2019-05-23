@@ -8,6 +8,12 @@ from colcon_bundle.installer.apt import AptBundleInstallerExtension
 
 
 class AptInstallerTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp_apt = sys.modules['apt']
+    
+    def tearDown(self):
+        sys.modules['apt'] = self.tmp_apt
+
     @patch('colcon_bundle.installer.apt.get_ubuntu_distribution_version')
     def test_should_load_not_on_ubuntu(self, get_version):
         apt = AptBundleInstallerExtension()
