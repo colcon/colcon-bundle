@@ -59,11 +59,11 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         )
 
     def should_load(self):  # noqa: D102
+        """Determine if this plugin should load."""
         try:
-            with open(os.devnull, 'w') as devnull:
-                subprocess.check_call(
-                    ['apt-get', '--help'], stdout=devnull, stderr=devnull)
-        except subprocess.CalledProcessError:
+            get_ubuntu_distribution_version()
+        except ValueError:
+            # Not on ubuntu, shouldn't load
             return False
 
         try:
