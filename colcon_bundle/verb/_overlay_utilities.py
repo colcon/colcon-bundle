@@ -28,8 +28,8 @@ def create_workspace_overlay(install_base: str,
     shutil.copy2(shellscript_path,
                  os.path.join(workspace_staging_path, 'setup.sh'))
     shutil.copytree(install_base, workspace_install_path)
-    recursive_tar_in_path(overlay_path, workspace_staging_path,
-                          mode='w:gz')
+    recursive_tar_gz_in_path(overlay_path,
+                             workspace_staging_path)
 
 
 def create_dependencies_overlay(staging_path, overlay_path):
@@ -54,23 +54,21 @@ def create_dependencies_overlay(staging_path, overlay_path):
                  os.path.join(dependencies_staging_path, 'setup.sh'))
     if os.path.exists(dependencies_tar_gz_path):
         os.remove(dependencies_tar_gz_path)
-    recursive_tar_in_path(dependencies_tar_gz_path,
-                          dependencies_staging_path,
-                          mode='w:gz')
+    recursive_tar_gz_in_path(dependencies_tar_gz_path,
+                             dependencies_staging_path)
 
 
-def recursive_tar_in_path(tar_path, path, *, mode='w'):
+def recursive_tar_gz_in_path(output_path, path):
     """
-    Tar all files inside a directory.
+    Create a tar.gz archive of all files inside a directory.
 
     This function includes all sub-folders of path in the root of the tarfile
 
-    :param tar_path: The output path
+    :param output_path: Name of archive file to create
     :param path: path to recursively collect all files and include in
-    tar
-    :param mode: mode flags passed to tarfile
+    tar.gz. These will be included with path as the root of the archive.
     """
-    with tarfile.open(tar_path, mode) as tar:
+    with tarfile.open(output_path, mode='w:gz', compresslevel=5) as tar:
         logger.info(
             'Creating tar of {path}'.format(path=path))
         for name in os.listdir(path):
