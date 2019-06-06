@@ -137,7 +137,12 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
 
         # Update the cache to the latest, we might not want to do this if the
         # cache already exists?
-        self._cache.update()
+        try:
+            self._cache.update()
+        except apt.cache.FetchFailedException as e:
+            logger.error('Could not fetch from repositories: {}'.format(e))
+            raise RuntimeError('Failed to fetch from repositories. Did '
+                               'you set your keys correctly?')
         self._cache.open()
 
     def is_package_available(self, package_name):  # noqa: D102
