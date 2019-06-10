@@ -2,6 +2,14 @@ FROM ros:kinetic
 
 SHELL ["/bin/bash", "-c"]
 
+RUN apt-get update && apt-get install -y \
+      lsb \
+      unzip \
+      wget \
+      curl
+
+RUN apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+
 RUN echo "yaml https://s3-us-west-2.amazonaws.com/rosdep/base.yaml" > /etc/ros/rosdep/sources.list.d/19-aws-sdk.list
 
 COPY . /opt/package
