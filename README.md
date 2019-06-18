@@ -27,14 +27,6 @@ To build your ROS workspace into a bundle execute:
 This will parse your dependencies, download apt and pip dependencies, install the dependencies into the bundle, and
 then install your built workspace into the bundle. The final output is located at `bundle/output.tar`
 
-## Ubuntu 18.04
-
-**This version of Ubuntu is not yet officially supported**
-
-We are currently tracking an [issue](https://github.com/colcon/colcon-bundle/issues/3) to support 18.04. 
-In the mean time, if you would like to build on 18.04 you can use the `--apt-allow-insecure` flag in order to work 
-around the `apt` security issues we are running into.
-
 ## In Docker
 
 The simplest way to get up and running without affecting your local development environment is to use Docker.
