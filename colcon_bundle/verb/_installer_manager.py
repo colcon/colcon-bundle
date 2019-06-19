@@ -78,19 +78,20 @@ class InstallerManager:
         with open(installer_metadata_path, 'w') as f:
             f.write(installer_metadata_string)
 
-        sources_tar_gz_path = self._path_context.sources_tar_gz_path()
-        with tarfile.open(
-                sources_tar_gz_path, 'w:gz', compresslevel=5) as archive:
-            for name, directory in self.installer_cache_dirs.items():
-                sources_path = os.path.join(directory, 'sources')
-                if not os.path.exists(sources_path):
-                    continue
-                for filename in os.listdir(sources_path):
-                    file_path = os.path.join(sources_path, filename)
-                    archive.add(
-                        file_path,
-                        arcname=os.path.join(
-                            name, os.path.basename(file_path)))
+        if include_sources:
+            sources_tar_gz_path = self._path_context.sources_tar_gz_path()
+            with tarfile.open(
+                    sources_tar_gz_path, 'w:gz', compresslevel=5) as archive:
+                for name, directory in self.installer_cache_dirs.items():
+                    sources_path = os.path.join(directory, 'sources')
+                    if not os.path.exists(sources_path):
+                        continue
+                    for filename in os.listdir(sources_path):
+                        file_path = os.path.join(sources_path, filename)
+                        archive.add(
+                            file_path,
+                            arcname=os.path.join(
+                                name, os.path.basename(file_path)))
 
         update_symlinks(self.prefix_path)
         # TODO: Update pkgconfig files?
