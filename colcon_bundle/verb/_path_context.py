@@ -47,7 +47,7 @@ class PathContext:
         self._bundle_cache = self._bundle_base
         if cache_version == 2:
             self._bundle_cache = os.path.join(self._bundle_base, 'cache')
-            os.mkdir(self._bundle_cache)
+            os.makedirs(self._bundle_cache, exist_ok=True)
         self._install_base = install_base
 
     def _create_path(self, path):
