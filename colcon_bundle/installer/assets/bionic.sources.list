@@ -7,10 +7,10 @@ deb [arch=amd64,i386] http://us.archive.ubuntu.com/ubuntu/ bionic-security main 
 
 # ARM Support
 
-deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic main restricted universe multiverse
-deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic-updates main restricted universe multiverse
-deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic-backports main restricted
-deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic-security main restricted universe multiverse
+deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ bionic main restricted universe multiverse
+deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ bionic-updates main restricted universe multiverse
+deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ bionic-backports main restricted
+deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ bionic-security main restricted universe multiverse
 
 # Source Repositories
 
