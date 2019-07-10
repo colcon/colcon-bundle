@@ -45,6 +45,19 @@ class InstallerManager:
                 prefix_path=self.prefix_path)
             installer.initialize(context)
 
+    def parameters_changed(self):
+        """
+        Check each installer to see if its arguments/parameters changed.
+
+        :return: true if any of the installer parameters have
+        changed this implies that run_installers() should
+        be invoked again.
+        """
+        changed = False
+        for name, installer in self.installers.items():
+            changed = changed or installer.parameters_changed()
+        return changed
+
     def run_installers(self, *, include_sources=False):
         """
         Invoke all installers to install packages into the bundle.

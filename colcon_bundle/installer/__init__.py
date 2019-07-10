@@ -69,6 +69,20 @@ class BundleInstallerExtensionPoint:
         """
         raise RuntimeError('This should be implemented in the subclass')
 
+    def cache_invalid(self):
+        """
+        Check if input to the installer has changed.
+
+        This method should look at the arguments and parameters
+        provided to the installer and determine if the cache for
+        the installer is invalid. An invalid cache means that
+        install() should be called to update the bundle.
+
+        :return: true if the install() for this installer
+        should be re-invoked
+        """
+        return False
+
     def add_to_install_list(self, name, *, metadata=None):
         """
         Add item to the list of items to install with this installer.
