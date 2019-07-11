@@ -1,0 +1,30 @@
+FROM ros:dashing
+
+SHELL ["/bin/bash", "-c"]
+
+COPY . /opt/package
+WORKDIR /opt/package
+
+# install packages
+RUN apt-get update && apt-get install -q -y \
+    bash-completion \
+    dirmngr \
+    gnupg2 \
+    python3-pip \
+    python3-apt \
+    wget \
+    enchant \
+    curl
+
+RUN pip3 install --upgrade pip setuptools
+# RUN pip3 install -r requirements.txt
+RUN pip3 install -U pytest colcon-common-extensions
+ARG CACHE_DATE=not_a_date
+RUN pip3 install git+https://github.com/colcon/colcon-ros-bundle.git@ros2-support
+RUN pip3 install -e .
+
+WORKDIR /opt/package/integration/ros2_workspace
+RUN source /opt/ros/dashing/setup.sh; colcon build
+RUN source /opt/ros/dashing/setup.sh; colcon bundle --bundle-version 2 --bundle-base v2
+
+

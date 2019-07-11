@@ -19,6 +19,9 @@ deb-src http://us.archive.ubuntu.com/ubuntu/ bionic-updates main restricted univ
 deb-src http://us.archive.ubuntu.com/ubuntu/ bionic-backports main restricted universe multiverse
 deb-src http://us.archive.ubuntu.com/ubuntu/ bionic-security main restricted universe multiverse
 
-# ROS
+# ROS 1
 deb http://packages.ros.org/ros/ubuntu bionic main
+
+# ROS 2
+deb [arch=amd64,arm64] http://packages.ros.org/ros2/ubuntu bionic main
 
