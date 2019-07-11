@@ -3,6 +3,8 @@ import shutil
 import tarfile
 
 from colcon_bundle.verb import logger
+from colcon_bundle.verb.utilities import \
+    update_shebang
 
 
 def create_workspace_overlay(install_base: str,
@@ -28,6 +30,11 @@ def create_workspace_overlay(install_base: str,
     shutil.copy2(shellscript_path,
                  os.path.join(workspace_staging_path, 'setup.sh'))
     shutil.copytree(install_base, workspace_install_path)
+
+    # This is required because python3 shell scripts use a hard
+    # coded shebang
+    update_shebang(workspace_staging_path)
+
     recursive_tar_gz_in_path(overlay_path,
                              workspace_staging_path)
 

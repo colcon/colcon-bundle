@@ -33,15 +33,21 @@ class PythonBundleTask(TaskExtensionPoint):
                     'because it is in the workspace'.format_map(locals()))
                 continue
 
-            if 'version_eq' in dependency.metadata:
-                pip = args.installers['pip3']
-                pip.add_to_install_list(
-                    dependency.name + '==' + dependency.metadata['version_eq'])
-            else:
-                logger.warning('Currently only support version locked '
-                               'packages. Skipping: {dependency}'
-                               .format(dependency=dependency))
-                continue
+            symbol_mapping = {
+                'version_eq': '==',
+                'version_neq': '!=',
+                'version_lte': '<=',
+                'version_gte': '>=',
+                'version_gt': '>',
+                'version_lt': '<',
+            }
+
+            for comparator, version in dependency.metadata.items():
+                if symbol_mapping.get(comparator) is not None:
+                    pip = args.installers['pip3']
+                    pip.add_to_install_list(
+                        dependency.name + symbol_mapping[comparator] + version
+                    )
 
             # TODO: The Pip managers should be doing this
             apt = args.installers['apt']
