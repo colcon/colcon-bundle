@@ -2,7 +2,7 @@ import sys
 from unittest import mock
 
 import unittest
-from mock import patch
+from unittest.mock import patch
 
 from colcon_bundle.installer.apt import AptBundleInstallerExtension
 
