@@ -2,6 +2,12 @@
 
 set -ex
 
+if [[ ${ROS_DISTRO} = "dashing" ]]
+then
+	./run_ros2_integration_test.sh
+	return
+fi
+
 # Clean up
 rm -rf integration/v1_bundle
 rm -rf integration/v2_bundle
