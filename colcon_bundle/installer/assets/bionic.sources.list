@@ -22,3 +22,5 @@ deb-src http://us.archive.ubuntu.com/ubuntu/ bionic-security main restricted uni
 # ROS
 deb http://packages.ros.org/ros/ubuntu bionic main
 
+# OSRF - Gazebo
+deb http://packages.osrfoundation.org/gazebo/ubuntu-stable bionic main
