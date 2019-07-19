@@ -5,7 +5,7 @@ set -ex
 if [[ ${ROS_DISTRO} = "dashing" ]]
 then
 	./run_ros2_integration_test.sh
-	return
+	exit 0
 fi
 
 # Clean up
