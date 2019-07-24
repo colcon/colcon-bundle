@@ -6,8 +6,7 @@ from typing import List
 from colcon_bundle.verb import logger
 from colcon_bundle.verb._dependency_utilities import update_dependencies_cache
 from colcon_bundle.verb._overlay_utilities import \
-    create_dependencies_overlay, create_workspace_overlay, \
-    recursive_tar_in_path
+    create_dependencies_overlay, create_workspace_overlay
 from colcon_bundle.verb._path_context import PathContext
 from colcon_bundle.verb.bundlefile import Bundle
 
@@ -122,3 +121,23 @@ def generate_archive_v2(path_context: PathContext,
 
     logger.info('Archiving complete')
     print('Archiving complete!')
+
+
+def recursive_tar_in_path(tar_path, path):
+    """
+    Tar all files inside a directory.
+
+    This function includes all sub-folders of path. Path
+    is treated as the root of the tarfile.
+
+    :param tar_path: The output path
+    :param path: path to recursively collect all files and include in
+    tar
+    mode type
+    """
+    with tarfile.open(tar_path, mode='w') as tar:
+        logger.info(
+            'Creating tar of {path}'.format(path=path))
+        for name in os.listdir(path):
+            some_path = os.path.join(path, name)
+            tar.add(some_path, arcname=os.path.basename(some_path))
