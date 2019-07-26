@@ -8,7 +8,6 @@ setuptools.setup(name='test-py-module',
                  description='Test Module',
                  packages=setuptools.find_packages(),
                  install_requires=[
-                     'flake8==3.4.0',
                      'annoy==1.8.3',
-                     'numpy==1.13.0',
+                     'tensorflow==1.14.0',
                  ])

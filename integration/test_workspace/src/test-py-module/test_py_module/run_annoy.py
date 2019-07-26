@@ -5,6 +5,7 @@
 def test():
     from annoy import AnnoyIndex
     import random
+    import tensorflow as tf
 
     f = 40
     t = AnnoyIndex(f)  # Length of item vector that will be indexed
@@ -13,4 +14,5 @@ def test():
         t.add_item(i, v)
 
     t.build(10) # 10 trees
+    print(tf.reduce_sum(tf.random.normal([1000, 1000])))
     print("test-py-module passed...")
