@@ -3,7 +3,7 @@ import shutil
 import tarfile
 
 from colcon_bundle.verb import logger
-from colcon_bundle.verb.utilities import update_shebang
+from colcon_bundle.verb.utilities import update_shebang, set_ament_current_prefix
 
 
 def create_workspace_overlay(install_base: str,
@@ -32,6 +32,8 @@ def create_workspace_overlay(install_base: str,
     # This is required because python3 shell scripts use a hard
     # coded shebang
     update_shebang(workspace_staging_path)
+    # Set AMENT_CURRENT_PREFIX - temporary fix due to https://github.com/colcon/colcon-ros/issues/67
+    set_ament_current_prefix(workspace_staging_path)
     recursive_tar_in_path(overlay_path, workspace_staging_path,
                           mode='w:gz')
 

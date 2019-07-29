@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import sys
+import massedit
 
 from colcon_bundle.verb import logger
 
@@ -94,6 +95,22 @@ def update_shebang(path):
                         file_handle.seek(0)
                         file_handle.truncate()
                         file_handle.write(py_replacement_tuple[0].encode())
+
+
+def set_ament_current_prefix(path):
+    """
+    Patch local_setup.sh so that it sets AMENT_CURRENT_PREFIX to be the same as COLCON_CURRENT_PREFIX.
+
+    This is a temporary workaround for ROS2 support that was put in place due to https://github.com/colcon/colcon-ros/issues/67
+
+    :param path: Path to the staging workspace
+    """
+    local_setup_sh_path = os.path.join(path, 'opt', 'built_workspace', 'local_setup.sh')
+    logger.info('Modifying {local_setup_sh_path} to set AMENT_CURRENT_PREFIX'.format_map(locals()))
+    massedit.edit_files(
+        [local_setup_sh_path, ],
+        ["re.sub('^  COLCON_CURRENT_PREFIX=(.*)', '  COLCON_CURRENT_PREFIX=\g<1>\\n  AMENT_CURRENT_PREFIX=${COLCON_CURRENT_PREFIX}', line)"],
+        dry_run=False)
 
 
 def update_symlinks(base_path):
