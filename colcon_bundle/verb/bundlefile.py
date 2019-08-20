@@ -54,7 +54,6 @@ class Bundle:
 
     def close(self):  # noqa: N806
         """Close the archive."""
-
         # We don't use any magic numbers here
         # but Python 3.9 is updating to use the
         # PAX format and we should do thorough
