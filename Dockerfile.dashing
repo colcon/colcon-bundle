@@ -26,14 +26,17 @@ RUN	rosdep update && \
 
 RUN pip3 install --upgrade pip setuptools
 # RUN pip3 install -r requirements.txt
-RUN pip3 uninstall -y colcon-ros
-RUN pip3 install git+https://github.com/murphm8/colcon-ros.git
+
 RUN pip3 install -U pytest colcon-common-extensions
 ARG CACHE_DATE=not_a_date
 RUN pip3 install git+https://github.com/colcon/colcon-ros-bundle.git@ros2-support
 RUN pip3 install -e .
 
 WORKDIR /opt/package/integration/ros2_workspace
+
+RUN source /opt/ros/dashing/setup.sh; pip3 uninstall -y ament-package
+RUN pip3 install git+https://github.com/ament/ament_package.git@dirk-thomas/ament-current-prefix-warning-and-fallback
+
 RUN source /opt/ros/dashing/setup.sh; colcon build
 RUN source /opt/ros/dashing/setup.sh; colcon bundle --bundle-version 2 --bundle-base v2
 
