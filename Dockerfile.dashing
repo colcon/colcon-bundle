@@ -11,7 +11,7 @@ RUN apt-get update && \
     echo "yaml https://s3-us-west-2.amazonaws.com/rosdep/base.yaml" > /etc/ros/rosdep/sources.list.d/19-aws-sdk.list
 
 # install packages
-RUN apt-get update && apt-get install -q -y \
+RUN apt-get update && apt-get upgrade -y && apt-get install -q -y \
     bash-completion \
     dirmngr \
     gnupg2 \
