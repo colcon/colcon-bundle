@@ -34,9 +34,6 @@ RUN pip3 install -e .
 
 WORKDIR /opt/package/integration/ros2_workspace
 
-RUN source /opt/ros/dashing/setup.sh; pip3 uninstall -y ament-package
-RUN pip3 install git+https://github.com/ament/ament_package.git@dirk-thomas/ament-current-prefix-warning-and-fallback
-
 RUN source /opt/ros/dashing/setup.sh; colcon build
 RUN source /opt/ros/dashing/setup.sh; colcon bundle --bundle-version 2 --bundle-base v2
 
