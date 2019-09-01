@@ -1,5 +1,5 @@
 import logging
-from unittest.mock import MagicMock
+from unittest.mock import call, MagicMock
 import pytest
 
 from colcon_bundle.task.python.bundle import PythonBundleTask
@@ -34,10 +34,10 @@ async def test_bundle():
 
     await task.bundle()
 
-    pip_installer.add_to_install_list.assert_called_once_with('pkg1==1.3.2')
+    pip_installer.add_to_install_list.assert_has_calls([call('pkg1==1.3.2'), call('pkg2<1.2')])
 
     apt_calls = apt_installer.add_to_install_list.call_args_list
-    assert len(apt_calls) == 2
+    assert len(apt_calls) == 4
     assert apt_calls[0][0][0] == 'libpython3-dev'
     assert apt_calls[1][0][0] == 'python3-pip'
     logging.disable(logging.CRITICAL)

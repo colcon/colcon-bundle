@@ -7,6 +7,7 @@ env:
   - TEST=create ROS_DISTRO=kinetic TOXENV=py35-github
   - TEST=create ROS_DISTRO=melodic TOXENV=py35-pypi
   - TEST=create ROS_DISTRO=melodic TOXENV=py35-github
+  - TEST=create ROS_DISTRO=dashing TOXENV=py35-pypi
   - TEST=backwards ROS_DISTRO=kinetic TOXENV=py35-pypi
   - TEST=double ROS_DISTRO=melodic TOXENV=py35-pypi
 services:
