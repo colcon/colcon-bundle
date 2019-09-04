@@ -42,12 +42,18 @@ class PythonBundleTask(TaskExtensionPoint):
                 'version_lt': '<',
             }
 
+            pip = args.installers['pip3']
+            versioned = False
             for comparator, version in dependency.metadata.items():
                 if symbol_mapping.get(comparator) is not None:
-                    pip = args.installers['pip3']
+                    versioned = True
                     pip.add_to_install_list(
                         dependency.name + symbol_mapping[comparator] + version
                     )
+            if not versioned:
+                pip.add_to_install_list(
+                    dependency.name
+                )
 
             # TODO: The Pip managers should be doing this
             apt = args.installers['apt']
