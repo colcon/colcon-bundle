@@ -33,8 +33,9 @@ class PythonBundleTask(TaskExtensionPoint):
                     'because it is in the workspace'.format_map(locals()))
                 continue
 
-            # Currently, only the first five of these mappings are supported by colcon-core
-            # The others are added for completeness with PEP 440
+            # Currently, only the first five of these mappings are supported
+            # by colcon-core. The others are added for completeness with
+            # PEP 440.
             symbol_mapping = {
                 'version_eq': '==',
                 'version_lte': '<=',
