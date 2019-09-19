@@ -61,7 +61,9 @@ def update_shebang(path):
     for (root, dirs, files) in os.walk(path):
         for file in files:
             file_path = os.path.join(root, file)
-            if not os.path.islink(file_path) and '.so' not in file_path:
+            if not os.path.islink(file_path) and \
+                    '.so' not in os.path.basename(file_path) and \
+                    'README' not in os.path.basename(file_path):
                 with open(file_path, 'rb+') as file_handle:
                     contents = file_handle.read()
                     try:
