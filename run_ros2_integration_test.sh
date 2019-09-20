@@ -9,7 +9,7 @@ rm -rf integration/v2.tar
 docker build -f Dockerfile.dashing -t test-container .
 
 # Copy bundles into local directory
-docker run -v=$(pwd):/workspace test-container bash -c "cp v2/output.tar /workspace/integration/v2.tar"
+docker run -v=$(pwd):/workspace test-container bash -c "sudo cp v2/output.tar /workspace/integration/v2.tar"
 
 cd integration
 
