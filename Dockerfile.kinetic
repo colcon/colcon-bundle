@@ -17,7 +17,8 @@ RUN chown builduser /home/builduser
 RUN sh -c "echo 'builduser ALL=NOPASSWD: ALL' >> /etc/sudoers"
 
 RUN pip3 install --upgrade pip setuptools
-RUN pip3 install -r requirements.txt
+RUN pip3 install -U pytest colcon-common-extensions
+RUN pip3 install git+https://github.com/colcon/colcon-ros-bundle.git@rosdep_update
 RUN pip3 install -e .
 
 RUN chown -R builduser /opt/package

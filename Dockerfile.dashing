@@ -31,8 +31,7 @@ RUN pip3 install --upgrade pip setuptools
 # RUN pip3 install -r requirements.txt
 
 RUN pip3 install -U pytest colcon-common-extensions
-ARG CACHE_DATE=not_a_date
-RUN pip3 install git+https://github.com/colcon/colcon-ros-bundle.git
+RUN pip3 install git+https://github.com/colcon/colcon-ros-bundle.git@rosdep_update
 RUN pip3 install -e .
 
 WORKDIR /opt/package/integration/ros2_workspace
