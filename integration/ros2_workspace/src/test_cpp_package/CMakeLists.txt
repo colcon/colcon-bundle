@@ -21,4 +21,10 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}
 )
 
+install(FILES
+	pre-script
+	post-script
+	DESTINATION share
+)
+
 ament_package()
