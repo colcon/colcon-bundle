@@ -27,4 +27,7 @@ install(FILES
 	DESTINATION share
 )
 
+install(DIRECTORY launch/
+        DESTINATION launch)
+
 ament_package()
