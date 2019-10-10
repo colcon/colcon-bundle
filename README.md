@@ -1,6 +1,6 @@
 # colcon-bundle [![Build Status](https://travis-ci.org/colcon/colcon-bundle.svg?branch=master)](https://travis-ci.org/colcon/colcon-bundle)
 
-This code is in active development and **should not** be considered stable.
+**NOTE:** `colcon-bundle` only supports Ubuntu Xenial and Ubuntu Bionic operating systems and x86, ARMHF, and ARM64 architectures. All other operating systems and architectures are currently not supported.
 
 This package is a plugin to [colcon-core](https://github.com/colcon/colcon-core.git). It provides functionality to bundle a built
 workspace. A bundle is a portable environment which can be moved to a different linux system and executed
