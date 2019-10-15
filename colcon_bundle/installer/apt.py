@@ -145,16 +145,31 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
                                'you set your keys correctly?')
         self._cache.open()
 
+    def _separate_version_information(self, package_name):
+        if '=' not in package_name:
+            return package_name, ''
+        return package_name.split('=', maxsplit=1)
+
     def is_package_available(self, package_name):  # noqa: D102
+        package_name, _ = self._separate_version_information(package_name)
         return self._cache[package_name] is not None
 
     def add_to_install_list(self, name, metadata=None):  # noqa: D102
+        name, version = self._separate_version_information(name)
         logger.info(
             'Marking {name} for installation'.format_map(locals()))
         logger.info(self._cache[name].versions)
-        self._cache[name].mark_install(auto_fix=False, from_user=False)
+
+        if version:
+            package = self._cache[name]
+            candidate = package.versions.get(package.versions[version])
+            package.candidate = candidate
+            package.mark_install(auto_fix=False, from_user=False)
+        else:
+            self._cache[name].mark_install(auto_fix=False, from_user=False)
 
     def remove_from_install_list(self, name, metadata=None):  # noqa: D102
+        name, _ = self._separate_version_information(name)
         package = self._cache[name]
         package.mark_delete(auto_fix=False)
 
