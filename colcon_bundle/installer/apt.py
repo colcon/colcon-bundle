@@ -12,6 +12,10 @@ from colcon_bundle.verb.utilities import get_ubuntu_distribution_version
 from colcon_core.plugin_system import satisfies_version
 
 
+class PackageNotInCacheException(Exception):
+    def __init__(self, package_name):
+        self.package_name = package_name
+
 class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
     """Extension to support apt package manager."""
 
@@ -89,6 +93,8 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         self.setup()
 
     def setup(self):  # noqa: D102
+        # Importing apt here allows us to run
+        # unit tests on OSX
         import apt
 
         # Get config values before creating cache, as the cache changes
@@ -151,22 +157,28 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         return package_name.split('=', maxsplit=1)
 
     def is_package_available(self, package_name):  # noqa: D102
-        package_name, _ = self._separate_version_information(package_name)
-        return self._cache[package_name] is not None
+        package_key, _ = self._separate_version_information(package_name)
+        return self._cache[package_key] is not None
 
     def add_to_install_list(self, name, metadata=None):  # noqa: D102
-        name, version = self._separate_version_information(name)
-        logger.info(
-            'Marking {name} for installation'.format_map(locals()))
-        logger.info(self._cache[name].versions)
+        logger.info("Adding {name} to install list".format(locals()))
+        package_key, version = self._separate_version_information(name)
+        if not self.is_package_available(package_key):
+            logger.error("Package {package_key} is not in the package"
+                         "cache.".format(locals()))
+            raise PackageNotInCacheException(name)
+            return
 
+        logger.info("Found these versions of {package_key}"
+                    .format(locals()))
+        logger.info(self._cache[package_key].versions)
         if version:
-            package = self._cache[name]
+            package = self._cache[package_key]
             candidate = package.versions.get(package.versions[version])
             package.candidate = candidate
             package.mark_install(auto_fix=False, from_user=False)
         else:
-            self._cache[name].mark_install(auto_fix=False, from_user=False)
+            self._cache[package_key].mark_install(auto_fix=False, from_user=False)
 
     def remove_from_install_list(self, name, metadata=None):  # noqa: D102
         name, _ = self._separate_version_information(name)
