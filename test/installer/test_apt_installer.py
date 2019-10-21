@@ -63,3 +63,36 @@ class AptInstallerTests(unittest.TestCase):
                 shutil.rmtree(cache_dir)
                 shutil.rmtree(prefix)
                 os.remove(sources_list)
+
+    def test_apt_add_to_install_list(self):
+        # We import apt inside the method it is used so we can't @patch it like
+        # a normal import
+        apt = mock.MagicMock()
+        with patch.dict("sys.modules", apt=apt):
+            package_name = "foo"
+            cache_dir = mkdtemp()
+            prefix = mkdtemp()
+            _, sources_list = mkstemp()
+            try:
+                context_args = Mock()
+                context_args.apt_sources_list = sources_list
+                context = BundleInstallerContext(args=context_args, cache_path=cache_dir, prefix_path=prefix)
+                installer = AptBundleInstallerExtension()
+
+                installer.initialize(context)
+
+                package_mock = mock.MagicMock()
+                apt.Cache().__getitem__.return_value = package_mock
+                candidate_mock = mock.MagicMock()
+                package_mock.versions.get.return_value = candidate_mock
+
+                installer.add_to_install_list(package_name)
+
+                apt.Cache().__getitem__.assert_called_with(package_name)
+                package_mock.mark_install.assert_called_with(auto_fix=False, from_user=False)
+            finally:
+                shutil.rmtree(cache_dir)
+                shutil.rmtree(prefix)
+                os.remove(sources_list)
+
+
