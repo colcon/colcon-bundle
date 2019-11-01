@@ -176,6 +176,8 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         logger.info(self._cache[package_key].versions)
 
         package = self._cache[package_key]
+        # This will fallback to the latest version available
+        # if the specified version does not exist.
         candidate = package.versions.get(version, package.candidate)
         package.candidate = candidate
         package.mark_install(auto_fix=False, from_user=False)
