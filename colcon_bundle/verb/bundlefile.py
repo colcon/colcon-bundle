@@ -53,6 +53,69 @@ class Bundle:
         self._check('w')
         self.overlays.append(path)
 
+    def _close(self):
+        if 'w' in self.mode:
+            logger.debug('Start: Bundle')
+            self._check('w')
+            tempdir = tempfile.mkdtemp()
+            version_path = os.path.join(tempdir, 'version')
+
+            with open(version_path, 'w') as v:
+                v.write('2')
+            self.tarfile.add(version_path, arcname='version')
+            logger.debug('Start: metadta')
+            offset = MAX_METADATA_SIZE
+            overlay_metadata = []
+            for overlay in self.overlays:
+                name = os.path.basename(overlay)
+                checksum = filechecksum(overlay)
+                info = self.tarfile.gettarinfo(overlay, arcname=name)
+                header_size = len(info.tobuf())
+                file_size = os.stat(overlay).st_size
+                overlay_metadata.append({
+                    'name': name,
+                    'sha256': checksum,
+                    'offset': offset + header_size,
+                    'size': file_size
+                })
+                num_blocks = math.ceil(file_size / tarfile.BLOCKSIZE)
+                offset = offset + header_size + num_blocks * tarfile.BLOCKSIZE
+
+            metadata_path = os.path.join(tempdir, 'overlays.json')
+            with open(metadata_path, 'w') as md:
+                metadata = {
+                    'overlays': overlay_metadata
+                }
+                json.dump(metadata, md)
+
+            metadata_archive_path = os.path.join(tempdir, 'metadata.tar.gz')
+            with tarfile.open(metadata_archive_path, 'w:gz') as md:
+                md.add(metadata_path, arcname=os.path.basename(metadata_path))
+                for item in self.metadata:
+                    md.add(item, arcname=os.path.basename(item))
+            self.tarfile.add(metadata_archive_path,
+                             arcname=os.path.basename(metadata_archive_path))
+            logger.debug('End: metadata')
+            if os.stat(metadata_archive_path).st_size > MAX_METADATA_SIZE:
+                raise RuntimeError('Metadata too large, must be less than 4MB')
+            logger.debug('Start: pad')
+            tar_header_len = tarfile.BLOCKSIZE
+            pad_size = MAX_METADATA_SIZE - self.tarfile.offset - tar_header_len
+            pad_path = os.path.join(tempdir, 'pad')
+            with open(pad_path, 'wb') as f:
+                data = bytearray(pad_size)
+                f.write(data)
+            self.tarfile.add(pad_path, arcname='pad')
+            logger.debug('End: pad')
+            for overlay in self.overlays:
+                logger.info('Start tar overlay file: %s', overlay)
+                name = os.path.basename(overlay)
+                self.tarfile.add(overlay, arcname=name)
+                logger.info('End tar overlay file: %s', overlay)
+            self.tarfile.close()
+            logger.debug('End: Bundle')
+            self.closed = True
+
     def close(self):  # noqa: N806
         """Close the archive."""
         # We don't use any magic numbers here
@@ -61,67 +124,7 @@ class Bundle:
         # testing before changing the format
         # we use.
         with _set_temporary_tarfile_default_format(tarfile.GNU_FORMAT):
-            if 'w' in self.mode:
-                logger.debug('Start: Bundle')
-                self._check('w')
-                tempdir = tempfile.mkdtemp()
-                version_path = os.path.join(tempdir, 'version')
-
-                with open(version_path, 'w') as v:
-                    v.write('2')
-                self.tarfile.add(version_path, arcname='version')
-                logger.debug('Start: metadta')
-                offset = MAX_METADATA_SIZE
-                overlay_metadata = []
-                for overlay in self.overlays:
-                    name = os.path.basename(overlay)
-                    checksum = filechecksum(overlay)
-                    info = self.tarfile.gettarinfo(overlay, arcname=name)
-                    header_size = len(info.tobuf())
-                    file_size = os.stat(overlay).st_size
-                    overlay_metadata.append({
-                        'name': name,
-                        'sha256': checksum,
-                        'offset': offset + header_size,
-                        'size': file_size
-                    })
-                    num_blocks = math.ceil(file_size / tarfile.BLOCKSIZE)
-                    offset = offset + header_size + num_blocks * tarfile.BLOCKSIZE
-
-                metadata_path = os.path.join(tempdir, 'overlays.json')
-                with open(metadata_path, 'w') as md:
-                    metadata = {
-                        'overlays': overlay_metadata
-                    }
-                    json.dump(metadata, md)
-
-                metadata_archive_path = os.path.join(tempdir, 'metadata.tar.gz')
-                with tarfile.open(metadata_archive_path, 'w:gz') as md:
-                    md.add(metadata_path, arcname=os.path.basename(metadata_path))
-                    for item in self.metadata:
-                        md.add(item, arcname=os.path.basename(item))
-                self.tarfile.add(metadata_archive_path,
-                                 arcname=os.path.basename(metadata_archive_path))
-                logger.debug('End: metadata')
-                if os.stat(metadata_archive_path).st_size > MAX_METADATA_SIZE:
-                    raise RuntimeError('Metadata too large, must be less than 4MB')
-                logger.debug('Start: pad')
-                tar_header_len = tarfile.BLOCKSIZE
-                pad_size = MAX_METADATA_SIZE - self.tarfile.offset - tar_header_len
-                pad_path = os.path.join(tempdir, 'pad')
-                with open(pad_path, 'wb') as f:
-                    data = bytearray(pad_size)
-                    f.write(data)
-                self.tarfile.add(pad_path, arcname='pad')
-                logger.debug('End: pad')
-                for overlay in self.overlays:
-                    logger.info('Start tar overlay file: %s', overlay)
-                    name = os.path.basename(overlay)
-                    self.tarfile.add(overlay, arcname=name)
-                    logger.info('End tar overlay file: %s', overlay)
-                self.tarfile.close()
-                logger.debug('End: Bundle')
-                self.closed = True
+            self._close()
 
     def _check(self, mode=None):
         """Check if Bundle is still open. And mode is valid."""
@@ -140,7 +143,7 @@ class Bundle:
 @contextlib.contextmanager
 def _set_temporary_tarfile_default_format(value):
     tarfile_format = tarfile.DEFAULT_FORMAT
-    tarfile.DEFAULT_FORMAT= value
+    tarfile.DEFAULT_FORMAT = value
     try:
         yield
     finally:
