@@ -30,13 +30,11 @@ class AptInstallerTests(unittest.TestCase):
             apt = AptBundleInstallerExtension()
             with self.assertRaises(RuntimeError): apt.should_load()
 
-    def test_apt_add_to_install_list_splits_version_specifier(self):
+    def _run_add_to_install_list_test(self, package_name, package_version):
         # We import apt inside the method it is used so we can't @patch it like
         # a normal import
         apt = mock.MagicMock()
         with patch.dict("sys.modules", apt=apt):
-            package_name = "foo"
-            package_version = "1.3.4"
             cache_dir = mkdtemp()
             prefix = mkdtemp()
             _, sources_list = mkstemp()
@@ -65,37 +63,13 @@ class AptInstallerTests(unittest.TestCase):
                 shutil.rmtree(prefix)
                 os.remove(sources_list)
 
+    def test_apt_add_to_install_list_splits_version_specifier(self):
+        package_name = "foo"
+        package_version = "1.3.4"
+        self._run_add_to_install_list_test(package_name, package_version)
+
     def test_apt_add_to_install_list(self):
-        # We import apt inside the method it is used so we can't @patch it like
-        # a normal import
-        apt = mock.MagicMock()
-        with patch.dict("sys.modules", apt=apt):
-            package_name = "foo"
-            cache_dir = mkdtemp()
-            prefix = mkdtemp()
-            _, sources_list = mkstemp()
-            try:
-                context_args = Mock()
-                context_args.apt_sources_list = sources_list
-                context = BundleInstallerContext(args=context_args, cache_path=cache_dir, prefix_path=prefix)
-                installer = AptBundleInstallerExtension()
-
-                installer.initialize(context)
-
-                package_mock = mock.MagicMock()
-                default_candidate = package_mock.candidate
-                apt.Cache().__getitem__.return_value = package_mock
-                package_mock.versions.get.return_value = default_candidate
-
-                installer.add_to_install_list(package_name)
-
-                apt.Cache().__getitem__.assert_called_with(package_name)
-                package_mock.versions.get.assert_called_with('', default_candidate)
-                self.assertEqual(package_mock.candidate, default_candidate)
-                package_mock.mark_install.assert_called_with(auto_fix=False, from_user=False)
-            finally:
-                shutil.rmtree(cache_dir)
-                shutil.rmtree(prefix)
-                os.remove(sources_list)
+        package_name = "foo"
+        self._run_add_to_install_list_test(package_name, '')
 
 
