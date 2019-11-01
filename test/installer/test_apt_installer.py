@@ -49,6 +49,7 @@ class AptInstallerTests(unittest.TestCase):
                 installer.initialize(context)
 
                 package_mock = mock.MagicMock()
+                default_candidate = package_mock.candidate
                 apt.Cache().__getitem__.return_value = package_mock
                 candidate_mock = mock.MagicMock()
                 package_mock.versions.get.return_value = candidate_mock
@@ -56,7 +57,7 @@ class AptInstallerTests(unittest.TestCase):
                 installer.add_to_install_list(package_name + "=" + package_version)
 
                 apt.Cache().__getitem__.assert_called_with(package_name)
-                package_mock.versions.get.assert_called_with(package_mock.versions[package_version])
+                package_mock.versions.get.assert_called_with(package_version, default_candidate)
                 self.assertEqual(package_mock.candidate, candidate_mock)
                 package_mock.mark_install.assert_called_with(auto_fix=False, from_user=False)
             finally:
@@ -82,13 +83,15 @@ class AptInstallerTests(unittest.TestCase):
                 installer.initialize(context)
 
                 package_mock = mock.MagicMock()
+                default_candidate = package_mock.candidate
                 apt.Cache().__getitem__.return_value = package_mock
-                candidate_mock = mock.MagicMock()
-                package_mock.versions.get.return_value = candidate_mock
+                package_mock.versions.get.return_value = default_candidate
 
                 installer.add_to_install_list(package_name)
 
                 apt.Cache().__getitem__.assert_called_with(package_name)
+                package_mock.versions.get.assert_called_with('', default_candidate)
+                self.assertEqual(package_mock.candidate, default_candidate)
                 package_mock.mark_install.assert_called_with(auto_fix=False, from_user=False)
             finally:
                 shutil.rmtree(cache_dir)

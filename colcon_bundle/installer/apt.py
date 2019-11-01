@@ -170,16 +170,14 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
             logger.error('Package {package_key} is not in the package'
                          'cache.'.format(package_key=package_key))
             raise PackageNotInCacheException(name)
-            return
 
         logger.info('Found these versions of {package_key}'
                     .format(package_key=package_key))
         logger.info(self._cache[package_key].versions)
 
         package = self._cache[package_key]
-        if version:
-            candidate = package.versions.get(package.versions[version])
-            package.candidate = candidate
+        candidate = package.versions.get(version, package.candidate)
+        package.candidate = candidate
         package.mark_install(auto_fix=False, from_user=False)
 
     def remove_from_install_list(self, name, metadata=None):  # noqa: D102
