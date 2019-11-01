@@ -183,7 +183,7 @@ class BundleVerb(VerbExtensionPoint):
         direct_dependencies_changed = package_dependencies_changed(
             path_context, decorators)
         installer_parameters_changed = \
-            self._installer_manager.parameters_changed()
+            self._installer_manager.cache_invalid()
 
         if not os.path.exists(path_context.dependencies_overlay_path()):
             self._installer_manager.run_installers(

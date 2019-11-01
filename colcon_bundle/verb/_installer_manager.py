@@ -45,7 +45,7 @@ class InstallerManager:
                 prefix_path=self.prefix_path)
             installer.initialize(context)
 
-    def parameters_changed(self):
+    def cache_invalid(self):
         """
         Check each installer to see if its arguments/parameters changed.
 
@@ -55,7 +55,7 @@ class InstallerManager:
         """
         changed = False
         for name, installer in self.installers.items():
-            changed = changed or installer.parameters_changed()
+            changed = changed or installer.cache_invalid()
         return changed
 
     def run_installers(self, *, include_sources=False):
