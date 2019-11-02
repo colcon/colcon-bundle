@@ -47,6 +47,9 @@ class BasePipInstallerExtensionPoint(BundleInstallerExtensionPoint):
     def remove_from_install_list(self, name, *, metadata=None):  # noqa: D102
         self._packages.remove(name)
 
+    def cache_invalid(self):  # noqa: D102
+        return self.additional_requirements is not None
+
     def install(self):  # noqa: D102
         if len(self._packages) == 0 and self.additional_requirements is None:
             logger.info('No dependencies to install for {}'.format(
