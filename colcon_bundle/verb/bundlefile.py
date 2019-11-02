@@ -1,3 +1,4 @@
+import contextlib
 import json
 import math
 import os
@@ -52,8 +53,7 @@ class Bundle:
         self._check('w')
         self.overlays.append(path)
 
-    def close(self):  # noqa: N806
-        """Close the archive."""
+    def _close(self):
         if 'w' in self.mode:
             logger.debug('Start: Bundle')
             self._check('w')
@@ -116,6 +116,16 @@ class Bundle:
             logger.debug('End: Bundle')
             self.closed = True
 
+    def close(self):  # noqa: N806
+        """Close the archive."""
+        # We don't use any magic numbers here
+        # but Python 3.9 is updating to use the
+        # PAX format and we should do thorough
+        # testing before changing the format
+        # we use.
+        with _set_temporary_tarfile_default_format(tarfile.GNU_FORMAT):
+            self._close()
+
     def _check(self, mode=None):
         """Check if Bundle is still open. And mode is valid."""
         if self.closed:
@@ -128,3 +138,13 @@ class Bundle:
 
     def __exit__(self, t, value, traceback):  # noqa: D105
         self.close()
+
+
+@contextlib.contextmanager
+def _set_temporary_tarfile_default_format(value):
+    tarfile_format = tarfile.DEFAULT_FORMAT
+    tarfile.DEFAULT_FORMAT = value
+    try:
+        yield
+    finally:
+        tarfile.DEFAULT_FORMAT = tarfile_format
