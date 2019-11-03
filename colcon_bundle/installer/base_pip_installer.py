@@ -63,6 +63,10 @@ class BasePipInstallerExtensionPoint(BundleInstallerExtensionPoint):
         metadata_file = os.path.join(self._cache_path, 'metadata')
 
         if self.additional_requirements is not None:
+            logger.info('Installing additional Python requirements from'
+                        '{req} into {path}'
+                        .format(req=self.additional_requirements,
+                                path=self._python_path))
             with open(self.additional_requirements) as req:
                 for requirement in req.readlines():
                     self._packages.append(requirement)
