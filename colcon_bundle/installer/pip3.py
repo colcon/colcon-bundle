@@ -20,7 +20,7 @@ class Pip3BundleInstallerExtensionPoint(BasePipInstallerExtensionPoint):
         parser.add_argument(
             '--pip3-requirements', type=str, default=None,
             help='Path to a requirements.txt. All packages in the file'
-                 'will be installed into Python2 in the bundle')
+                 'will be installed into Python3 in the bundle')
 
     def initialize(self, context):  # noqa: D102
         super().initialize(context)
