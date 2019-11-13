@@ -182,7 +182,7 @@ def test_install_not_required(check_output, check_call):
 @patch('subprocess.check_call')
 @patch('subprocess.check_output')
 @patch('builtins.open', mock_open(read_data='rpkg==1.2.3'))
-def test_install_addtional_requirements(check_output, check_call):
+def test_install_additional_requirements(check_output, check_call):
     """
     This test should be mocking the read and write to the file
     and then reading the requirements file. Instead I am just
