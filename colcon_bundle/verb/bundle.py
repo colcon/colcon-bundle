@@ -179,6 +179,9 @@ class BundleVerb(VerbExtensionPoint):
 
         direct_dependencies_changed = package_dependencies_changed(
             path_context, decorators)
+        installer_parameters_changed = \
+            self._installer_manager.cache_invalid()
+
         if not os.path.exists(path_context.dependencies_overlay_path()):
             self._installer_manager.run_installers(
                 include_sources=context.args.include_sources)
@@ -201,7 +204,8 @@ class BundleVerb(VerbExtensionPoint):
             logger.info(
                 'Checking if local dependencies have changed since last'
                 ' bundle...')
-            if not direct_dependencies_changed:
+            if not direct_dependencies_changed and \
+                    not installer_parameters_changed:
                 print('Local dependencies not changed, skipping dependencies'
                       ' update...')
                 logger.info(
