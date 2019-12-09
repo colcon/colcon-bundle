@@ -38,7 +38,7 @@ class BundlePackageArguments:
                  args, *,
                  additional_destinations=None):
         """
-        Constructor.
+        Construct the BundlePackageArguments.
 
         :param PackageDescriptor pkg: The package descriptor
         :param args: The parsed command line arguments
