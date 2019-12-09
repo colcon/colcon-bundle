@@ -15,7 +15,7 @@ class BundleInstallerContext:
 
     def __init__(self, *, args, cache_path, prefix_path):
         """
-        Constructor.
+        Construct the BundleInstallerContext.
 
         :param args: The parsed command line arguments
         """
