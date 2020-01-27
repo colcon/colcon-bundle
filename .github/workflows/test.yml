@@ -1,0 +1,120 @@
+name: Testing workflows for colcon-bundle
+on:
+  pull_request:
+  schedule:
+    - cron: '43 17 * * *'
+
+jobs:
+  tox_unittest:
+    runs-on: ubuntu-16.04
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v2
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.5
+    - name: Install dependencies
+      run: |
+        sudo apt update && sudo apt install -y enchant
+        pip install tox
+    - name: Run tests
+      env:
+        TOXENV: unittest
+      run: tox
+
+  backwards_compatability_test:
+    runs-on: ubuntu-16.04
+    env:
+      TOXENV: py35-pypi
+      ROS_DISTRO: kinetic
+      TEST: backwards
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v2
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.5
+        architecture: x64
+    - name: Install dependencies
+      run: |
+        sudo apt update 
+        sudo apt install -y enchant
+    - name: Install Tox
+      run: pip install tox
+    - name: Run tests
+      run: tox
+
+  double_test:
+    runs-on: ubuntu-18.04
+    env:
+      TOXENV: py35-pypi
+      ROS_DISTRO: melodic
+      TEST: double
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v2
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.5
+        architecture: x64
+    - name: Install dependencies
+      run: |
+        sudo apt update 
+        sudo apt install -y enchant
+    - name: Install Tox
+      run: pip install tox
+    - name: Run tests
+      run: tox
+
+  ros1_tests:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        toxenv: [py35-pypi, py35-github]
+        ros_distro: [melodic, kinetic]
+    env:
+      TOXENV: ${{ matrix.toxenv }}
+      ROS_DISTRO: ${{ matrix.ros_distro }}
+      TEST: backwards
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v2
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.5
+        architecture: x64
+    - name: Install dependencies
+      run: |
+        sudo apt update 
+        sudo apt install -y enchant
+    - name: Install Tox
+      run: pip install tox
+    - name: Run tests
+      run: tox
+
+  ros2_tests:
+    runs-on: ubuntu-18.04
+    env: 
+      TOXENV: py35-pypi
+      ROS_DISTRO: dashing
+      TEST: create
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.5
+          architecture: x64
+      - name: Install dependencies
+        run: |
+          sudo apt update 
+          sudo apt install -y enchant
+      - name: Install Tox
+        run: pip install tox
+      - name: Run tests
+        run: tox
