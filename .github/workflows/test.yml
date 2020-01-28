@@ -17,11 +17,9 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update && sudo apt install -y enchant
-        pip install tox
+        pip install -U tox setuptools
     - name: Run tests
-      env:
-        TOXENV: unittest
-      run: tox
+      run: tox -e unittest
 
   backwards_compatability_test:
     runs-on: ubuntu-16.04
@@ -39,7 +37,7 @@ jobs:
         architecture: x64
     - name: Install dependencies
       run: |
-        sudo apt update 
+        sudo apt update
         sudo apt install -y enchant
     - name: Install Tox
       run: pip install tox
@@ -62,7 +60,7 @@ jobs:
         architecture: x64
     - name: Install dependencies
       run: |
-        sudo apt update 
+        sudo apt update
         sudo apt install -y enchant
     - name: Install Tox
       run: pip install tox
@@ -89,7 +87,7 @@ jobs:
         architecture: x64
     - name: Install dependencies
       run: |
-        sudo apt update 
+        sudo apt update
         sudo apt install -y enchant
     - name: Install Tox
       run: pip install tox
@@ -98,7 +96,7 @@ jobs:
 
   ros2_tests:
     runs-on: ubuntu-18.04
-    env: 
+    env:
       TOXENV: py35-pypi
       ROS_DISTRO: dashing
       TEST: create
@@ -112,7 +110,7 @@ jobs:
           architecture: x64
       - name: Install dependencies
         run: |
-          sudo apt update 
+          sudo apt update
           sudo apt install -y enchant
       - name: Install Tox
         run: pip install tox

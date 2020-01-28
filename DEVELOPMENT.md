@@ -38,12 +38,14 @@ Inside of a ROS1 workspace execute the following:
 
 ### Unit
 
-To run tests execute `pytest` in the root directory. Install dependencies using `pip3 install -r requirements_devel.txt`.
-You might need to `apt-get install enchant` to install the spellchecker.
+Prerequisites:
 
-To view stdout from a test while running `pytest` use the `-s` flag.
+```
+pip install tox
+apt-get update && apt-get install enchant
+```
 
-See `.travis.yml` for more information about what runs in the full test suite.
+To run tests execute `tox -e unittest` in the root directory.
 
 ### Integration
 
