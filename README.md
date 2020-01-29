@@ -1,4 +1,4 @@
-# colcon-bundle [![Build Status](https://travis-ci.org/colcon/colcon-bundle.svg?branch=master)](https://travis-ci.org/colcon/colcon-bundle)
+# colcon-bundle [![Build Status][travis-build-badge]][travis-build] [![GitHub Action Status][action-badge]][action-workflow]
 
 **NOTE:** `colcon-bundle` only supports Ubuntu Xenial and Ubuntu Bionic operating systems and x86, ARMHF, and ARM64 architectures. All other operating systems and architectures are currently not supported.
 
@@ -70,3 +70,8 @@ You can override this blacklist by using the `--apt-package-blacklist` argument.
 # `colcon-bundle` Development
 
 See [DEVELOPMENT.md](DEVELOPMENT.md)
+
+[action-badge]: https://github.com/colcon/colcon-bundle/workflows/Testing%20workflows%20for%20colcon-bundle/badge.svg
+[action-workflow]: https://github.com/colcon/colcon-bundle/actions
+[travis-build]: https://travis-ci.org/colcon/colcon-bundle
+[travis-build-badge]: https://travis-ci.org/colcon/colcon-bundle.svg?branch=master
