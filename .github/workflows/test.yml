@@ -6,7 +6,9 @@ on:
 
 jobs:
   tox_unittest:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-18.04
+    env:
+      TOXENV: unittest
     steps:
     - name: Checkout sources
       uses: actions/checkout@v2
@@ -17,12 +19,12 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update && sudo apt install -y enchant
-        pip install -U tox setuptools
+        pip install -U tox setuptools==44.0.0
     - name: Run tests
-      run: tox -e unittest
+      run: tox
 
   backwards_compatability_test:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-18.04
     env:
       TOXENV: py35-pypi
       ROS_DISTRO: kinetic
@@ -34,13 +36,10 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.5
-        architecture: x64
     - name: Install dependencies
       run: |
-        sudo apt update
-        sudo apt install -y enchant
-    - name: Install Tox
-      run: pip install tox
+        sudo apt update && sudo apt install -y enchant
+        pip install -U tox setuptools==44.0.0
     - name: Run tests
       run: tox
 
@@ -57,13 +56,10 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.5
-        architecture: x64
     - name: Install dependencies
       run: |
-        sudo apt update
-        sudo apt install -y enchant
-    - name: Install Tox
-      run: pip install tox
+        sudo apt update && sudo apt install -y enchant
+        pip install -U tox setuptools==44.0.0
     - name: Run tests
       run: tox
 
@@ -84,13 +80,10 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.5
-        architecture: x64
     - name: Install dependencies
       run: |
-        sudo apt update
-        sudo apt install -y enchant
-    - name: Install Tox
-      run: pip install tox
+        sudo apt update && sudo apt install -y enchant
+        pip install -U tox setuptools==44.0.0
     - name: Run tests
       run: tox
 
@@ -107,12 +100,9 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: 3.5
-          architecture: x64
       - name: Install dependencies
         run: |
-          sudo apt update
-          sudo apt install -y enchant
-      - name: Install Tox
-        run: pip install tox
+          sudo apt update && sudo apt install -y enchant
+          pip install -U tox setuptools==44.0.0
       - name: Run tests
         run: tox
