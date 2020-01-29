@@ -22,6 +22,11 @@ jobs:
         pip install -U tox setuptools==44.0.0
     - name: Run tests
       run: tox
+    - name: Email on failure
+      if: failure() && github.event == 'schedule'
+      uses: peter-evans/sendgrid-action@v1.0.0
+      env:
+        SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
 
   backwards_compatability_test:
     runs-on: ubuntu-18.04
@@ -42,6 +47,11 @@ jobs:
         pip install -U tox setuptools==44.0.0
     - name: Run tests
       run: tox
+    - name: Email on failure
+      if: failure() && github.event == 'schedule'
+      uses: peter-evans/sendgrid-action@v1.0.0
+      env:
+        SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
 
   double_test:
     runs-on: ubuntu-18.04
@@ -62,6 +72,11 @@ jobs:
         pip install -U tox setuptools==44.0.0
     - name: Run tests
       run: tox
+    - name: Email on failure
+      if: failure() && github.event == 'schedule'
+      uses: peter-evans/sendgrid-action@v1.0.0
+      env:
+        SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
 
   ros1_tests:
     runs-on: ubuntu-18.04
@@ -86,6 +101,11 @@ jobs:
         pip install -U tox setuptools==44.0.0
     - name: Run tests
       run: tox
+    - name: Email on failure
+      if: failure() && github.event == 'schedule'
+      uses: peter-evans/sendgrid-action@v1.0.0
+      env:
+        SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
 
   ros2_tests:
     runs-on: ubuntu-18.04
@@ -106,3 +126,8 @@ jobs:
           pip install -U tox setuptools==44.0.0
       - name: Run tests
         run: tox
+      - name: Email on failure
+        if: failure() && github.event == 'schedule'
+        uses: peter-evans/sendgrid-action@v1.0.0
+        env:
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
