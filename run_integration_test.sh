@@ -50,10 +50,10 @@ tar -xzOf ./v1.tar.gz bundle.tar | tar -xf - --directory ./v1_bundle
 # Run tests
 if [[ ${ROS_DISTRO} = "kinetic" ]]
 then
-	docker run -it -v $(pwd):/workspace ubuntu:xenial /workspace/test_v1.sh
-	docker run -it -v $(pwd):/workspace ubuntu:xenial /workspace/test_v2.sh
+	docker run -v $(pwd):/workspace ubuntu:xenial /workspace/test_v1.sh
+	docker run -v $(pwd):/workspace ubuntu:xenial /workspace/test_v2.sh
 else
-	docker run -it -v $(pwd):/workspace ubuntu:bionic /workspace/test_v1.sh
-	docker run -it -v $(pwd):/workspace ubuntu:bionic /workspace/test_v2.sh
+	docker run -v $(pwd):/workspace ubuntu:bionic /workspace/test_v1.sh
+	docker run -v $(pwd):/workspace ubuntu:bionic /workspace/test_v2.sh
 fi
 
