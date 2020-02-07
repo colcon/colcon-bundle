@@ -1,0 +1,52 @@
+{
+  "name": "cw-build-status",
+  "version": "0.0.0",
+  "description": "Github Action to report the status of a workflow to CloudWatch Metrics",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/cw-build-status.ts -o dist",
+    "lint": "eslint src/**.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ros-tooling/cw-build-metrics.git"
+  },
+  "keywords": [
+    "aws",
+    "cloudwatch",
+    "cloudwatch metrics"
+  ],
+  "author": "AWS RoboMaker",
+  "license": "Apache-2.0",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/aws-robotics/action-cw-build-status/issues"
+  },
+  "homepage": "https://github.com/aws-robotics/action-cw-build-status.git#issues",
+  "dependencies": {
+    "@actions/core": "^1.2.0",
+    "@actions/exec": "^1.0.1",
+    "aws-sdk": "^2.588.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.10.0",
+    "@typescript-eslint/parser": "^2.10.0",
+    "@zeit/ncc": "^0.20.5",
+    "eslint": "^6.7.2",
+    "husky": "^4.1.0",
+    "jest": "^24.8.0",
+    "ts-jest": "^25.1.0",
+    "typescript": "^3.7.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run build"
+    }
+  }
+}

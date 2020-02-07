@@ -1,0 +1,15 @@
+name: 'cw-build-status'
+description: 'Send build status metrics to CloudWatch'
+inputs:
+  project-name:
+    description: 'Name of the project'
+    default: ${{ github.repository }}
+  namespace:
+    description: 'Namespace the metrics will be logged under'
+    default: 'GithubCI'
+  status:
+    description: 'Status of the build [success|failure]'
+    required: true
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
