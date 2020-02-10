@@ -1,20 +1,24 @@
 import * as core from '@actions/core';
 import CloudWatch from 'aws-sdk/clients/cloudwatch';
+import * as github from '@actions/github'
 
 const cloudwatch = new CloudWatch();
+const context = github.context
 
 const FAILED_BUILDS_METRIC_NAME = 'FailedBuilds'
 const NUM_BUILDS_METRIC_NAME = 'Builds'
 const SUCCESS_BUILDS_METRIC_NAME = 'SucceededBuilds'
 const PROJECT_DIMENSION = 'ProjectName'
 const IS_CRON_JOB_DIMENSION = 'IsCronJob'
+const WORKFLOW_DIMENSION = 'WorkflowName'
 
 function createMetricDatum(metricName, projectName, isCronJob, value) {
   const cronJobString = isCronJob ? 'True' : 'False'
   const metric_datum = { 'MetricName': metricName, 'Value': value, 
     'Dimensions': [ 
       { 'Name': PROJECT_DIMENSION, 'Value': projectName },
-      { 'Name': IS_CRON_JOB_DIMENSION, 'Value': cronJobString }
+      { 'Name': IS_CRON_JOB_DIMENSION, 'Value': cronJobString },
+      { 'Name':  WORKFLOW_DIMENSION, 'Value': context.workflow }
     ] 
   } 
   return metric_datum

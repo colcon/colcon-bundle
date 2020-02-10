@@ -32,6 +32,7 @@
   "dependencies": {
     "@actions/core": "^1.2.0",
     "@actions/exec": "^1.0.1",
+    "@actions/github": "^2.1.0",
     "aws-sdk": "^2.588.0"
   },
   "devDependencies": {
