@@ -22481,9 +22481,10 @@ function postBuildStatus() {
                 throw new Error(`Invalid build status ${buildStatus} passed to cw-build-status`);
             }
             const isFailedBuild = buildStatus === 'failure';
-            const metricData = [createMetricDatum(NUM_BUILDS_METRIC_NAME, projectName, false, 1.0)];
-            metricData.push(createMetricDatum(FAILED_BUILDS_METRIC_NAME, projectName, false, isFailedBuild ? 1.0 : 0.0));
-            metricData.push(createMetricDatum(SUCCESS_BUILDS_METRIC_NAME, projectName, false, isFailedBuild ? 0.0 : 1.0));
+            const isCronJob = context.eventName === 'schedule';
+            const metricData = [createMetricDatum(NUM_BUILDS_METRIC_NAME, projectName, isCronJob, 1.0)];
+            metricData.push(createMetricDatum(FAILED_BUILDS_METRIC_NAME, projectName, isCronJob, isFailedBuild ? 1.0 : 0.0));
+            metricData.push(createMetricDatum(SUCCESS_BUILDS_METRIC_NAME, projectName, isCronJob, isFailedBuild ? 0.0 : 1.0));
             yield publishMetricData(metricData);
             console.log("Received build status: ", buildStatus);
         }
