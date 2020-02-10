@@ -22444,6 +22444,27 @@ const SUCCESS_BUILDS_METRIC_NAME = 'SucceededBuilds';
 const PROJECT_DIMENSION = 'ProjectName';
 const IS_CRON_JOB_DIMENSION = 'IsCronJob';
 const WORKFLOW_DIMENSION = 'WorkflowName';
+const SUCCESS_METRIC_VALUE = 1.0;
+const FAILED_METRIC_VALUTE = 0.0;
+/**
+ * Validate the `status` input to the action.
+ *
+ * @param status The input string from the workflow
+ */
+function checkStatusString(status) {
+    const validBuildStatusCheck = new RegExp('(success|failure)');
+    if (!status.match(validBuildStatusCheck)) {
+        throw new Error(`Invalid build status ${status} passed to cw-build-status`);
+    }
+}
+/**
+ * Construct a CloudWatch metric datum with repo and workflow info.
+ *
+ * @param metricName The name of the CloudWatch Metric
+ * @param projectName The name of the GitHub repo
+ * @param isCronJob True if the workflow is a scheduled run. False otherwise.
+ * @param value The value of the metric (1.0 or 0.0)
+ */
 function createMetricDatum(metricName, projectName, isCronJob, value) {
     const cronJobString = isCronJob ? 'True' : 'False';
     const metric_datum = { 'MetricName': metricName, 'Value': value,
@@ -22455,18 +22476,23 @@ function createMetricDatum(metricName, projectName, isCronJob, value) {
     };
     return metric_datum;
 }
+/**
+ * Publish datapoints using the AWS CloudWatch Metrics SDK.
+ *
+ * @param metricData A list of CloudWatch metric datapoints (objects)
+ */
 function publishMetricData(metricData) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const metricNamespace = core.getInput('namespace');
-            console.log(`Publishing metrics ${console.dir(metricData, { depth: false })} under namespace ${metricNamespace}`);
+            core.info(`Publishing metrics ${console.dir(metricData, { depth: false })} under namespace ${metricNamespace}`);
             yield cloudwatch.putMetricData({
                 Namespace: metricNamespace,
                 MetricData: metricData
             }).promise();
-            console.log("Successfully published metrics");
         }
         catch (error) {
+            core.error('Failed to publish metric data');
             core.setFailed(error.message);
         }
     });
@@ -22474,19 +22500,19 @@ function publishMetricData(metricData) {
 function postBuildStatus() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const buildStatus = core.getInput('status', { required: true });
+            // Get all parameters
             const projectName = core.getInput('project-name');
-            const validBuildStatusCheck = new RegExp('(success|failure)');
-            if (!buildStatus.match(validBuildStatusCheck)) {
-                throw new Error(`Invalid build status ${buildStatus} passed to cw-build-status`);
-            }
+            const buildStatus = core.getInput('status', { required: true });
+            checkStatusString(buildStatus);
             const isFailedBuild = buildStatus === 'failure';
             const isCronJob = context.eventName === 'schedule';
-            const metricData = [createMetricDatum(NUM_BUILDS_METRIC_NAME, projectName, isCronJob, 1.0)];
-            metricData.push(createMetricDatum(FAILED_BUILDS_METRIC_NAME, projectName, isCronJob, isFailedBuild ? 1.0 : 0.0));
-            metricData.push(createMetricDatum(SUCCESS_BUILDS_METRIC_NAME, projectName, isCronJob, isFailedBuild ? 0.0 : 1.0));
+            // Populate the datapoints
+            let metricData = [createMetricDatum(NUM_BUILDS_METRIC_NAME, projectName, isCronJob, SUCCESS_METRIC_VALUE)];
+            metricData.push(createMetricDatum(FAILED_BUILDS_METRIC_NAME, projectName, isCronJob, isFailedBuild ? SUCCESS_METRIC_VALUE : FAILED_METRIC_VALUTE));
+            metricData.push(createMetricDatum(SUCCESS_BUILDS_METRIC_NAME, projectName, isCronJob, isFailedBuild ? FAILED_METRIC_VALUTE : SUCCESS_METRIC_VALUE));
+            // Log to CloudWatch
             yield publishMetricData(metricData);
-            console.log("Received build status: ", buildStatus);
+            core.info('Successfully published metrics');
         }
         catch (error) {
             core.setFailed(error.message);
