@@ -1,8 +1,8 @@
-import * as core from '@actions/core';
-import CloudWatch from 'aws-sdk/clients/cloudwatch';
+import * as core from '@actions/core'
+import CloudWatch from 'aws-sdk/clients/cloudwatch'
 import * as github from '@actions/github'
 
-const cloudwatch = new CloudWatch();
+const cloudwatch = new CloudWatch()
 const context = github.context
 
 const FAILED_BUILDS_METRIC_NAME = 'FailedBuilds'
@@ -12,7 +12,7 @@ const PROJECT_DIMENSION = 'ProjectName'
 const IS_CRON_JOB_DIMENSION = 'IsCronJob'
 const WORKFLOW_DIMENSION = 'WorkflowName'
 const SUCCESS_METRIC_VALUE = 1.0
-const FAILED_METRIC_VALUTE = 0.0
+const FAILED_METRIC_VALUE = 0.0
 
 /**
  * Validate the `status` input to the action.
@@ -20,9 +20,9 @@ const FAILED_METRIC_VALUTE = 0.0
  * @param status The input string from the workflow
  */
 function checkStatusString(status: string) {
-  const validBuildStatusCheck = new RegExp('(success|failure)');
+  const validBuildStatusCheck = new RegExp('(success|failure)')
   if (!status.match(validBuildStatusCheck)) {
-    throw new Error(`Invalid build status ${status} passed to cw-build-status`);
+    throw new Error(`Invalid build status ${status} passed to cw-build-status`)
   }
 }
 
@@ -34,7 +34,7 @@ function checkStatusString(status: string) {
  * @param isCronJob True if the workflow is a scheduled run. False otherwise.
  * @param value The value of the metric (1.0 or 0.0)
  */
-function createMetricDatum(metricName, projectName, isCronJob, value) {
+function createMetricDatum(metricName: string, projectName: string, isCronJob: Boolean, value: number) {
   const cronJobString = isCronJob ? 'True' : 'False'
   const metric_datum = { 'MetricName': metricName, 'Value': value, 
     'Dimensions': [ 
@@ -53,44 +53,61 @@ function createMetricDatum(metricName, projectName, isCronJob, value) {
  */
 async function publishMetricData(metricData) {
   try {
-    const metricNamespace = core.getInput('namespace');
-    core.info(`Publishing metrics ${console.dir(metricData, {depth: false})} under namespace ${metricNamespace}`);
+    const metricNamespace = core.getInput('namespace')
+    core.info(`Publishing metrics ${console.dir(metricData, {depth: false})} under namespace ${metricNamespace}`)
     await cloudwatch.putMetricData({
       Namespace: metricNamespace,
       MetricData: metricData
-    }).promise();
+    }).promise()
   } catch (error) {
-    core.error('Failed to publish metric data');
-    core.setFailed(error.message);
+    core.error('Failed to publish metric data')
+    core.setFailed(error.message)
   }
 }
 
+/**
+ * Parse parameters from input, populate the metrics, and publish them to CloudWatch.
+ */
 async function postBuildStatus() {
   try {
     // Get all parameters
-    const projectName = core.getInput('project-name');
-    const buildStatus = core.getInput('status', { required: true });
-    checkStatusString(buildStatus);
-    const isFailedBuild: Boolean = buildStatus === 'failure';
-    const isCronJob: Boolean = context.eventName === 'schedule';
+    const projectName = core.getInput('project-name')
+    const buildStatus = core.getInput('status', { required: true })
+    checkStatusString(buildStatus)
+    const isFailedBuild: Boolean = buildStatus === 'failure'
+    const isCronJob: Boolean = context.eventName === 'schedule'
 
     // Populate the datapoints
-    let metricData = [createMetricDatum(NUM_BUILDS_METRIC_NAME, projectName, isCronJob, SUCCESS_METRIC_VALUE)]
+    let metricData = new Array
     metricData.push(
-      createMetricDatum(FAILED_BUILDS_METRIC_NAME, projectName, isCronJob, isFailedBuild ? SUCCESS_METRIC_VALUE : FAILED_METRIC_VALUTE))
+      createMetricDatum(
+        NUM_BUILDS_METRIC_NAME,
+        projectName,
+        isCronJob,
+        SUCCESS_METRIC_VALUE))
     metricData.push(
-      createMetricDatum(SUCCESS_BUILDS_METRIC_NAME, projectName, isCronJob, isFailedBuild ? FAILED_METRIC_VALUTE : SUCCESS_METRIC_VALUE))
+      createMetricDatum(
+        FAILED_BUILDS_METRIC_NAME,
+        projectName,
+        isCronJob,
+        isFailedBuild ? SUCCESS_METRIC_VALUE : FAILED_METRIC_VALUE))
+    metricData.push(
+      createMetricDatum(
+        SUCCESS_BUILDS_METRIC_NAME,
+        projectName,
+        isCronJob,
+        isFailedBuild ? FAILED_METRIC_VALUE : SUCCESS_METRIC_VALUE))
 
     // Log to CloudWatch
-    await publishMetricData(metricData);
-    core.info('Successfully published metrics');
+    await publishMetricData(metricData)
+    core.info('Successfully published metrics')
   } catch (error) {
-    core.setFailed(error.message);
+    core.setFailed(error.message)
   }
 }
 
 async function run() {
-  await postBuildStatus();
+  await postBuildStatus()
 }
 
-run();
+run()
