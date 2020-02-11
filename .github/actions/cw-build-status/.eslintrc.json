@@ -18,5 +18,7 @@
   "plugins": [
       "@typescript-eslint"
   ],
-  "rules": {}
+  "rules": {
+    "sort-imports": ["error"]
+  }
 }

@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
-import CloudWatch from 'aws-sdk/clients/cloudwatch'
 import * as github from '@actions/github'
+import CloudWatch from 'aws-sdk/clients/cloudwatch'
 
 const cloudwatch = new CloudWatch()
 const context = github.context
