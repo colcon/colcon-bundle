@@ -8,27 +8,13 @@
     "lint": "eslint --fix src/**.ts",
     "test": "tsc --noEmit && jest --coverage"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ros-tooling/cw-build-metrics.git"
-  },
-  "keywords": [
-    "aws",
-    "cloudwatch",
-    "cloudwatch metrics"
-  ],
   "author": "AWS RoboMaker",
-  "license": "Apache-2.0",
   "licenses": [
     {
       "type": "Apache-2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }
   ],
-  "bugs": {
-    "url": "https://github.com/aws-robotics/action-cw-build-status/issues"
-  },
-  "homepage": "https://github.com/aws-robotics/action-cw-build-status.git#issues",
   "dependencies": {
     "@actions/core": "^1.0.0",
     "@actions/exec": "^1.0.1",
