@@ -1,7 +1,7 @@
 # CW Build Status Github Action
 
-This action sends the status of a workflow step to CloudWatch Metrics. It does 
-this by checking the failure or success status of the previous workflow step
+This action sends the status of a workflow step to CloudWatch Metrics.
+It does this by checking the failure or success status of the previous workflow step
 and sending that status to CloudWatch.  
 
 This plugin should be used in conjunction with the [configure-aws-credentials Github Action][configure-aws-credentials] to setup your 
