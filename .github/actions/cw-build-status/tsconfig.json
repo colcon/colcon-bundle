@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    // TODO(piraka9011): Remove when actions/toolkit#332 is merged and released
+    "skipLibCheck": true,
     /* Basic Options */
     // "incremental": true,                   /* Enable incremental compilation */
     "target": "es6",                          /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019' or 'ESNEXT'. */
@@ -22,8 +24,8 @@
     // "isolatedModules": true,               /* Transpile each file as a separate module (similar to 'ts.transpileModule'). */
 
     /* Strict Type-Checking Options */
-    "strict": true,                           /* Enable all strict type-checking options. */
-    "noImplicitAny": false,                 /* Raise error on expressions and declarations with an implied 'any' type. */
+    // "strict": true,                        /* Enable all strict type-checking options. */
+    "noImplicitAny": false,                   /* Raise error on expressions and declarations with an implied 'any' type. */
     // "strictNullChecks": true,              /* Enable strict null checks. */
     // "strictFunctionTypes": true,           /* Enable strict checking of function types. */
     // "strictBindCallApply": true,           /* Enable strict 'bind', 'call', and 'apply' methods on functions. */
