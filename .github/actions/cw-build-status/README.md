@@ -1,9 +1,5 @@
 # CW Build Status Github Action
 
-This action was originally ported over from [rosbag-uploader-ros1/cw-build-status][cw-build-status].
-
-----
-
 This action sends the status of a workflow step to CloudWatch Metrics. It does 
 this by checking the failure or success status of the previous workflow step
 and sending that status to CloudWatch.  
@@ -17,9 +13,9 @@ AWS credentials correctly.
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: 'Build + Test'
+    name: 'Build'
     steps:
-    - name: Checkout
+    - name: Checkout repo
       uses: actions/checkout@v1
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -28,7 +24,7 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-west-2
     - name: Build
-      uses: ./.github/actions/ros1-ci/
+      run: ./my-build-script.sh
     - name: Log Build Failure
       uses: ./.github/actions/cw-build-status/
       with:
@@ -43,8 +39,8 @@ jobs:
 
 ## CloudWatch Metrics format
 
-The following metrics will be logged under the namespace `GithubCI` by default, 
-this namespace can be changed via the `namespace` input parameter.
+The following metrics will be logged under the namespace `GithubCI` by default.
+The namespace can be changed via the `namespace` input parameter.
 
 - Builds - Always a value of 1
 - FailedBuilds  - Value of 1 when the build fails, 0 otherwise
@@ -52,33 +48,35 @@ this namespace can be changed via the `namespace` input parameter.
 
 Each Metric has the following dimensions:
 
-- IsCronJob - Always set to `False` for now, will be used in the future
-- ProjectName - Set to the input `project-name`. Defaults to [${{ github.repository }}] which will resolve to `<repository-owner>/<repository-name>` so for this repository
-it would be `aws-robotics/cw-build-status`.
+- IsCronJob - True if the workflow run is a `schedule`. False otherwise.
+- ProjectName - Set to the input `project-name`.
+  Defaults to [${{ github.repository }}].
 
 ## FAQ
 
-Q. Can this send the status of multiple steps at once
-A. No, unfortunately you can only check the failure/success of the previous step, 
-not multiple steps. If you want to send the status of an entire workflow you could create a new workflow that listens to a [check_run or check_suite webhook event](https://developer.github.com/v3/activity/events/types/#checkrunevent), queries
-the Github API for the overall build status, and sends that status to CloudWatch Metrics.
+**Q.** Can this send the status of multiple steps at once
+**A.** No, unfortunately you can only check the failure/success of the previous step, 
+not multiple steps.
+If you want to send the status of an entire workflow you could:
+1. Create a new workflow that listens to a [check_run or check_suite webhook event][check-run-event-doc].
+2. Query the Github API for the overall build status.
+3. Send the status to CloudWatch Metrics.
 
 ## Inputs
 
 ### `status`
 
-**Required** The build status `[failure|success]`
+**Required** The build status `[failure|success]`.
 
 ### `namespace`
 
-The namespace that metrics are logged to. Defaults to `GithubCI`
+The namespace that metrics are logged to. Defaults to `GithubCI`.
 
 ### `project-name`
 
 The name of your project. Defaults to [${{ github.repository }}]
 
 [${{ github.repository }}]: https://help.github.com/en/actions/automating-your-workflow-with-github-actions/contexts-and-expression-syntax-for-github-actions#github-context
-
-
 [cw-build-status]: https://github.com/aws-robotics/rosbag-uploader-ros1/tree/master/.github/actions/cw-build-status
 [configure-aws-credentials]: https://github.com/aws-actions/configure-aws-credentials
+[check-run-event-doc]: https://developer.github.com/v3/activity/events/types/#checkrunevent
