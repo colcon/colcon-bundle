@@ -23258,11 +23258,8 @@ const PROJECT_DIMENSION = 'ProjectName';
 const IS_CRON_JOB_DIMENSION = 'IsCronJob';
 const SUCCESS_METRIC_VALUE = 1.0;
 const FAILED_METRIC_VALUE = 0.0;
-/**
- * Validate the `status` input to the action.
- *
- * @param status The input string from the workflow
- */
+const FAILED_BUILD_STATUS = 'failure';
+const SCHEDULE_EVENT_NAME = 'schedule';
 function checkStatusString(status) {
     const validBuildStatusCheck = new RegExp('(success|failure)');
     if (!status.match(validBuildStatusCheck)) {
@@ -23270,14 +23267,6 @@ function checkStatusString(status) {
     }
 }
 exports.checkStatusString = checkStatusString;
-/**
- * Construct a CloudWatch metric datum with repo and workflow info.
- *
- * @param metricName The name of the CloudWatch Metric
- * @param projectName The name of the GitHub repo
- * @param isCronJob True if the workflow is a scheduled run. False otherwise.
- * @param value The value of the metric (1.0 or 0.0)
- */
 function createMetricDatum(metricName, projectName, isCronJob, value) {
     const cronJobString = isCronJob ? 'True' : 'False';
     const metric_datum = {
@@ -23291,11 +23280,6 @@ function createMetricDatum(metricName, projectName, isCronJob, value) {
     return metric_datum;
 }
 exports.createMetricDatum = createMetricDatum;
-/**
- * Publish datapoints using the AWS CloudWatch Metrics SDK.
- *
- * @param metricData A list of CloudWatch metric datapoints (objects)
- */
 function publishMetricData(metricNamespace, metricData) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -23312,25 +23296,19 @@ function publishMetricData(metricNamespace, metricData) {
     });
 }
 exports.publishMetricData = publishMetricData;
-/**
- * Parse parameters from input, populate the metrics, and publish them to CloudWatch.
- */
 function postBuildStatus() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            // Get all parameters
             const metricNamespace = core.getInput('namespace');
             const projectName = core.getInput('project-name');
             const buildStatus = core.getInput('status', { required: true });
             checkStatusString(buildStatus);
-            const isFailedBuild = buildStatus === 'failure';
-            const isCronJob = context.eventName === 'schedule';
-            // Populate the datapoints
+            const isFailedBuild = buildStatus === FAILED_BUILD_STATUS;
+            const isCronJob = context.eventName === SCHEDULE_EVENT_NAME;
             let metricData = new Array;
             metricData.push(createMetricDatum(NUM_BUILDS_METRIC_NAME, projectName, isCronJob, SUCCESS_METRIC_VALUE));
             metricData.push(createMetricDatum(FAILED_BUILDS_METRIC_NAME, projectName, isCronJob, isFailedBuild ? SUCCESS_METRIC_VALUE : FAILED_METRIC_VALUE));
             metricData.push(createMetricDatum(SUCCESS_BUILDS_METRIC_NAME, projectName, isCronJob, isFailedBuild ? FAILED_METRIC_VALUE : SUCCESS_METRIC_VALUE));
-            // Log to CloudWatch
             yield publishMetricData(metricNamespace, metricData);
             core.info('Successfully published metrics');
         }

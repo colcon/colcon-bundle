@@ -54,7 +54,7 @@ Each Metric has the following dimensions:
 
 ## FAQ
 
-**Q.** Can this send the status of multiple steps at once
+**Q.** Can this send the status of multiple steps at once?
 **A.** No, unfortunately you can only check the failure/success of the previous step, 
 not multiple steps.
 If you want to send the status of an entire workflow you could:

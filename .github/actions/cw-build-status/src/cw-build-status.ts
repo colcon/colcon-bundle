@@ -12,6 +12,8 @@ const PROJECT_DIMENSION = 'ProjectName'
 const IS_CRON_JOB_DIMENSION = 'IsCronJob'
 const SUCCESS_METRIC_VALUE = 1.0
 const FAILED_METRIC_VALUE = 0.0
+const FAILED_BUILD_STATUS = 'failure'
+const SCHEDULE_EVENT_NAME = 'schedule'
 
 /**
  * Validate the `status` input to the action.
@@ -74,8 +76,8 @@ export async function postBuildStatus() {
     const projectName = core.getInput('project-name')
     const buildStatus = core.getInput('status', { required: true })
     checkStatusString(buildStatus)
-    const isFailedBuild: Boolean = buildStatus === 'failure'
-    const isCronJob: Boolean = context.eventName === 'schedule'
+    const isFailedBuild: Boolean = buildStatus === FAILED_BUILD_STATUS
+    const isCronJob: Boolean = context.eventName === SCHEDULE_EVENT_NAME
 
     // Populate the datapoints
     let metricData = new Array
