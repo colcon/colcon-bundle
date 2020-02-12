@@ -1,7 +1,5 @@
-import CloudWatch from 'aws-sdk/clients/cloudwatch'
-import * as core from '@actions/core'
-
 import {checkStatusString, createMetricDatum, publishMetricData} from '../src/cw-build-status'
+import CloudWatch from 'aws-sdk/clients/cloudwatch'
 
 jest.mock('aws-sdk/clients/cloudwatch')
 
@@ -26,7 +24,7 @@ describe('unit test suite', () => {
     const value = 1.0
     const result = createMetricDatum(metricName, projectName, isCronJob, value)
     expect(result.MetricName).toStrictEqual(metricName)
-    expect(result.Value).toStrictEqual(1.0)
+    expect(result.Value).toStrictEqual(value)
     expect(result.Dimensions.length).toStrictEqual(2)
   });
 
