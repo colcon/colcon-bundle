@@ -77,6 +77,5 @@ The namespace that metrics are logged to. Defaults to `GithubCI`.
 The name of your project. Defaults to [${{ github.repository }}]
 
 [${{ github.repository }}]: https://help.github.com/en/actions/automating-your-workflow-with-github-actions/contexts-and-expression-syntax-for-github-actions#github-context
-[cw-build-status]: https://github.com/aws-robotics/rosbag-uploader-ros1/tree/master/.github/actions/cw-build-status
 [configure-aws-credentials]: https://github.com/aws-actions/configure-aws-credentials
 [check-run-event-doc]: https://developer.github.com/v3/activity/events/types/#checkrunevent
