@@ -32,12 +32,12 @@ jobs:
       uses: ./.github/actions/cw-build-status/
       with:
         status: 'failure'
-      if: failure() && github.ref == 'refs/heads/master'
+      if: failure()
     - name: Log Test Success
       uses: ./.github/actions/cw-build-status/
       with:
         status: 'success'
-      if: success() && github.ref == 'refs/heads/master'
+      if: success()
 
   backwards_compatability_test:
     runs-on: ubuntu-18.04
