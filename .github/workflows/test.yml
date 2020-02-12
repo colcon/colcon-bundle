@@ -32,12 +32,12 @@ jobs:
       uses: ./.github/actions/cw-build-status/
       with:
         status: 'failure'
-      if: failure() && github.ref == 'refs/heads/master'
+      if: failure() && github.event_name == 'schedule'
     - name: Log Test Success
       uses: ./.github/actions/cw-build-status/
       with:
         status: 'success'
-      if: success() && github.ref == 'refs/heads/master'
+      if: success() && github.event_name == 'schedule'
 
   backwards_compatability_test:
     runs-on: ubuntu-18.04
@@ -68,12 +68,12 @@ jobs:
       uses: ./.github/actions/cw-build-status/
       with:
         status: 'failure'
-      if: failure() && github.ref == 'refs/heads/master'
+      if: failure() && github.event_name == 'schedule'
     - name: Log Test Success
       uses: ./.github/actions/cw-build-status/
       with:
         status: 'success'
-      if: success() && github.ref == 'refs/heads/master'
+      if: success() && github.event_name == 'schedule'
 
   double_test:
     runs-on: ubuntu-18.04
@@ -104,12 +104,12 @@ jobs:
       uses: ./.github/actions/cw-build-status/
       with:
         status: 'failure'
-      if: failure() && github.ref == 'refs/heads/master'
+      if: failure() && github.event_name == 'schedule'
     - name: Log Test Success
       uses: ./.github/actions/cw-build-status/
       with:
         status: 'success'
-      if: success() && github.ref == 'refs/heads/master'
+      if: success() && github.event_name == 'schedule'
 
   ros1_tests:
     runs-on: ubuntu-18.04
@@ -144,12 +144,12 @@ jobs:
       uses: ./.github/actions/cw-build-status/
       with:
         status: 'failure'
-      if: failure() && github.ref == 'refs/heads/master'
+      if: failure() && github.event_name == 'schedule'
     - name: Log Test Success
       uses: ./.github/actions/cw-build-status/
       with:
         status: 'success'
-      if: success() && github.ref == 'refs/heads/master'
+      if: success() && github.event_name == 'schedule'
 
   ros2_tests:
     runs-on: ubuntu-18.04
@@ -180,9 +180,9 @@ jobs:
         uses: ./.github/actions/cw-build-status/
         with:
           status: 'failure'
-        if: failure() && github.ref == 'refs/heads/master'
+        if: failure() && github.event_name == 'schedule'
       - name: Log Test Success
         uses: ./.github/actions/cw-build-status/
         with:
           status: 'success'
-        if: success() && github.ref == 'refs/heads/master'
+        if: success() && github.event_name == 'schedule'
