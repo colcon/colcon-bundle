@@ -1,0 +1,40 @@
+{
+  "name": "cw-build-status",
+  "version": "0.0.0",
+  "description": "Github Action to report the status of a workflow to CloudWatch Metrics",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/cw-build-status.ts -o dist",
+    "lint": "eslint --fix src/**.ts",
+    "test": "tsc --noEmit && jest --coverage"
+  },
+  "author": "AWS RoboMaker",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "dependencies": {
+    "@actions/core": "^1.0.0",
+    "@actions/exec": "^1.0.1",
+    "@actions/github": "^2.0.0",
+    "aws-sdk": "^2.588.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.1.2",
+    "@typescript-eslint/eslint-plugin": "^2.10.0",
+    "@typescript-eslint/parser": "^2.10.0",
+    "@zeit/ncc": "^0.20.5",
+    "eslint": "^6.7.2",
+    "husky": "^4.1.0",
+    "jest": "^24.9.0",
+    "ts-jest": "^25.2.0",
+    "typescript": "^3.7.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run build"
+    }
+  }
+}
