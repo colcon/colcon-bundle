@@ -12,6 +12,12 @@ jobs:
     steps:
     - name: Checkout sources
       uses: actions/checkout@v2
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
     - name: Setup Python
       uses: actions/setup-python@v1
       with:
@@ -22,6 +28,16 @@ jobs:
         pip install -U tox setuptools==44.0.0
     - name: Run tests
       run: tox
+    - name: Log Test Failure
+      uses: ./.github/actions/cw-build-status/
+      with:
+        status: 'failure'
+      if: failure() && github.ref == 'refs/heads/master'
+    - name: Log Test Success
+      uses: ./.github/actions/cw-build-status/
+      with:
+        status: 'success'
+      if: success() && github.ref == 'refs/heads/master'
 
   backwards_compatability_test:
     runs-on: ubuntu-18.04
@@ -32,6 +48,12 @@ jobs:
     steps:
     - name: Checkout sources
       uses: actions/checkout@v2
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
     - name: Setup Python
       uses: actions/setup-python@v1
       with:
@@ -42,6 +64,16 @@ jobs:
         pip install -U tox setuptools==44.0.0
     - name: Run tests
       run: tox
+    - name: Log Test Failure
+      uses: ./.github/actions/cw-build-status/
+      with:
+        status: 'failure'
+      if: failure() && github.ref == 'refs/heads/master'
+    - name: Log Test Success
+      uses: ./.github/actions/cw-build-status/
+      with:
+        status: 'success'
+      if: success() && github.ref == 'refs/heads/master'
 
   double_test:
     runs-on: ubuntu-18.04
@@ -52,6 +84,12 @@ jobs:
     steps:
     - name: Checkout sources
       uses: actions/checkout@v2
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
     - name: Setup Python
       uses: actions/setup-python@v1
       with:
@@ -62,6 +100,16 @@ jobs:
         pip install -U tox setuptools==44.0.0
     - name: Run tests
       run: tox
+    - name: Log Test Failure
+      uses: ./.github/actions/cw-build-status/
+      with:
+        status: 'failure'
+      if: failure() && github.ref == 'refs/heads/master'
+    - name: Log Test Success
+      uses: ./.github/actions/cw-build-status/
+      with:
+        status: 'success'
+      if: success() && github.ref == 'refs/heads/master'
 
   ros1_tests:
     runs-on: ubuntu-18.04
@@ -76,6 +124,12 @@ jobs:
     steps:
     - name: Checkout sources
       uses: actions/checkout@v2
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
     - name: Setup Python
       uses: actions/setup-python@v1
       with:
@@ -86,6 +140,16 @@ jobs:
         pip install -U tox setuptools==44.0.0
     - name: Run tests
       run: tox
+    - name: Log Test Failure
+      uses: ./.github/actions/cw-build-status/
+      with:
+        status: 'failure'
+      if: failure() && github.ref == 'refs/heads/master'
+    - name: Log Test Success
+      uses: ./.github/actions/cw-build-status/
+      with:
+        status: 'success'
+      if: success() && github.ref == 'refs/heads/master'
 
   ros2_tests:
     runs-on: ubuntu-18.04
@@ -96,6 +160,12 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
       - name: Setup Python
         uses: actions/setup-python@v1
         with:
@@ -106,3 +176,13 @@ jobs:
           pip install -U tox setuptools==44.0.0
       - name: Run tests
         run: tox
+      - name: Log Test Failure
+        uses: ./.github/actions/cw-build-status/
+        with:
+          status: 'failure'
+        if: failure() && github.ref == 'refs/heads/master'
+      - name: Log Test Success
+        uses: ./.github/actions/cw-build-status/
+        with:
+          status: 'success'
+        if: success() && github.ref == 'refs/heads/master'
