@@ -28,12 +28,12 @@ jobs:
         pip install -U tox setuptools==44.0.0
     - name: Run tests
       run: tox
-    - name: Log Test failure
+    - name: Log Test Failure
       uses: ./.github/actions/cw-build-status/
       with:
         status: 'failure'
       if: failure()
-    - name: Log Test success
+    - name: Log Test Success
       uses: ./.github/actions/cw-build-status/
       with:
         status: 'success'
