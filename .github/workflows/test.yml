@@ -29,12 +29,12 @@ jobs:
     - name: Run tests
       run: tox
     - name: Log Test Failure
-      uses: ./.github/actions/cw-build-status/
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
       with:
         status: 'failure'
       if: failure() && github.event_name == 'schedule'
     - name: Log Test Success
-      uses: ./.github/actions/cw-build-status/
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
       with:
         status: 'success'
       if: success() && github.event_name == 'schedule'
@@ -65,12 +65,12 @@ jobs:
     - name: Run tests
       run: tox
     - name: Log Test Failure
-      uses: ./.github/actions/cw-build-status/
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
       with:
         status: 'failure'
       if: failure() && github.event_name == 'schedule'
     - name: Log Test Success
-      uses: ./.github/actions/cw-build-status/
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
       with:
         status: 'success'
       if: success() && github.event_name == 'schedule'
@@ -101,12 +101,12 @@ jobs:
     - name: Run tests
       run: tox
     - name: Log Test Failure
-      uses: ./.github/actions/cw-build-status/
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
       with:
         status: 'failure'
       if: failure() && github.event_name == 'schedule'
     - name: Log Test Success
-      uses: ./.github/actions/cw-build-status/
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
       with:
         status: 'success'
       if: success() && github.event_name == 'schedule'
@@ -141,12 +141,12 @@ jobs:
     - name: Run tests
       run: tox
     - name: Log Test Failure
-      uses: ./.github/actions/cw-build-status/
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
       with:
         status: 'failure'
       if: failure() && github.event_name == 'schedule'
     - name: Log Test Success
-      uses: ./.github/actions/cw-build-status/
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
       with:
         status: 'success'
       if: success() && github.event_name == 'schedule'
@@ -177,12 +177,12 @@ jobs:
       - name: Run tests
         run: tox
       - name: Log Test Failure
-        uses: ./.github/actions/cw-build-status/
+        uses: ros-tooling/action-cloudwatch-metrics@0.0.1
         with:
           status: 'failure'
         if: failure() && github.event_name == 'schedule'
       - name: Log Test Success
-        uses: ./.github/actions/cw-build-status/
+        uses: ros-tooling/action-cloudwatch-metrics@0.0.1
         with:
           status: 'success'
         if: success() && github.event_name == 'schedule'
