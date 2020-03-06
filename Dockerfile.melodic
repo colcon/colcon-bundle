@@ -2,7 +2,7 @@ FROM ros:melodic
 
 SHELL ["/bin/bash", "-c"]
 
-RUN apt-get update && apt-get upgrade && \
+RUN apt-get update && apt-get upgrade -y && \
         apt-get install -y wget && \
 	wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add - && \
         echo "yaml https://s3-us-west-2.amazonaws.com/rosdep/base.yaml" > /etc/ros/rosdep/sources.list.d/19-aws-sdk.list
