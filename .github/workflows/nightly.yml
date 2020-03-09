@@ -1,5 +1,7 @@
 name: Nightly testing workflows for colcon-bundle
 on:
+  # Build at minute 43 hour 17 (9:43am PST)
+  # Minutes was chosen randomly
   schedule:
     - cron: '43 17 * * *'
 
