@@ -1,0 +1,187 @@
+name: Nightly testing workflows for colcon-bundle
+on:
+  schedule:
+    - cron: '43 17 * * *'
+
+jobs:
+  tox_unittest:
+    runs-on: ubuntu-18.04
+    env:
+      TOXENV: unittest
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v2
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.5
+    - name: Install dependencies
+      run: |
+        sudo apt update && sudo apt install -y enchant
+        pip install -U tox setuptools==44.0.0
+    - name: Run tests
+      run: tox
+    - name: Log Test Failure
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+      with:
+        status: 'failure'
+      if: failure() && github.event_name == 'schedule'
+    - name: Log Test Success
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+      with:
+        status: 'success'
+      if: success() && github.event_name == 'schedule'
+
+  backwards_compatability_test:
+    runs-on: ubuntu-18.04
+    env:
+      TOXENV: py35-pypi
+      ROS_DISTRO: kinetic
+      TEST: backwards
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v2
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.5
+    - name: Install dependencies
+      run: |
+        sudo apt update && sudo apt install -y enchant
+        pip install -U tox setuptools==44.0.0
+    - name: Run tests
+      run: tox
+    - name: Log Test Failure
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+      with:
+        status: 'failure'
+      if: failure() && github.event_name == 'schedule'
+    - name: Log Test Success
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+      with:
+        status: 'success'
+      if: success() && github.event_name == 'schedule'
+
+  double_test:
+    runs-on: ubuntu-18.04
+    env:
+      TOXENV: py35-pypi
+      ROS_DISTRO: melodic
+      TEST: double
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v2
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.5
+    - name: Install dependencies
+      run: |
+        sudo apt update && sudo apt install -y enchant
+        pip install -U tox setuptools==44.0.0
+    - name: Run tests
+      run: tox
+    - name: Log Test Failure
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+      with:
+        status: 'failure'
+      if: failure() && github.event_name == 'schedule'
+    - name: Log Test Success
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+      with:
+        status: 'success'
+      if: success() && github.event_name == 'schedule'
+
+  ros1_tests:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        toxenv: [py35-pypi, py35-github]
+        ros_distro: [melodic, kinetic]
+    env:
+      TOXENV: ${{ matrix.toxenv }}
+      ROS_DISTRO: ${{ matrix.ros_distro }}
+      TEST: backwards
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v2
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.5
+    - name: Install dependencies
+      run: |
+        sudo apt update && sudo apt install -y enchant
+        pip install -U tox setuptools==44.0.0
+    - name: Run tests
+      run: tox
+    - name: Log Test Failure
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+      with:
+        status: 'failure'
+      if: failure() && github.event_name == 'schedule'
+    - name: Log Test Success
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+      with:
+        status: 'success'
+      if: success() && github.event_name == 'schedule'
+
+  ros2_tests:
+    runs-on: ubuntu-18.04
+    env:
+      TOXENV: py35-pypi
+      ROS_DISTRO: dashing
+      TEST: create
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.5
+      - name: Install dependencies
+        run: |
+          sudo apt update && sudo apt install -y enchant
+          pip install -U tox setuptools==44.0.0
+      - name: Run tests
+        run: tox
+      - name: Log Test Failure
+        uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+        with:
+          status: 'failure'
+        if: failure() && github.event_name == 'schedule'
+      - name: Log Test Success
+        uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+        with:
+          status: 'success'
+        if: success() && github.event_name == 'schedule'
