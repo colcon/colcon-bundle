@@ -1,4 +1,4 @@
-# colcon-bundle [![Build Status][travis-build-badge]][travis-build] [![GitHub Action Status][action-badge]][action-workflow]
+# colcon-bundle [![GitHub Action Status][action-badge]][action-workflow]
 
 **NOTE:** `colcon-bundle` only supports Ubuntu Xenial and Ubuntu Bionic operating systems and x86, ARMHF, and ARM64 architectures. All other operating systems and architectures are currently not supported.
 
