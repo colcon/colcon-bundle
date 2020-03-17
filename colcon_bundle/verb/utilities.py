@@ -76,9 +76,10 @@ def update_shebang(path):
                         logger.info('Found shebang in {}'.format(file_path))
                         shebang_command = cmd_regex.search(shebang_str)
                         if not shebang_command:
-                            raise ValueError(
-                              'Unable to find the executable in the shebang.'
-                              'The shebang may be malformed.')
+                            logger.warning(
+                              'Unable to find shebang command in {}.'
+                              'It may be malformed.'.format(file_path))
+                            continue
                         shebang_command = shebang_command.group(0)
                         result, _ = shebang_regex.subn(
                           '#!/usr/bin/env {}'.format(shebang_command),
