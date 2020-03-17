@@ -44,19 +44,19 @@ def get_ubuntu_distribution_version():
 
 def update_shebang(path):
     """
-    Search for python shebangs in path and all sub-paths.
+    Search and replace shebangs in path and all sub-paths with /usr/bin/env.
 
-    It then replaces them with /usr/bin/env.
-    env does not support parameters so we need to so something
-    else if python is invoked with parameters
+    `env` does not support parameters so parameters are removed.
+    Environment variables should be used instead of parameters
+    (specifically for Python).
 
-    :param path: Path to file to replace shebang in
+    :param path: Path to directory with files to replace shebang in.
     """
     # TODO: We should handle scripts that have parameters in the shebang
-    # TODO: We should hangle scripts that are doing other /usr/bin executables
-    py3_shebang_regex = re.compile(r'#!\s*.+python3')
-    py_shebang_regex = re.compile(r'#!\s*.+python')
-    sh_shebang_regex = re.compile(r'#!\s*.+sh')
+    # Parse the shebang
+    shebang_regex = re.compile(r'#!\S*.')
+    # Parse the command to execute in the shebang
+    cmd_regex = re.compile(r'([^\/]*)\/*$')
     logger.info('Starting shebang update...')
     for (root, dirs, files) in os.walk(path):
         for file in files:
@@ -70,32 +70,24 @@ def update_shebang(path):
                         str_contents = contents.decode()
                     except UnicodeError:
                         continue
-                    py3_replacement_tuple = py3_shebang_regex.subn(
-                        '#!/usr/bin/env python3', str_contents, count=1)
-                    if py3_replacement_tuple[1] > 0:
-                        logger.info('Found shebang in {file_path}'.format_map(
-                            locals()))
+                    shebang_match = shebang_regex.match(str_contents)
+                    if shebang_match:
+                        shebang_str = shebang_match.group(0)
+                        logger.info('Found shebang in {}'.format(file_path))
+                        shebang_command = cmd_regex.search(shebang_str)
+                        if not shebang_command:
+                            raise ValueError(
+                              'Unable to find the executable in the shebang.'
+                              'The shebang may be malformed.')
+                        shebang_command = shebang_command.group(0)
+                        result, _ = shebang_regex.subn(
+                          '#!/usr/bin/env {}'.format(shebang_command),
+                          str_contents,
+                          count=1
+                        )
                         file_handle.seek(0)
                         file_handle.truncate()
-                        file_handle.write(py3_replacement_tuple[0].encode())
-                        continue
-
-                    py_replacement_tuple = py_shebang_regex.subn(
-                        '#!/usr/bin/env python', str_contents, count=1)
-                    if py_replacement_tuple[1] > 0:
-                        logger.info('Found shebang in {file_path}'.format_map(
-                            locals()))
-                        file_handle.seek(0)
-                        file_handle.truncate()
-                        file_handle.write(py_replacement_tuple[0].encode())
-                    sh_replacement_tuple = sh_shebang_regex.subn(
-                        '#!/usr/bin/env sh', str_contents, count=1)
-                    if sh_replacement_tuple[1] > 0:
-                        logger.info('Found shebang in {file_path}'.format_map(
-                            locals()))
-                        file_handle.seek(0)
-                        file_handle.truncate()
-                        file_handle.write(py_replacement_tuple[0].encode())
+                        file_handle.write(result.encode())
 
 
 def update_symlinks(base_path):
