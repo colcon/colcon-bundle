@@ -18,9 +18,10 @@ class TestUtilities:
 
     def test_replaces_regular_shebang(self):
         shebang_scripts = [
+            ('python_shebang.sh', 'python_shebang_expected.sh'),
             ('regular_python_shebang.sh', 'regular_python_shebang_expected.sh'),
             ('regular_python3_shebang.sh', 'regular_python3_shebang_expected.sh'),
-            ('regular_node_shebang.sh', 'regular_node_shebang_expected.sh'),
+            ('regular_node_shebang.sh', 'regular_node_shebang_expected.sh')
         ]
         for script in shebang_scripts:
             regular_shebang_script = script[0]

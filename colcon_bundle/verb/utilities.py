@@ -11,6 +11,8 @@ import sys
 
 from colcon_bundle.verb import logger
 
+ENV_COMMAND = 'env'
+
 
 def get_ros_distribution_version():
     """
@@ -81,6 +83,10 @@ def update_shebang(path):
                               'It may be malformed.'.format(file_path))
                             continue
                         shebang_command = shebang_command.group(0)
+                        if shebang_command.strip() == ENV_COMMAND:
+                            logger.debug('Shebang updated for {}.'
+                                         'Skipping.'.format(file_path))
+                            continue
                         result, _ = shebang_regex.subn(
                           '#!/usr/bin/env {}'.format(shebang_command),
                           str_contents,
