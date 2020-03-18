@@ -17,34 +17,30 @@ class TestUtilities:
         shutil.rmtree(self.tmpdir)
 
     def test_replaces_regular_shebang(self):
-        regular_python_shebang_script = 'regular_python_shebang.sh'
-        assets_directory = os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), 'assets')
-        shutil.copy(
-            os.path.join(assets_directory, regular_python_shebang_script),
-            self.tmpdir)
+        shebang_scripts = [
+            ('python_shebang.sh', 'python_shebang_expected.sh'),
+            ('regular_python_shebang.sh', 'regular_python_shebang_expected.sh'),
+            ('regular_python3_shebang.sh', 'regular_python3_shebang_expected.sh'),
+            ('regular_node_shebang.sh', 'regular_node_shebang_expected.sh')
+        ]
+        for script in shebang_scripts:
+            regular_shebang_script = script[0]
+            expected_shebang_script = script[1]
+            assets_directory = os.path.join(
+                os.path.dirname(os.path.realpath(__file__)), 'assets')
+            shutil.copy(
+                os.path.join(assets_directory, regular_shebang_script),
+                self.tmpdir)
 
-        update_shebang(self.tmpdir)
+            update_shebang(self.tmpdir)
 
-        actual_file = os.path.join(self.tmpdir, regular_python_shebang_script)
-        expected_file = os.path.join(assets_directory,
-                                     'regular_python_shebang_expected.sh')
-        assert filecmp.cmp(actual_file, expected_file)
-
-    def test_replaces_py3_shebang(self):
-        regular_python_shebang_script = 'regular_python3_shebang.sh'
-        assets_directory = os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), 'assets')
-        shutil.copy(
-            os.path.join(assets_directory, regular_python_shebang_script),
-            self.tmpdir)
-
-        update_shebang(self.tmpdir)
-
-        actual_file = os.path.join(self.tmpdir, regular_python_shebang_script)
-        expected_file = os.path.join(assets_directory,
-                                     'regular_python3_shebang_expected.sh')
-        assert filecmp.cmp(actual_file, expected_file)
+            actual_file = os.path.join(self.tmpdir, regular_shebang_script)
+            expected_file = os.path.join(assets_directory,
+                                         expected_shebang_script)
+            print('test')
+            assert filecmp.cmp(actual_file, expected_file), \
+                "{} did not match expected file {}".format(
+                  regular_shebang_script, expected_shebang_script)
 
     def test_ignores_symlinks(self):
         pass

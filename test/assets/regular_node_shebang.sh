@@ -1,3 +1,3 @@
-#!/usr/bin/python3
+#!/usr/bin/node
 
 # Other contents not changed
