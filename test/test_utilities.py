@@ -37,6 +37,7 @@ class TestUtilities:
             actual_file = os.path.join(self.tmpdir, regular_shebang_script)
             expected_file = os.path.join(assets_directory,
                                          expected_shebang_script)
+            print('test')
             assert filecmp.cmp(actual_file, expected_file), \
                 "{} did not match expected file {}".format(
                   regular_shebang_script, expected_shebang_script)
