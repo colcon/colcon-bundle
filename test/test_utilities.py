@@ -19,6 +19,7 @@ class TestUtilities:
     def test_replaces_regular_shebang(self):
         shebang_scripts = [
             ('python_shebang.sh', 'python_shebang_expected.sh'),
+            ('template_shebang.sh', 'template_shebang.sh'),
             ('regular_python_shebang.sh', 'regular_python_shebang_expected.sh'),
             ('regular_python3_shebang.sh', 'regular_python3_shebang_expected.sh'),
             ('regular_node_shebang.sh', 'regular_node_shebang_expected.sh')
@@ -37,7 +38,6 @@ class TestUtilities:
             actual_file = os.path.join(self.tmpdir, regular_shebang_script)
             expected_file = os.path.join(assets_directory,
                                          expected_shebang_script)
-            print('test')
             assert filecmp.cmp(actual_file, expected_file), \
                 "{} did not match expected file {}".format(
                   regular_shebang_script, expected_shebang_script)
