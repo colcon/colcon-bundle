@@ -22,14 +22,16 @@ sudo pip3 install colcon-ros-bundle
 
 `colcon bundle` performs the following steps to bundle your package:
 
-1. Parse package dependencies through your `package.xml` 
-1. Add dependencies to the install list for each installer
-1. Run installs in the following order: `apt`, `pip`, `pip3`
+1. Parse package dependencies through your `package.xml`.
+1. Add dependencies to the install list for each installer.
+1. Run installs in the following order:
+    1. `apt`
+    1. `pip`
+    1. `pip3`
 1. Run the following transforms:
-  1. Update the shebangs of scripts to use `#!/usr/bin/env`
-
-These are all bundled into a standalone ROS workspace that is compressed into a `tar` file for usage somewhere else.
-
+    1. Update the shebangs of scripts to use `#!/usr/bin/env`.
+1. Bundle your local workspace and dependencies into a standalone ROS workspace.
+The bundled workspace follows the format defined in [`BUNDLE_FORMAT.md`](BUNDLE_FORMAT.md).
 
 # Building a bundle with `colcon bundle`
 
