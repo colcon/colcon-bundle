@@ -55,9 +55,11 @@ def update_shebang(path):
 
     :param path: Path to directory with files to replace shebang in.
     """
-    # TODO: We should handle scripts that have parameters in the shebang
     # Parse the shebang
-    shebang_regex = re.compile(r'#!\S*.')
+    shebang_regex = re.compile(r'^#!\s*\S*.')
+    # Shebangs in templates are a special case we need to handle.
+    # Example: #!@PYTHON_EXECUTABLE@
+    template_shebang_regex = re.compile(r'^#!\s*@\S*.@')
     # Parse the command to execute in the shebang
     cmd_regex = re.compile(r'([^\/]*)\/*$')
     logger.info('Starting shebang update...')
@@ -72,6 +74,11 @@ def update_shebang(path):
                     try:
                         str_contents = contents.decode()
                     except UnicodeError:
+                        continue
+                    template_shebang_match = template_shebang_regex.match(
+                        str_contents)
+                    if template_shebang_match:
+                        logger.debug('Skipping templated shebang')
                         continue
                     shebang_match = shebang_regex.match(str_contents)
                     if shebang_match:
