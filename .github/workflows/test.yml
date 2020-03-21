@@ -191,3 +191,19 @@ jobs:
         with:
           status: 'success'
         if: success() && github.event_name == 'schedule'
+
+  test_pypi_release:
+    name: Upload to Test PyPi
+    runs-on: ubuntu-18.04
+    needs: [tox_unittest, backwards_compatability_test, double_test, ros1_tests, ros2_tests]
+    steps:
+    - name: Upload to Test PyPi
+      uses: ros-tooling/action-pypi@0.0.2
+      with:
+        username: __token__
+        password: ${{ secrets.TEST_PYPI_TOKEN }}
+        repository-url: https://test.pypi.org/legacy/
+        package-directory: "${{ github.workspace }}"
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v2
+      if: always()
