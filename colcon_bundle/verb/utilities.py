@@ -12,7 +12,6 @@ import sys
 from colcon_bundle.verb import logger
 
 ENV_COMMAND = 'env'
-REPLACEMENT_COMMENT = '# This shebang has been modified by colcon-bundle'
 
 
 def get_ros_distribution_version():
@@ -98,8 +97,7 @@ def update_shebang(path):
                         logger.info('Modifying shebang for {}'.format(
                             file_path))
                         result, _ = shebang_regex.subn(
-                          '#!/usr/bin/env {}\n{}'.format(
-                              shebang_command, REPLACEMENT_COMMENT),
+                          '#!/usr/bin/env {}'.format(shebang_command),
                           str_contents,
                           count=1
                         )
