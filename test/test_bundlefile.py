@@ -99,7 +99,7 @@ class TestBundlefile:
             assert actual_data == json_data
 
     def test_bundlefile_metadata_over_4mb(self):
-        file_size = 6 * 1024 * 1024 # size in bytes
+        file_size = 6 * 1024 * 1024  # size in bytes
         large_file_path = os.path.join(self.tmpdir, 'big_file')
         with open(large_file_path, "wb") as f:
             f.write(os.urandom(file_size))
@@ -122,4 +122,3 @@ class TestBundlefile:
                 bundle.add_metadata(large_file_path)
                 bundle.add_overlay_archive(archive)
                 bundle.add_overlay_archive(other)
-
