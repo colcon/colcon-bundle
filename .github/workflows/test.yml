@@ -13,6 +13,7 @@ jobs:
     - name: Checkout sources
       uses: actions/checkout@v2
     - name: Configure AWS Credentials
+      if: github.event_name == 'schedule'
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -29,12 +30,12 @@ jobs:
     - name: Run tests
       run: tox
     - name: Log Test Failure
-      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.2
       with:
         status: 'failure'
       if: failure() && github.event_name == 'schedule'
     - name: Log Test Success
-      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.2
       with:
         status: 'success'
       if: success() && github.event_name == 'schedule'
@@ -49,6 +50,7 @@ jobs:
     - name: Checkout sources
       uses: actions/checkout@v2
     - name: Configure AWS Credentials
+      if: github.event_name == 'schedule'
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -65,12 +67,12 @@ jobs:
     - name: Run tests
       run: tox
     - name: Log Test Failure
-      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.2
       with:
         status: 'failure'
       if: failure() && github.event_name == 'schedule'
     - name: Log Test Success
-      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.2
       with:
         status: 'success'
       if: success() && github.event_name == 'schedule'
@@ -85,6 +87,7 @@ jobs:
     - name: Checkout sources
       uses: actions/checkout@v2
     - name: Configure AWS Credentials
+      if: github.event_name == 'schedule'
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -101,12 +104,12 @@ jobs:
     - name: Run tests
       run: tox
     - name: Log Test Failure
-      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.2
       with:
         status: 'failure'
       if: failure() && github.event_name == 'schedule'
     - name: Log Test Success
-      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.2
       with:
         status: 'success'
       if: success() && github.event_name == 'schedule'
@@ -125,6 +128,7 @@ jobs:
     - name: Checkout sources
       uses: actions/checkout@v2
     - name: Configure AWS Credentials
+      if: github.event_name == 'schedule'
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -141,12 +145,12 @@ jobs:
     - name: Run tests
       run: tox
     - name: Log Test Failure
-      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.2
       with:
         status: 'failure'
       if: failure() && github.event_name == 'schedule'
     - name: Log Test Success
-      uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+      uses: ros-tooling/action-cloudwatch-metrics@0.0.2
       with:
         status: 'success'
       if: success() && github.event_name == 'schedule'
@@ -161,6 +165,7 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
       - name: Configure AWS Credentials
+        if: github.event_name == 'schedule'
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -177,12 +182,12 @@ jobs:
       - name: Run tests
         run: tox
       - name: Log Test Failure
-        uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+        uses: ros-tooling/action-cloudwatch-metrics@0.0.2
         with:
           status: 'failure'
         if: failure() && github.event_name == 'schedule'
       - name: Log Test Success
-        uses: ros-tooling/action-cloudwatch-metrics@0.0.1
+        uses: ros-tooling/action-cloudwatch-metrics@0.0.2
         with:
           status: 'success'
         if: success() && github.event_name == 'schedule'

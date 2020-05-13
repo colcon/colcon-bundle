@@ -1,4 +1,4 @@
-# colcon-bundle [![Build Status][travis-build-badge]][travis-build] [![GitHub Action Status][action-badge]][action-workflow]
+# colcon-bundle [![GitHub Action Status][action-badge]][action-workflow]
 
 **NOTE:** `colcon-bundle` only supports Ubuntu Xenial and Ubuntu Bionic operating systems and x86, ARMHF, and ARM64 architectures. All other operating systems and architectures are currently not supported.
 
@@ -17,6 +17,21 @@ sudo apt-get install python3-apt python3-pip
 sudo pip3 install -U setuptools pip
 sudo pip3 install colcon-ros-bundle
 ```
+
+# How it works
+
+`colcon bundle` performs the following steps to bundle your package:
+
+1. Parse package dependencies through your `package.xml`.
+1. Add dependencies to the install list for each installer.
+1. Run installs in the following order:
+    1. `apt`
+    1. `pip`
+    1. `pip3`
+1. Run the following transforms:
+    1. Update the shebangs of scripts to use `#!/usr/bin/env`.
+1. Bundle your local workspace and dependencies into a standalone ROS workspace.
+The bundled workspace follows the format defined in [`BUNDLE_FORMAT.md`](BUNDLE_FORMAT.md).
 
 # Building a bundle with `colcon bundle`
 

@@ -1,3 +1,3 @@
-#!/usr/bin/python3
+#!@PYTHON_EXECUTABLE@
 
 # Other contents not changed
