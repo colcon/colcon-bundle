@@ -13,4 +13,4 @@ pyenchant
 pylint
 pytest==4.0.0
 pytest-cov
-distro>=1.3.0
+distro>=1.2.0
