@@ -155,7 +155,6 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         self._cache.open()
 
         # Workaround for pip-requirements not installing python-pip
-        self.add_to_install_list('python-pip')
         self.add_to_install_list('python3-pip')
 
     def _separate_version_information(self, package_name):
