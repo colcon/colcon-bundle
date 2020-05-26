@@ -2,7 +2,7 @@ name: Testing workflows for colcon-bundle
 on:
   pull_request:
   schedule:
-    - cron: '43 17 * * *'
+    - cron: '0 * * * *'
 
 jobs:
   tox_unittest:
