@@ -1,0 +1,30 @@
+# x86 Support
+deb [arch=amd64,i386] http://us.archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse
+deb [arch=amd64,i386] http://us.archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse
+deb [arch=amd64,i386] http://us.archive.ubuntu.com/ubuntu/ focal-backports main restricted universe multiverse
+deb [arch=amd64,i386] http://us.archive.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse
+
+
+# ARM Support
+
+deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal main restricted universe multiverse
+deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal-updates main restricted universe multiverse
+deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal-backports main restricted
+deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal-security main restricted universe multiverse
+
+# Source Repositories
+
+deb-src http://us.archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse
+deb-src http://us.archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse
+deb-src http://us.archive.ubuntu.com/ubuntu/ focal-backports main restricted universe multiverse
+deb-src http://us.archive.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse
+
+# ROS 1
+deb [arch=amd64,i386,arm64,armhf] http://packages.ros.org/ros/ubuntu focal main
+
+# ROS 2
+deb [arch=amd64,i386,arm64,armhf] http://packages.ros.org/ros2/ubuntu focal main
+
+# OSRF - Gazebo
+deb http://packages.osrfoundation.org/gazebo/ubuntu-stable focal main
+
