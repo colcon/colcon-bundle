@@ -48,6 +48,9 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         if get_ubuntu_distribution_version() == 'bionic':
             sources_list_path = os.path.join(assets_directory,
                                              'bionic.sources.list')
+        elif get_ubuntu_distribution_version() == 'focal':
+            sources_list_path = os.path.join(assets_directory,
+                                             'focal.sources.list')
 
         parser.add_argument(
             '--apt-package-blacklist', default=blacklist_path,

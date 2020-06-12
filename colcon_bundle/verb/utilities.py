@@ -24,6 +24,8 @@ def get_ros_distribution_version():
     ros_distribution_version = 'kinetic'
     if get_ubuntu_distribution_version() == 'bionic':
         ros_distribution_version = 'melodic'
+    elif get_ubuntu_distribution_version() == 'focal':
+        ros_distribution_version = 'noetic'
     return ros_distribution_version
 
 
@@ -40,6 +42,8 @@ def get_ubuntu_distribution_version():
         return 'xenial'
     elif distribution[0] == 'Ubuntu' and distribution[1] == '18.04':
         return 'bionic'
+    elif distribution[0] == 'Ubuntu' and distribution[1] == '20.04':
+        return 'focal'
     else:
         raise ValueError('Unsupported distribution', distribution)
 
