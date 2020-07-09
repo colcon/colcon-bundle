@@ -1,8 +1,8 @@
 # x86 Support
-deb [arch=amd64,i386] http://us.archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse
-deb [arch=amd64,i386] http://us.archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe multiverse
-deb [arch=amd64,i386] http://us.archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe multiverse
-deb [arch=amd64,i386] http://us.archive.ubuntu.com/ubuntu/ xenial-security main restricted universe multiverse
+deb [arch=amd64,i386] mirror://mirrors.ubuntu.com/mirrors.txt xenial main restricted universe multiverse
+deb [arch=amd64,i386] mirror://mirrors.ubuntu.com/mirrors.txt xenial-updates main restricted universe multiverse
+deb [arch=amd64,i386] mirror://mirrors.ubuntu.com/mirrors.txt xenial-backports main restricted universe multiverse
+deb [arch=amd64,i386] mirror://mirrors.ubuntu.com/mirrors.txt xenial-security main restricted universe multiverse
 
 
 # ARM Support
@@ -14,10 +14,10 @@ deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ xenial-security mai
 
 # Source Repositories
 
-deb-src http://us.archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse
-deb-src http://us.archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe multiverse
-deb-src http://us.archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe multiverse
-deb-src http://us.archive.ubuntu.com/ubuntu/ xenial-security main restricted universe multiverse
+deb-src http://archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse
+deb-src http://archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe multiverse
+deb-src http://archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe multiverse
+deb-src http://archive.ubuntu.com/ubuntu/ xenial-security main restricted universe multiverse
 
 # ROS
 deb http://packages.ros.org/ros/ubuntu xenial main
