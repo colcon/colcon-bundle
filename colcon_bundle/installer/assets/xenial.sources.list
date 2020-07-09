@@ -1,8 +1,8 @@
 # x86 Support
-deb [arch=amd64,i386] mirror://mirrors.ubuntu.com/mirrors.txt xenial main restricted universe multiverse
-deb [arch=amd64,i386] mirror://mirrors.ubuntu.com/mirrors.txt xenial-updates main restricted universe multiverse
-deb [arch=amd64,i386] mirror://mirrors.ubuntu.com/mirrors.txt xenial-backports main restricted universe multiverse
-deb [arch=amd64,i386] mirror://mirrors.ubuntu.com/mirrors.txt xenial-security main restricted universe multiverse
+deb [arch=amd64,i386] http://archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse
+deb [arch=amd64,i386] http://archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe multiverse
+deb [arch=amd64,i386] http://archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe multiverse
+deb [arch=amd64,i386] http://archive.ubuntu.com/ubuntu/ xenial-security main restricted universe multiverse
 
 
 # ARM Support

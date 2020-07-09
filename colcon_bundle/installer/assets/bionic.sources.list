@@ -14,10 +14,10 @@ deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ bionic-security mai
 
 # Source Repositories
 
-deb-src http://archive.ubuntu.com/ubuntu/ bionic main restricted universe multiverse
-deb-src http://archive.ubuntu.com/ubuntu/ bionic-updates main restricted universe multiverse
-deb-src http://archive.ubuntu.com/ubuntu/ bionic-backports main restricted universe multiverse
-deb-src http://archive.ubuntu.com/ubuntu/ bionic-security main restricted universe multiverse
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt bionic main restricted universe multiverse
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt bionic-updates main restricted universe multiverse
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt bionic-backports main restricted universe multiverse
+deb-src mirror://mirrors.ubuntu.com/mirrors.txt bionic-security main restricted universe multiverse
 
 # ROS 1
 deb [arch=amd64,i386,arm64,armhf] http://packages.ros.org/ros/ubuntu bionic main
