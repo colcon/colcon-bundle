@@ -1,6 +1,9 @@
 name: Testing workflows for colcon-bundle
 on:
   pull_request:
+  push:
+    branches:
+      - master
   schedule:
     - cron: '0 * * * *'
 
@@ -140,4 +143,3 @@ jobs:
         # join() converts the array to a string 'successfailuresuccess'
         # contains() checks whether the string contains failure
         metric-value: ${{ ! contains(join(needs.*.result, ''), 'failure') && ! contains(join(needs.*.result, ''), 'cancelled') }}
-
