@@ -10,6 +10,9 @@ WORKDIR /opt/package
 RUN apt-get update && \
 	apt-get install -y python3-pip python3-apt python-pip enchant sudo
 
+# NOTE: This is a workaround for setuptools 50.* (see https://github.com/pypa/setuptools/issues/2352)
+ENV SETUPTOOLS_USE_DISTUTILS=stdlib
+
 RUN	rosdep update && \
 	rosdep install --from-paths integration/test_workspace --ignore-src -r -y
 

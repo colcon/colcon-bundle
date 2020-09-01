@@ -27,6 +27,9 @@ RUN mkdir -p /home/builduser
 RUN chown builduser /home/builduser
 RUN sh -c "echo 'builduser ALL=NOPASSWD: ALL' >> /etc/sudoers"
 
+# NOTE: This is a workaround for setuptools 50.* (see https://github.com/pypa/setuptools/issues/2352)
+ENV SETUPTOOLS_USE_DISTUTILS=stdlib
+
 RUN pip3 install --upgrade pip setuptools
 # RUN pip3 install -r requirements.txt
 
@@ -45,5 +48,3 @@ RUN	rosdep update && \
 
 RUN source /opt/ros/dashing/setup.sh; colcon build
 RUN source /opt/ros/dashing/setup.sh; colcon bundle --bundle-version 2 --bundle-base v2
-
-
