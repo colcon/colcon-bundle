@@ -120,6 +120,7 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         apt.apt_pkg.config.set('Acquire::BrokenProxy', 'true')
         apt.apt_pkg.config.set('Acquire::http::Pipeline-Depth', '0')
         apt.apt_pkg.config.set('Acquire::http::No-Cache', 'true')
+        apt.apt_pkg.config.set('Acquire::http::Retries', '3')
 
         if self.allow_insecure:
             apt.apt_pkg.config.set(
