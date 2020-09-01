@@ -26,7 +26,7 @@ jobs:
     - name: Run tests
       run: tox
 
-  backwards_compatability_test:
+  backwards_compatibility_test:
     runs-on: ubuntu-18.04
     env:
       TOXENV: py35-pypi
@@ -116,7 +116,7 @@ jobs:
       image: ubuntu:bionic
     needs:
       - tox_unittest
-      - backwards_compatability_test
+      - backwards_compatibility_test
       - double_test
       - ros1_tests
       - ros2_tests
