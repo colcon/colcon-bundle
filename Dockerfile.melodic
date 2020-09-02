@@ -19,7 +19,7 @@ RUN mkdir -p /home/builduser
 RUN chown builduser /home/builduser
 RUN sh -c "echo 'builduser ALL=NOPASSWD: ALL' >> /etc/sudoers"
 
-RUN pip3 install --upgrade pip setuptools
+RUN pip3 install --upgrade pip setuptools!=50.0.0
 RUN pip3 install -r requirements.txt
 RUN pip3 install -e .
 
@@ -32,8 +32,6 @@ RUN	rosdep update && \
 
 WORKDIR /opt/package/integration/test_workspace
 
-# NOTE: This is a workaround for setuptools 50.* (see https://github.com/pypa/setuptools/issues/2352)
-ENV SETUPTOOLS_USE_DISTUTILS=stdlib
 RUN source /opt/ros/melodic/setup.sh; colcon build
 RUN source /opt/ros/melodic/setup.sh; colcon bundle --bundle-version 1 --bundle-base v1 --pip-requirements py27_requirements.txt --pip3-requirements py3_requirements.txt
 RUN source /opt/ros/melodic/setup.sh; colcon bundle --bundle-version 2 --bundle-base v2 --pip-requirements py27_requirements.txt --pip3-requirements py3_requirements.txt
