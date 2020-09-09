@@ -24,7 +24,7 @@ jobs:
     with:
       package-name: helloworld
       target-ros1-distro: kinetic
-      vcs-repo-file-url: "" #todo fixme
+      vcs-repo-file-url: "https://raw.githubusercontent.com/colcon/colcon-bundle/d21b09884e4278eb16220ffe1351be8f481e36bb/.github/workflows/test_bundle.repos"
       - uses: ./
         id: colcon-bundle
         run: colcon bundle
