@@ -1,0 +1,30 @@
+name: Test building ROS 1 demos with colcon-bundle
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 * * * *'
+jobs:
+  build_demos:
+    runs-on: ubuntu-18.04
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.5
+    - name: Install dependencies
+      run: |
+        sudo apt update && sudo apt install -y enchant
+        pip install -U setuptools==44.0.0
+  - uses: ros-tooling/setup-ros@0.0.25
+  	with:
+      required-ros-distributions: kinetic
+  - uses: ros-tooling/action-ros-ci@0.0.17
+    with:
+      package-name: helloworld
+      target-ros1-distro: kinetic
+      vcs-repo-file-url: "" #todo fixme
+      - uses: ./
+        id: colcon-bundle
+        run: colcon bundle

@@ -1,0 +1,5 @@
+repositories:
+  helloworld:
+    type: git
+    url: https://github.com/aws-robotics/aws-robomaker-sample-application-helloworld
+    version: ros1
