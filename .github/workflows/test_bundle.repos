@@ -1,0 +1,5 @@
+repositories:
+  navigation:
+    type: git
+    url: https://github.com/ros-planning/navigation
+    version: kinetic-devel
