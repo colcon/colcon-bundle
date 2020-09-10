@@ -1,5 +1,5 @@
 repositories:
-  helloworld:
+  navigation:
     type: git
-    url: https://github.com/aws-robotics/aws-robomaker-sample-application-helloworld
-    version: ros1
+    url: https://github.com/ros-planning/navigation
+    version: kinetic-devel

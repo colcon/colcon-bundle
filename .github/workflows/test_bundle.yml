@@ -1,4 +1,4 @@
-name: Test colcon-bundle latest release
+name: Test colcon-bundle (latest release) bundling navigation
 on:
   pull_request:
   push:
@@ -14,11 +14,11 @@ jobs:
         with:
           required-ros-distributions: kinetic
       - uses: ros-tooling/action-ros-ci@0.0.19
-        id: action-ros-helloworld
+        id: action-ros-navigation
         with:
-          package-name: hello_world_robot hello_world_simulation
+          package-name: navigation
           target-ros1-distro: kinetic
-          vcs-repo-file-url: "https://raw.githubusercontent.com/colcon/colcon-bundle/d21b09884e4278eb16220ffe1351be8f481e36bb/.github/workflows/test_bundle.repos"
+          vcs-repo-file-url: "https://raw.githubusercontent.com/colcon/colcon-bundle/b90af91ddee43508c1f0c099fe3d33ea07acb4a4/.github/workflows/test_bundle.repos"
       - uses: actions/setup-python@v1
         with:
           python-version: 3.5
@@ -28,5 +28,5 @@ jobs:
           pip install -U setuptools==44.0.0
           sudo pip3 install colcon-ros-bundle
       - run: |
-          cd "${{ steps.action-ros-helloworld.outputs.ros-workspace-directory-name }}"
+          cd "${{ steps.action-ros-navigation.outputs.ros-workspace-directory-name }}"
           colcon bundle
