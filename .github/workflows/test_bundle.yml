@@ -8,11 +8,12 @@ on:
     - cron: '0 * * * *'
 jobs:
   bundle:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
+    container:
+      image: rostooling/setup-ros-docker:ubuntu-xenial-ros-kinetic-desktop
     steps:
-      - uses: ros-tooling/setup-ros@0.0.25
-        with:
-          required-ros-distributions: kinetic
+      # TODO(setup-ros-docker#7): calling chown is necessary for now
+      - run: sudo chown -R rosbuild:rosbuild "$HOME" .
       - uses: ros-tooling/action-ros-ci@0.0.19
         id: action-ros-navigation
         with:
@@ -22,11 +23,12 @@ jobs:
       - uses: actions/setup-python@v1
         with:
           python-version: 3.5
-      - name: Install dependencies
+      - name: Install colcon-bundle dependencies
         run: |
           sudo apt update
           pip install -U setuptools==44.0.0
           sudo pip3 install colcon-ros-bundle
-      - run: |
+      - name: Run colcon bundle
+        run: |
           cd "${{ steps.action-ros-navigation.outputs.ros-workspace-directory-name }}"
           colcon bundle
