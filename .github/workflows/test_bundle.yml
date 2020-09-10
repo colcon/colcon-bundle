@@ -1,0 +1,32 @@
+name: Test colcon-bundle (latest release) bundling navigation
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 * * * *'
+jobs:
+  bundle:
+    runs-on: ubuntu-16.04
+    steps:
+      - uses: ros-tooling/setup-ros@0.0.25
+        with:
+          required-ros-distributions: kinetic
+      - uses: ros-tooling/action-ros-ci@0.0.19
+        id: action-ros-navigation
+        with:
+          package-name: navigation
+          target-ros1-distro: kinetic
+          vcs-repo-file-url: "https://raw.githubusercontent.com/colcon/colcon-bundle/b90af91ddee43508c1f0c099fe3d33ea07acb4a4/.github/workflows/test_bundle.repos"
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.5
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          pip install -U setuptools==44.0.0
+          sudo pip3 install colcon-ros-bundle
+      - run: |
+          cd "${{ steps.action-ros-navigation.outputs.ros-workspace-directory-name }}"
+          colcon bundle
