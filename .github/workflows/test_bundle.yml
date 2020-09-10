@@ -8,7 +8,7 @@ on:
     - cron: '0 * * * *'
 jobs:
   bundle:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-16.04
     steps:
       - uses: ros-tooling/setup-ros@0.0.25
         with:
