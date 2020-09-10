@@ -16,7 +16,7 @@ jobs:
       - uses: ros-tooling/action-ros-ci@0.0.19
         id: action-ros-helloworld
         with:
-          package-name: hello_world_robot
+          package-name: hello_world_robot hello_world_simulation
           target-ros1-distro: kinetic
           vcs-repo-file-url: "https://raw.githubusercontent.com/colcon/colcon-bundle/d21b09884e4278eb16220ffe1351be8f481e36bb/.github/workflows/test_bundle.repos"
       - uses: actions/setup-python@v1
