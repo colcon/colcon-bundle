@@ -1,4 +1,4 @@
-name: Test building ROS 1 demos with colcon-bundle
+name: Test colcon-bundle latest release
 on:
   pull_request:
   push:
@@ -13,22 +13,20 @@ jobs:
       - uses: ros-tooling/setup-ros@0.0.25
         with:
           required-ros-distributions: kinetic
-      - uses: ros-tooling/action-ros-ci@0.0.17
+      - uses: ros-tooling/action-ros-ci@0.0.19
         id: action-ros-helloworld
         with:
           package-name: hello_world_robot
           target-ros1-distro: kinetic
           vcs-repo-file-url: "https://raw.githubusercontent.com/colcon/colcon-bundle/d21b09884e4278eb16220ffe1351be8f481e36bb/.github/workflows/test_bundle.repos"
-      - uses: actions/checkout@v2
-      - name: Setup Python
-        uses: actions/setup-python@v1
+      - uses: actions/setup-python@v1
         with:
           python-version: 3.5
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y enchant
           pip install -U setuptools==44.0.0
+          sudo pip3 install colcon-ros-bundle
       - run: |
-          cd "{{$steps.action-ros-helloworld.ros-workspace-directory-name}}"
+          cd "${{ steps.action-ros-helloworld.outputs.ros-workspace-directory-name }}"
           colcon bundle
