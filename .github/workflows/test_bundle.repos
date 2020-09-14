@@ -1,4 +1,8 @@
 repositories:
+  ros_tutorials:
+    type: git
+    url: https://github.com/ros/ros_tutorials
+    version: 98753d885775a3347ba6d149afae0ac3df7be772
   navigation:
     type: git
     url: https://github.com/ros-planning/navigation
