@@ -1,9 +1,6 @@
 name: Test colcon-bundle (latest release) bundling navigation
 on:
-  pull_request:
-  push:
-    branches:
-      - master
+  pull_request: # used for testing the PR
   schedule:
     - cron: '0 * * * *'
 jobs:
@@ -13,23 +10,24 @@ jobs:
       image: rostooling/setup-ros-docker:ubuntu-xenial-ros-kinetic-ros-base-latest
     steps:
       # TODO(setup-ros-docker#7): calling chown is necessary for now
-      - run: sudo chown -R rosbuild:rosbuild "$HOME" .
-      # - uses: ros-tooling/action-ros-ci@0.0.17
-      #   id: action-ros-navigation
-      #   with:
-      #     package-name: navigation
-      #     source-ros-binary-installation: kinetic
-      #     vcs-repo-file-url: "https://raw.githubusercontent.com/colcon/colcon-bundle/b90af91ddee43508c1f0c099fe3d33ea07acb4a4/.github/workflows/test_bundle.repos"
+      - name: setup-ros-docker#7 workaround
+        run: sudo chown -R rosbuild:rosbuild "$HOME" .
+      - uses: ros-tooling/action-ros-ci@0.0.17
+        id: action-ros-navigation
+        with:
+          package-name: navigation
+          source-ros-binary-installation: kinetic
+          vcs-repo-file-url: "https://raw.githubusercontent.com/colcon/colcon-bundle/b90af91ddee43508c1f0c099fe3d33ea07acb4a4/.github/workflows/test_bundle.repos"
       - uses: actions/setup-python@v1
         with:
           python-version: 3.5
-      - name: Install colcon-bundle dependencies
+      - name: Install dependencies and colcon-bundle
         run: |
           sudo apt update
           sudo apt -y install python3-apt python3-pip
           sudo pip3 install -U setuptools==44.0.0
-          sudo pip3 install colcon-ros-bundle
-      # - name: Run colcon bundle
-      #   run: |
-      #     cd "${{ steps.action-ros-navigation.outputs.ros-workspace-directory-name }}"
-      #     colcon bundle
+          sudo pip3 install -U colcon-ros-bundle
+      - name: Run colcon bundle
+        run: |
+          cd "${{ steps.action-ros-navigation.outputs.ros-workspace-directory-name }}"
+          colcon bundle
