@@ -15,7 +15,7 @@ jobs:
       - uses: ros-tooling/action-ros-ci@0.0.17
         id: action-ros-navigation
         with:
-          package-name: navigation
+          package-name: ros_tutorials navigation
           source-ros-binary-installation: kinetic
           vcs-repo-file-url: "https://raw.githubusercontent.com/colcon/colcon-bundle/b90af91ddee43508c1f0c099fe3d33ea07acb4a4/.github/workflows/test_bundle.repos"
       - uses: actions/setup-python@v1
