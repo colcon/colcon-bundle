@@ -30,7 +30,7 @@ jobs:
           sudo apt -y install python3-apt python3-pip
           sudo pip3 install -U setuptools==44.0.0
       - name: Install ${{ matrix.install_colcon_bundle_cmd }}
-          sudo pip3 install -U ${{ matrix.install_colcon_bundle_cmd }}
+        run: sudo pip3 install -U ${{ matrix.install_colcon_bundle_cmd }}
       - name: Run colcon bundle
         run: |
           cd "${{ steps.action-ros-navigation.outputs.ros-workspace-directory-name }}"
