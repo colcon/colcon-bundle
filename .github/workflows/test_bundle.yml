@@ -9,6 +9,7 @@ jobs:
     container:
       image: rostooling/setup-ros-docker:ubuntu-xenial-ros-kinetic-ros-base-latest
     steps:
+      # TODO(setup-ros-docker#7): calling chown is necessary for now
       - name: setup-ros-docker#7 workaround
         run: sudo chown -R rosbuild:rosbuild "$HOME" .
       - uses: ros-tooling/action-ros-ci@0.0.17
@@ -16,7 +17,7 @@ jobs:
         with:
           package-name: ros_tutorials navigation
           source-ros-binary-installation: kinetic
-          vcs-repo-file-url: "https://raw.githubusercontent.com/dabonnie/colcon-bundle/master/.github/workflows/test_bundle.repos"
+          vcs-repo-file-url: "https://github.com/colcon/colcon-bundle/blob/42dcb8f0be1eb29a865f7a4f161e775b383e20c7/.github/workflows/test_bundle.repos"
       - uses: actions/setup-python@v1
         with:
           python-version: 3.5
