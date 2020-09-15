@@ -1,15 +1,21 @@
-name: Test colcon-bundle (latest release) bundling navigation
+name: colcon-bundle Integration Test
 on:
   pull_request: # used for testing the PR
   schedule:
     - cron: '0 * * * *'
 jobs:
-  bundle:
+  latest release bundle:
+    name: ""
+    strategy:
+      fail-fast: false
+      matrix:
+        install_colcon_bundle_cmd:
+          - "colcon-ros-bundle"
+          - "git+https://github.com/colcon/colcon-bundle.git@master#egg=colcon-bundle git+https://github.com/colcon/colcon-ros-bundle.git@master#egg=colcon-ros-bundle"
     runs-on: ubuntu-latest
     container:
       image: rostooling/setup-ros-docker:ubuntu-xenial-ros-kinetic-ros-base-latest
     steps:
-      # TODO(setup-ros-docker#7): calling chown is necessary for now
       - name: setup-ros-docker#7 workaround
         run: sudo chown -R rosbuild:rosbuild "$HOME" .
       - uses: ros-tooling/action-ros-ci@0.0.17
@@ -18,12 +24,13 @@ jobs:
           package-name: ros_tutorials navigation
           source-ros-binary-installation: kinetic
           vcs-repo-file-url: "https://github.com/colcon/colcon-bundle/blob/42dcb8f0be1eb29a865f7a4f161e775b383e20c7/.github/workflows/test_bundle.repos"
-      - name: Install dependencies and colcon-bundle
+      - name: Install colcon-bundle dependencies
         run: |
           sudo apt update
           sudo apt -y install python3-apt python3-pip
           sudo pip3 install -U setuptools==44.0.0
-          sudo pip3 install -U colcon-ros-bundle
+      - name: Install ${{ matrix.install_colcon_bundle_cmd }}
+          sudo pip3 install -U ${{ matrix.install_colcon_bundle_cmd }}
       - name: Run colcon bundle
         run: |
           cd "${{ steps.action-ros-navigation.outputs.ros-workspace-directory-name }}"
