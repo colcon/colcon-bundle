@@ -17,7 +17,7 @@ jobs:
         with:
           package-name: ros_tutorials navigation
           source-ros-binary-installation: kinetic
-          vcs-repo-file-url: "https://raw.githubusercontent.com/colcon/colcon-bundle/8732026918f8a8325ceb19bedc0adc95e431cd6b/.github/workflows/test_bundle.repos"
+          vcs-repo-file-url: "${{ github.workspace }}/.github/workflows/test_bundle.repos"
       - uses: actions/setup-python@v1
         with:
           python-version: 3.5
