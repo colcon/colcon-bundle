@@ -23,7 +23,7 @@ jobs:
         with:
           package-name: ros_tutorials navigation
           source-ros-binary-installation: kinetic
-          vcs-repo-file-url: "https://raw.githubusercontent.com/colcon/colcon-bundle/42dcb8f0be1eb29a865f7a4f161e775b383e20c7/.github/workflows/test_bundle.repos"
+          vcs-repo-file-url: "https://raw.githubusercontent.com/colcon/colcon-bundle/${{ github.sha }}/.github/workflows/test_bundle.repos"
       - name: Install colcon-bundle dependencies
         run: |
           sudo apt update
