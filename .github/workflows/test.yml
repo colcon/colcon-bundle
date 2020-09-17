@@ -1,145 +1,145 @@
-# name: Testing workflows for colcon-bundle
-# on:
-#   pull_request:
-#   push:
-#     branches:
-#       - master
-#   schedule:
-#     - cron: '0 * * * *'
-#
-# jobs:
-#   tox_unittest:
-#     runs-on: ubuntu-18.04
-#     env:
-#       TOXENV: unittest
-#     steps:
-#     - name: Checkout sources
-#       uses: actions/checkout@v2
-#     - name: Setup Python
-#       uses: actions/setup-python@v1
-#       with:
-#         python-version: 3.5
-#     - name: Install dependencies
-#       run: |
-#         sudo apt update && sudo apt install -y enchant
-#         pip install -U tox setuptools==44.0.0
-#     - name: Run tests
-#       run: tox
-#
-#   backwards_compatibility_test:
-#     runs-on: ubuntu-18.04
-#     env:
-#       TOXENV: py35-pypi
-#       ROS_DISTRO: kinetic
-#       TEST: backwards
-#     steps:
-#     - name: Checkout sources
-#       uses: actions/checkout@v2
-#     - name: Setup Python
-#       uses: actions/setup-python@v1
-#       with:
-#         python-version: 3.5
-#     - name: Install dependencies
-#       run: |
-#         sudo apt update && sudo apt install -y enchant
-#         pip install -U tox setuptools==44.0.0
-#     - name: Run tests
-#       run: tox
-#
-#   double_test:
-#     runs-on: ubuntu-18.04
-#     env:
-#       TOXENV: py35-pypi
-#       ROS_DISTRO: melodic
-#       TEST: double
-#     steps:
-#     - name: Checkout sources
-#       uses: actions/checkout@v2
-#     - name: Setup Python
-#       uses: actions/setup-python@v1
-#       with:
-#         python-version: 3.5
-#     - name: Install dependencies
-#       run: |
-#         sudo apt update && sudo apt install -y enchant
-#         pip install -U tox setuptools==44.0.0
-#     - name: Run tests
-#       run: tox
-#
-#   ros1_tests:
-#     runs-on: ubuntu-18.04
-#     strategy:
-#       matrix:
-#         toxenv: [py35-pypi, py35-github]
-#         ros_distro: [melodic, kinetic]
-#     env:
-#       TOXENV: ${{ matrix.toxenv }}
-#       ROS_DISTRO: ${{ matrix.ros_distro }}
-#       TEST: backwards
-#     steps:
-#     - name: Checkout sources
-#       uses: actions/checkout@v2
-#     - name: Setup Python
-#       uses: actions/setup-python@v1
-#       with:
-#         python-version: 3.5
-#     - name: Install dependencies
-#       run: |
-#         sudo apt update && sudo apt install -y enchant
-#         pip install -U tox setuptools==44.0.0
-#     - name: Run tests
-#       run: tox
-#
-#   ros2_tests:
-#     runs-on: ubuntu-18.04
-#     env:
-#       TOXENV: py35-pypi
-#       ROS_DISTRO: dashing
-#       TEST: create
-#     steps:
-#       - name: Checkout sources
-#         uses: actions/checkout@v2
-#       - name: Setup Python
-#         uses: actions/setup-python@v1
-#         with:
-#           python-version: 3.5
-#       - name: Install dependencies
-#         run: |
-#           sudo apt update && sudo apt install -y enchant
-#           pip install -U tox setuptools==44.0.0
-#       - name: Run tests
-#         run: tox
-#
-#   log_workflow_status_to_cloudwatch:
-#     runs-on: ubuntu-latest
-#     container:
-#       image: ubuntu:bionic
-#     needs:
-#       - tox_unittest
-#       - backwards_compatibility_test
-#       - double_test
-#       - ros1_tests
-#       - ros2_tests
-#     if: always()  # run even if the dependent jobs have failed to log failures
-#     # Allow build reports to fail on pull requests.
-#     # When a contribution is made on a fork, the secrets will not be available,
-#     # and this step will be failing. This is acceptable.
-#     # On the other end, we want to be notified if this happens on merge, or
-#     # on schedule.
-#     continue-on-error: ${{ github.event_name == 'pull_request'}}
-#     steps:
-#     - name: Configure AWS Credentials
-#       uses: aws-actions/configure-aws-credentials@v1
-#       with:
-#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#         aws-region: ${{ secrets.AWS_REGION }}
-#     - uses: ros-tooling/action-cloudwatch-metrics@0.0.4
-#       with:
-#         # Checks if any of the jobs have failed.
-#         #
-#         # needs.*.result is returns the list of all success statuses as an
-#         # array, i.e. ['success', 'failure, 'success']
-#         # join() converts the array to a string 'successfailuresuccess'
-#         # contains() checks whether the string contains failure
-#         metric-value: ${{ ! contains(join(needs.*.result, ''), 'failure') && ! contains(join(needs.*.result, ''), 'cancelled') }}
+name: Testing workflows for colcon-bundle
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 * * * *'
+
+jobs:
+  tox_unittest:
+    runs-on: ubuntu-18.04
+    env:
+      TOXENV: unittest
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v2
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.5
+    - name: Install dependencies
+      run: |
+        sudo apt update && sudo apt install -y enchant
+        pip install -U tox setuptools==44.0.0
+    - name: Run tests
+      run: tox
+
+  backwards_compatibility_test:
+    runs-on: ubuntu-18.04
+    env:
+      TOXENV: py35-pypi
+      ROS_DISTRO: kinetic
+      TEST: backwards
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v2
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.5
+    - name: Install dependencies
+      run: |
+        sudo apt update && sudo apt install -y enchant
+        pip install -U tox setuptools==44.0.0
+    - name: Run tests
+      run: tox
+
+  double_test:
+    runs-on: ubuntu-18.04
+    env:
+      TOXENV: py35-pypi
+      ROS_DISTRO: melodic
+      TEST: double
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v2
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.5
+    - name: Install dependencies
+      run: |
+        sudo apt update && sudo apt install -y enchant
+        pip install -U tox setuptools==44.0.0
+    - name: Run tests
+      run: tox
+
+  ros1_tests:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        toxenv: [py35-pypi, py35-github]
+        ros_distro: [melodic, kinetic]
+    env:
+      TOXENV: ${{ matrix.toxenv }}
+      ROS_DISTRO: ${{ matrix.ros_distro }}
+      TEST: backwards
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v2
+    - name: Setup Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.5
+    - name: Install dependencies
+      run: |
+        sudo apt update && sudo apt install -y enchant
+        pip install -U tox setuptools==44.0.0
+    - name: Run tests
+      run: tox
+
+  ros2_tests:
+    runs-on: ubuntu-18.04
+    env:
+      TOXENV: py35-pypi
+      ROS_DISTRO: dashing
+      TEST: create
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.5
+      - name: Install dependencies
+        run: |
+          sudo apt update && sudo apt install -y enchant
+          pip install -U tox setuptools==44.0.0
+      - name: Run tests
+        run: tox
+
+  log_workflow_status_to_cloudwatch:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:bionic
+    needs:
+      - tox_unittest
+      - backwards_compatibility_test
+      - double_test
+      - ros1_tests
+      - ros2_tests
+    if: always()  # run even if the dependent jobs have failed to log failures
+    # Allow build reports to fail on pull requests.
+    # When a contribution is made on a fork, the secrets will not be available,
+    # and this step will be failing. This is acceptable.
+    # On the other end, we want to be notified if this happens on merge, or
+    # on schedule.
+    continue-on-error: ${{ github.event_name == 'pull_request'}}
+    steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    - uses: ros-tooling/action-cloudwatch-metrics@0.0.4
+      with:
+        # Checks if any of the jobs have failed.
+        #
+        # needs.*.result is returns the list of all success statuses as an
+        # array, i.e. ['success', 'failure, 'success']
+        # join() converts the array to a string 'successfailuresuccess'
+        # contains() checks whether the string contains failure
+        metric-value: ${{ ! contains(join(needs.*.result, ''), 'failure') && ! contains(join(needs.*.result, ''), 'cancelled') }}

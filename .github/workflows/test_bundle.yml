@@ -18,12 +18,12 @@ jobs:
     container:
       image: rostooling/setup-ros-docker:ubuntu-xenial-ros-kinetic-ros-base-latest
     steps:
+      - name: setup-ros-docker#7 workaround
+        run: sudo chown -R rosbuild:rosbuild "$HOME" .
        # needed to access the vcs repos file from the workspace
        # ensures a contribution does not break scheduled tests
       - name: Checkout source
         uses: actions/checkout@v2
-      - name: setup-ros-docker#7 workaround
-        run: sudo chown -R rosbuild:rosbuild "$HOME" .
       - uses: ros-tooling/action-ros-ci@0.0.17
         id: build-from-repos
         with:
@@ -49,10 +49,10 @@ jobs:
     container:
       image: rostooling/setup-ros-docker:ubuntu-xenial-ros-kinetic-ros-base-latest
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v2
       - name: setup-ros-docker#7 workaround
         run: sudo chown -R rosbuild:rosbuild "$HOME" .
+      - name: Checkout sources
+        uses: actions/checkout@v2
       - uses: ros-tooling/action-ros-ci@0.0.17
         id: build-from-repos
         with:
