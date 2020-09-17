@@ -7,7 +7,7 @@ on:
 # Test the released and current master branch
 jobs:
   bundle_integration_test:
-    name: "Release and Master Integration Test"
+    name: "Integration Test"
     strategy:
       fail-fast: false
       matrix:
@@ -35,7 +35,7 @@ jobs:
           sudo apt update
           sudo apt -y install python3-apt python3-pip
           sudo pip3 install -U setuptools==44.0.0
-      - name: Install ${{ matrix.install_colcon_bundle_cmd }}
+      - name: Install ${{ matrix.install_source }}
         run: sudo pip3 install -U ${{ matrix.install_source }}
       - name: Run colcon bundle
         run: |
@@ -66,7 +66,7 @@ jobs:
           sudo pip3 install -U setuptools==44.0.0
       - name: Install from contribution source
         run: |
-          sudo pip3 install --editable colcon-bundle
+          sudo -H pip3 install --editable colcon-bundle
           sudo pip3 install -U git+https://github.com/colcon/colcon-ros-bundle.git@master#egg=colcon-ros-bundle
       - name: Run colcon bundle
         run: |
