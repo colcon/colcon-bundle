@@ -66,8 +66,10 @@ jobs:
           sudo pip3 install -U setuptools==44.0.0
       - name: Install from contribution source
         run: |
+          cd ${{ github.workspace }}
           sudo -H pip3 install --editable colcon-bundle
-          sudo pip3 install -U git+https://github.com/colcon/colcon-ros-bundle.git@master#egg=colcon-ros-bundle
+      - name: Install lastest colcon-ros-bundle from master
+        run: sudo pip3 install -U git+https://github.com/colcon/colcon-ros-bundle.git@master#egg=colcon-ros-bundle
       - name: Run colcon bundle
         run: |
           cd "${{ steps.build-from-repos.outputs.ros-workspace-directory-name }}"
