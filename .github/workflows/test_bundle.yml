@@ -1,0 +1,75 @@
+name: colcon-bundle Integration Test
+on:
+  pull_request:
+  schedule:
+    - cron: '0 * * * *'
+
+# Test the released and current master branch
+jobs:
+  bundle_integration_test:
+    name: "Integration Test"
+    strategy:
+      fail-fast: false
+      matrix:
+        install_source:
+          - "colcon-ros-bundle"
+          - "git+https://github.com/colcon/colcon-bundle.git@master#egg=colcon-bundle git+https://github.com/colcon/colcon-ros-bundle.git@master#egg=colcon-ros-bundle"
+    runs-on: ubuntu-latest
+    container:
+      image: rostooling/setup-ros-docker:ubuntu-xenial-ros-kinetic-ros-base-latest
+    steps:
+      - name: setup-ros-docker#7 workaround
+        run: sudo chown -R rosbuild:rosbuild "$HOME" .
+       # needed to access the vcs repos file from the workspace
+       # ensures a contribution does not break scheduled tests
+      - name: Checkout source
+        uses: actions/checkout@v2
+      - uses: ros-tooling/action-ros-ci@0.0.17
+        id: build-from-repos
+        with:
+          vcs-repo-file-url: "${{ github.workspace }}/.github/workflows/test_bundle.repos"
+          package-name: ros_tutorials navigation
+          source-ros-binary-installation: kinetic
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install python3-apt python3-pip
+          sudo -H pip3 install -U setuptools==44.0.0
+      - name: Install ${{ matrix.install_source }}
+        run: sudo -H pip3 install -U ${{ matrix.install_source }}
+      - name: Run colcon bundle
+        run: |
+          cd "${{ steps.build-from-repos.outputs.ros-workspace-directory-name }}"
+          colcon bundle
+
+  # Test the changes from a contribution
+  contribution_bundle_integration_test:
+    name: "Contribution Integration Test"
+    runs-on: ubuntu-latest
+    container:
+      image: rostooling/setup-ros-docker:ubuntu-xenial-ros-kinetic-ros-base-latest
+    steps:
+      - name: setup-ros-docker#7 workaround
+        run: sudo chown -R rosbuild:rosbuild "$HOME" .
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      - uses: ros-tooling/action-ros-ci@0.0.17
+        id: build-from-repos
+        with:
+          vcs-repo-file-url: "${{ github.workspace }}/.github/workflows/test_bundle.repos"
+          package-name: ros_tutorials navigation
+          source-ros-binary-installation: kinetic
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install python3-apt python3-pip
+          sudo -H pip3 install -U setuptools==44.0.0
+      - name: Install colcon-bundle from contribution source
+        run: |
+          sudo -H pip3 install --editable .
+      - name: Install latest colcon-ros-bundle from master
+        run: sudo pip3 install -U git+https://github.com/colcon/colcon-ros-bundle.git@master#egg=colcon-ros-bundle
+      - name: Run colcon bundle
+        run: |
+          cd "${{ steps.build-from-repos.outputs.ros-workspace-directory-name }}"
+          colcon bundle
