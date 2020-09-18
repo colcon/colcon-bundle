@@ -32,8 +32,8 @@ jobs:
           source-ros-binary-installation: kinetic
       - name: Install dependencies
         run: |
-          sudo apt update
-          sudo apt -y install python3-apt python3-pip
+          sudo apt-get update
+          sudo apt-get -y install python3-apt python3-pip
           sudo -H pip3 install -U setuptools==44.0.0
       - name: Install ${{ matrix.install_source }}
         run: sudo -H pip3 install -U ${{ matrix.install_source }}
@@ -61,8 +61,8 @@ jobs:
           source-ros-binary-installation: kinetic
       - name: Install dependencies
         run: |
-          sudo apt update
-          sudo apt -y install python3-apt python3-pip
+          sudo apt-get update
+          sudo apt-get -y install python3-apt python3-pip
           sudo -H pip3 install -U setuptools==44.0.0
       - name: Install colcon-bundle from contribution source
         run: |
