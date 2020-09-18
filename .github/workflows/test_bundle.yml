@@ -34,9 +34,9 @@ jobs:
         run: |
           sudo apt update
           sudo apt -y install python3-apt python3-pip
-          sudo pip3 install -U setuptools==44.0.0
+          sudo -H pip3 install -U setuptools==44.0.0
       - name: Install ${{ matrix.install_source }}
-        run: sudo pip3 install -U ${{ matrix.install_source }}
+        run: sudo -H pip3 install -U ${{ matrix.install_source }}
       - name: Run colcon bundle
         run: |
           cd "${{ steps.build-from-repos.outputs.ros-workspace-directory-name }}"
@@ -63,11 +63,10 @@ jobs:
         run: |
           sudo apt update
           sudo apt -y install python3-apt python3-pip
-          sudo pip3 install -U setuptools==44.0.0
+          sudo -H pip3 install -U setuptools==44.0.0
       - name: Install colcon-bundle from contribution source
         run: |
-          cd ${{ github.workspace }}
-          sudo -H pip3 install --editable colcon-bundle
+          sudo -H pip3 install --editable .
       - name: Install lastest colcon-ros-bundle from master
         run: sudo pip3 install -U git+https://github.com/colcon/colcon-ros-bundle.git@master#egg=colcon-ros-bundle
       - name: Run colcon bundle
