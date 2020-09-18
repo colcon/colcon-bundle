@@ -30,7 +30,7 @@ jobs:
           vcs-repo-file-url: "${{ github.workspace }}/.github/workflows/test_bundle.repos"
           package-name: ros_tutorials navigation
           source-ros-binary-installation: kinetic
-      - name: ${{ matrix.install_name }}
+      - name: Install dependencies
         run: |
           sudo apt update
           sudo apt -y install python3-apt python3-pip
@@ -59,12 +59,12 @@ jobs:
           vcs-repo-file-url: "${{ github.workspace }}/.github/workflows/test_bundle.repos"
           package-name: ros_tutorials navigation
           source-ros-binary-installation: kinetic
-      - name: ${{ matrix.install_name }}
+      - name: Install dependencies
         run: |
           sudo apt update
           sudo apt -y install python3-apt python3-pip
           sudo pip3 install -U setuptools==44.0.0
-      - name: Install from contribution source
+      - name: Install colcon-bundle from contribution source
         run: |
           cd ${{ github.workspace }}
           sudo -H pip3 install --editable colcon-bundle
