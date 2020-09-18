@@ -67,7 +67,7 @@ jobs:
       - name: Install colcon-bundle from contribution source
         run: |
           sudo -H pip3 install --editable .
-      - name: Install lastest colcon-ros-bundle from master
+      - name: Install latest colcon-ros-bundle from master
         run: sudo pip3 install -U git+https://github.com/colcon/colcon-ros-bundle.git@master#egg=colcon-ros-bundle
       - name: Run colcon bundle
         run: |
