@@ -13,9 +13,9 @@ elif [ -f $BUNDLE_CURRENT_PREFIX/opt/ros/melodic/setup.sh ]; then
 elif [ -f $BUNDLE_CURRENT_PREFIX/opt/ros/noetic/setup.sh ]; then
   _CATKIN_SETUP_DIR=$BUNDLE_CURRENT_PREFIX/opt/ros/noetic . $BUNDLE_CURRENT_PREFIX/opt/ros/noetic/setup.sh
 elif [ -f $BUNDLE_CURRENT_PREFIX/opt/ros/dashing/setup.sh ]; then
-  AMENT_CURRENT_PREFIX=$BUNDLE_CURRENT_PREFIX/opt/ros/dashing . $BUNDLE_CURRENT_PREFIX/opt/ros/dashing/setup.sh
+  _CATKIN_SETUP_DIR=$BUNDLE_CURRENT_PREFIX/opt/ros/dashing . $BUNDLE_CURRENT_PREFIX/opt/ros/dashing/setup.sh
 elif [ -f $BUNDLE_CURRENT_PREFIX/opt/ros/foxy/setup.sh ]; then
-  AMENT_CURRENT_PREFIX=$BUNDLE_CURRENT_PREFIX/opt/ros/foxy . $BUNDLE_CURRENT_PREFIX/opt/ros/foxy/setup.sh
+  _CATKIN_SETUP_DIR=$BUNDLE_CURRENT_PREFIX/opt/ros/foxy . $BUNDLE_CURRENT_PREFIX/opt/ros/foxy/setup.sh
 fi
 
 COLCON_CURRENT_PREFIX=$BUNDLE_CURRENT_PREFIX/opt/install . $BUNDLE_CURRENT_PREFIX/opt/install/setup.sh
