@@ -7,8 +7,3 @@ repositories:
     type: git
     url: https://github.com/ros-planning/navigation
     version: 0332151fd7628dddce5df1b1e69e1e251b4c4dec
-  perception_pcl:
-    type: git
-    url: https://github.com/ros-perception/perception_pcl
-    version: 539b5a78b2fb0f0004911c8f85d43a3cc0472625
-
