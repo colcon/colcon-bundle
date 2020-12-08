@@ -25,4 +25,5 @@ tar -xOf ./v2.tar workspace.tar.gz | tar -xzf - --directory ./v2_bundle/workspac
 
 # Run tests
 docker run -v $(pwd):/workspace ubuntu:bionic /workspace/test_ros2_v2.sh
+docker run -v $(pwd):/workspace ubuntu:bionic /workspace/test_ros2_v2.bash
 

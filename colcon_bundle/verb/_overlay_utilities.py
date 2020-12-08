@@ -1,10 +1,19 @@
 import os
 import shutil
+import stat
 import tarfile
 
 from colcon_bundle.verb import logger
 from colcon_bundle.verb.utilities import \
     update_shebang
+from jinja2 import \
+    Environment, \
+    FileSystemLoader, \
+    select_autoescape
+
+
+_CONTEXT_VAR_BASH = {'shell': 'bash'}
+_CONTEXT_VAR_SH = {'shell': 'sh'}
 
 
 def create_workspace_overlay(install_base: str,
@@ -17,18 +26,39 @@ def create_workspace_overlay(install_base: str,
     :param str workspace_staging_path: Path to stage the overlay build at
     :param str overlay_path: Name of the overlay file (.tar.gz)
     """
+    _generate_template(
+        'v2_workspace_setup.jinja2.sh',
+        'v2_workspace_setup.bash',
+        _CONTEXT_VAR_BASH
+    )
+
+    _generate_template(
+        'v2_workspace_setup.jinja2.sh',
+        'v2_workspace_setup.sh',
+        _CONTEXT_VAR_SH
+    )
     workspace_install_path = os.path.join(
         workspace_staging_path, 'opt', 'built_workspace')
     shutil.rmtree(workspace_staging_path, ignore_errors=True)
     assets_directory = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), 'assets')
 
-    shellscript_path = os.path.join(assets_directory, 'v2_workspace_setup.sh')
+    shellscript_path = os.path.join(
+        assets_directory,
+        'v2_workspace_setup.sh'
+    )
+    shellscript_path_bash = os.path.join(
+        assets_directory,
+        'v2_workspace_setup.bash'
+    )
 
     # install_base: Directory with built artifacts from the workspace
     os.mkdir(workspace_staging_path)
     shutil.copy2(shellscript_path,
                  os.path.join(workspace_staging_path, 'setup.sh'))
+    shutil.copy2(shellscript_path_bash,
+                 os.path.join(workspace_staging_path, 'setup.bash'))
+
     shutil.copytree(install_base, workspace_install_path)
 
     # This is required because python3 shell scripts use a hard
@@ -50,15 +80,33 @@ def create_dependencies_overlay(staging_path, overlay_path):
     """
     dependencies_staging_path = staging_path
     dependencies_tar_gz_path = overlay_path
-
     logger.info('Dependencies changed, updating {}'.format(
         dependencies_tar_gz_path
     ))
+
+    _generate_template(
+        'v2_setup.jinja2.sh',
+        'v2_setup.bash',
+        _CONTEXT_VAR_BASH
+    )
+
+    _generate_template(
+        'v2_setup.jinja2.sh',
+        'v2_setup.sh',
+        _CONTEXT_VAR_SH
+    )
+
     assets_directory = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), 'assets')
     shellscript_path = os.path.join(assets_directory, 'v2_setup.sh')
     shutil.copy2(shellscript_path,
                  os.path.join(dependencies_staging_path, 'setup.sh'))
+    shellscript_path_bash = os.path.join(
+        assets_directory,
+        'v2_setup.bash'
+    )
+    shutil.copy2(shellscript_path_bash,
+                 os.path.join(dependencies_staging_path, 'setup.bash'))
     if os.path.exists(dependencies_tar_gz_path):
         os.remove(dependencies_tar_gz_path)
     recursive_tar_gz_in_path(dependencies_tar_gz_path,
@@ -81,3 +129,30 @@ def recursive_tar_gz_in_path(output_path, path):
         for name in os.listdir(path):
             some_path = os.path.join(path, name)
             tar.add(some_path, arcname=os.path.basename(some_path))
+
+
+def _generate_template(template_name, script_name, context_vars):
+    """
+    Generate setup.bash or setup.sh files from a template.
+
+    This assumes the template is in the assets folder.
+
+    :param template_name: Name of the template to be used
+    :param script_name: name of the script to be generated
+    :param context_vars: dictionary of values to be used for the variables in
+    the template
+    """
+    template_location = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), 'assets/')
+    env = Environment(
+        autoescape=select_autoescape(['html', 'xml']),
+        loader=FileSystemLoader(template_location),
+        keep_trailing_newline=True,
+    )
+    template = env.get_template(template_name)
+
+    script_location = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), 'assets/', script_name)
+    with open(script_location, 'w') as file:
+        file.write(template.render(context_vars))
+    os.chmod(script_location, os.stat(script_location).st_mode | stat.S_IEXEC)
