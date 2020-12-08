@@ -3,6 +3,7 @@
 # cd /workspace
 echo 'dep'
 ls
+cd /worksapce
 ls v2_bundle
 ls v2_bundle/dependencies/
 ls v2_bundle/workspace/
