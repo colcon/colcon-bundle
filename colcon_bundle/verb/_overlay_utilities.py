@@ -24,11 +24,18 @@ def create_workspace_overlay(install_base: str,
         os.path.dirname(os.path.realpath(__file__)), 'assets')
 
     shellscript_path = os.path.join(assets_directory, 'v2_workspace_setup.sh')
+    shellscript_path_bash = os.path.join(
+        assets_directory,
+        'v2_workspace_setup.bash'
+    )
 
     # install_base: Directory with built artifacts from the workspace
     os.mkdir(workspace_staging_path)
     shutil.copy2(shellscript_path,
                  os.path.join(workspace_staging_path, 'setup.sh'))
+    shutil.copy2(shellscript_path_bash,
+                 os.path.join(workspace_staging_path, 'setup.bash'))
+
     shutil.copytree(install_base, workspace_install_path)
 
     # This is required because python3 shell scripts use a hard
@@ -59,6 +66,9 @@ def create_dependencies_overlay(staging_path, overlay_path):
     shellscript_path = os.path.join(assets_directory, 'v2_setup.sh')
     shutil.copy2(shellscript_path,
                  os.path.join(dependencies_staging_path, 'setup.sh'))
+    shellscript_path_bash = os.path.join(assets_directory, 'v2_setup.bash')
+    shutil.copy2(shellscript_path_bash,
+                 os.path.join(dependencies_staging_path, 'setup.bash'))
     if os.path.exists(dependencies_tar_gz_path):
         os.remove(dependencies_tar_gz_path)
     recursive_tar_gz_in_path(dependencies_tar_gz_path,
