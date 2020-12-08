@@ -19,7 +19,7 @@ ENV SETUPTOOLS_USE_DISTUTILS=stdlib
 RUN pip3 install --upgrade pip setuptools
 RUN pip3 install -r requirements.txt
 RUN pip3 install colcon-bundle
-
+RUN pip3 install colcon-common-extensions
 WORKDIR /opt/package/integration/test_workspace
 RUN source /opt/ros/kinetic/setup.sh; colcon build
 RUN source /opt/ros/kinetic/setup.sh; colcon bundle --bundle-version 1 --bundle-base v1
