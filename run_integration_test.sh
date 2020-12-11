@@ -52,8 +52,10 @@ if [[ ${ROS_DISTRO} = "kinetic" ]]
 then
 	docker run -v $(pwd):/workspace ubuntu:xenial /workspace/test_v1.sh
 	docker run -v $(pwd):/workspace ubuntu:xenial /workspace/test_v2.sh
+	docker run -v $(pwd):/workspace ubuntu:xenial /workspace/test_v2.bash
 else
 	docker run -v $(pwd):/workspace ubuntu:bionic /workspace/test_v1.sh
 	docker run -v $(pwd):/workspace ubuntu:bionic /workspace/test_v2.sh
+	docker run -v $(pwd):/workspace ubuntu:bionic /workspace/test_v2.bash
 fi
 
