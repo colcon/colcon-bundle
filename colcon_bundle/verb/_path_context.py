@@ -50,7 +50,7 @@ class PathContext:
             self._bundle_cache = os.path.join(self._bundle_base, 'cache')
             if os.path.exists(self.cache_valid_path()):
                 os.remove(self.cache_valid_path())
-            else:
+            elif os.path.exists(self._bundle_cache):
                 print('Cache is not valid. Clearing cache...')
                 shutil.rmtree(self._bundle_cache)
             os.makedirs(self._bundle_cache, exist_ok=True)
