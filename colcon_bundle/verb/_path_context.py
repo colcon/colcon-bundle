@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import shutil
 
 from colcon_bundle.verb import check_and_mark_bundle_tool, \
     check_and_mark_bundle_version, \
@@ -47,6 +48,9 @@ class PathContext:
         self._bundle_cache = self._bundle_base
         if cache_version == 2:
             self._bundle_cache = os.path.join(self._bundle_base, 'cache')
+            if not os.path.exists(self.cache_valid_path()):
+                print('Cache is not valid. Clearing cache...')
+                shutil.rmtree(self._bundle_cache)
             os.makedirs(self._bundle_cache, exist_ok=True)
         self._install_base = install_base
 
@@ -125,3 +129,7 @@ class PathContext:
     def sources_tar_gz_path(self):  # noqa: D400
         """:return: File path for sources files tarball"""
         return os.path.join(self._bundle_base, 'sources.tar.gz')
+
+    def cache_valid_path(self):  # noqa: D400
+        """:return: File path for cache valid file."""
+        return os.path.join(self._bundle_cache, '.valid')
