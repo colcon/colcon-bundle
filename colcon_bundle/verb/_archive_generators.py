@@ -121,6 +121,13 @@ def generate_archive_v2(path_context: PathContext,
 
     logger.info('Archiving complete')
     print('Archiving complete!')
+    _mark_cache_valid(path_context)
+
+
+def _mark_cache_valid(path_context):
+    cache_valid_file = path_context.cache_valid_path()
+    with open(cache_valid_file, 'a'):
+        os.utime(cache_valid_file)
 
 
 def recursive_tar_in_path(tar_path, path):
