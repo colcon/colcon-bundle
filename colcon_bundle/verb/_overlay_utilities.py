@@ -12,7 +12,6 @@ from jinja2 import \
     select_autoescape
 
 
-_ALL_X = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
 _CONTEXT_VAR_BASH = {'shell': 'bash'}
 _CONTEXT_VAR_SH = {'shell': 'sh'}
 
@@ -57,10 +56,10 @@ def create_workspace_overlay(install_base: str,
     os.mkdir(workspace_staging_path)
     shutil.copy2(shellscript_path,
                  os.path.join(workspace_staging_path, 'setup.sh'))
-    os.chmod(os.path.join(workspace_staging_path, 'setup.sh'), _ALL_X)
+    os.chmod(os.path.join(workspace_staging_path, 'setup.sh'), 0o755)
     shutil.copy2(shellscript_path_bash,
                  os.path.join(workspace_staging_path, 'setup.bash'))
-    os.chmod(os.path.join(workspace_staging_path, 'setup.bash'), _ALL_X)
+    os.chmod(os.path.join(workspace_staging_path, 'setup.bash'), 0o755)
 
     shutil.copytree(install_base, workspace_install_path)
 
@@ -104,14 +103,14 @@ def create_dependencies_overlay(staging_path, overlay_path):
     shellscript_path = os.path.join(assets_directory, 'v2_setup.sh')
     shutil.copy2(shellscript_path,
                  os.path.join(dependencies_staging_path, 'setup.sh'))
-    os.chmod(os.path.join(dependencies_staging_path, 'setup.sh'), _ALL_X)
+    os.chmod(os.path.join(dependencies_staging_path, 'setup.sh'), 0o755)
     shellscript_path_bash = os.path.join(
         assets_directory,
         'v2_setup.bash'
     )
     shutil.copy2(shellscript_path_bash,
                  os.path.join(dependencies_staging_path, 'setup.bash'))
-    os.chmod(os.path.join(dependencies_staging_path, 'setup.bash'), _ALL_X)
+    os.chmod(os.path.join(dependencies_staging_path, 'setup.bash'), 0o755)
     if os.path.exists(dependencies_tar_gz_path):
         os.remove(dependencies_tar_gz_path)
     recursive_tar_gz_in_path(dependencies_tar_gz_path,
