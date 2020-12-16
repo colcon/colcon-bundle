@@ -39,7 +39,7 @@ jobs:
       - name: Run colcon bundle
         run: |
           cd "${{ steps.build-from-repos.outputs.ros-workspace-directory-name }}"
-          colcon bundle
+          source /opt/ros/kinetic/setup.sh && colcon bundle
 
   # Test the changes from a contribution
   contribution_bundle_integration_test:
@@ -70,4 +70,4 @@ jobs:
       - name: Run colcon bundle
         run: |
           cd "${{ steps.build-from-repos.outputs.ros-workspace-directory-name }}"
-          colcon bundle
+          source /opt/ros/kinetic/setup.sh && colcon bundle
