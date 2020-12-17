@@ -32,6 +32,7 @@ def generate_archive_v1(path_context):
         os.path.dirname(os.path.realpath(__file__)), 'assets')
     shellscript_path = os.path.join(assets_directory, 'v1_setup.sh')
     shutil.copy2(shellscript_path, os.path.join(staging_path, 'setup.sh'))
+    os.chmod(os.path.join(staging_path, 'setup.sh'), 0o755)
     bundle_workspace_install_path = os.path.join(
         staging_path, 'opt', 'install')
     if os.path.exists(bundle_workspace_install_path):
