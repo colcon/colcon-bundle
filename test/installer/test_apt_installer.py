@@ -63,11 +63,13 @@ class AptInstallerTests(unittest.TestCase):
                 shutil.rmtree(prefix)
                 os.remove(sources_list)
 
+    @unittest.skipIf(not os.path.isfile('/etc/debian_release'), "requires a debian distro")
     def test_apt_add_to_install_list_splits_version_specifier(self):
         package_name = "foo"
         package_version = "1.3.4"
         self._run_add_to_install_list_test(package_name, package_version)
 
+    @unittest.skipIf(not os.path.isfile('/etc/debian_release'), "requires a debian distro")
     def test_apt_add_to_install_list(self):
         package_name = "foo"
         self._run_add_to_install_list_test(package_name, '')
