@@ -10,9 +10,6 @@ WORKDIR /opt/package
 RUN apt-get update && \
 	apt-get install -y python3-pip python3-apt enchant sudo
 
-RUN curl https://bootstrap.pypa.io/2.7/get-pip.py --output get-pip.py &&\
-  		     python2 get-pip.py pip==20.2.2
-
 RUN python3 -m pip install --upgrade pip==20.*
 RUN python2 -m pip install --upgrade pip==20.*
 RUN pip --version
