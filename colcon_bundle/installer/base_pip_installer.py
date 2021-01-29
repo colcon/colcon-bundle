@@ -57,11 +57,6 @@ class BasePipInstallerExtensionPoint(BundleInstallerExtensionPoint):
             ))
             return {'installed_packages': []}
 
-            self.download(
-                {'pip; python_version >= "3.6"', 'pip<21; python_version < "3.6"'}
-            )
-            self.install({"pip"}, ignore_installed=True)
-
         logger.info('Installing pip dependencies...')
 
         requirements_file = os.path.join(self._cache_path, 'requirements')

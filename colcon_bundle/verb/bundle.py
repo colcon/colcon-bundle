@@ -170,6 +170,8 @@ class BundleVerb(VerbExtensionPoint):
         print('Checking if dependency tarball exists...')
         logger.info('Checking if dependency tarball exists...')
 
+        self._is_pip_installed()
+
         jobs = self._get_jobs(context.args,
                               self._installer_manager.installers,
                               decorators)
@@ -264,3 +266,22 @@ class BundleVerb(VerbExtensionPoint):
 
             jobs[pkg.name] = job
         return jobs
+
+    def _is_pip_installed(self):
+        try:
+            # We're expecting an error here at least once complaining about
+            # pip not being installed. In order to verify that the error is the
+            # one we think it is, we need to process the stderr. So we'll
+            # redirect it to stdout. If it's not the error we expect, something
+            # is wrong, so re-raise it.
+            #
+            # Using _run_output here so stdout doesn't get printed to the
+            # terminal.
+            self._run_output([], stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            output = e.output.decode(sys.getfilesystemencoding()).strip()
+            if "no module named pip" in output.lower():
+                return False
+            else:
+                raise e
+        return True
