@@ -81,7 +81,7 @@ class InstallerManager:
 
         installer_metadata_string = json.dumps(installer_metadata,
                                                sort_keys=True)
-        print('JIKAWA_DEBUG: _installer_manager.py 13)
+        print('JIKAWA_DEBUG: _installer_manager.py 13')
 
         installer_metadata_path = self._path_context.installer_metadata_path()
         dependency_match = False
