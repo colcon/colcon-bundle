@@ -30,7 +30,10 @@ RUN pip3 install colcon-bundle
 
 WORKDIR /opt/package/integration/test_workspace
 
-# RUN source /opt/ros/kinetic/setup.sh; colcon build
+RUN source /opt/ros/kinetic/setup.sh; colcon build
+RUN pip --version
+RUN pip2 --version
+RUN pip3 --version
 # RUN source /opt/ros/kinetic/setup.sh; colcon bundle --bundle-version 1 --bundle-base v1
 # RUN source /opt/ros/kinetic/setup.sh; colcon bundle --bundle-version 2 --bundle-base v2
 

@@ -270,4 +270,3 @@ class BundleVerb(VerbExtensionPoint):
 
             jobs[pkg.name] = job
         return jobs
-        
