@@ -11,7 +11,7 @@ RUN apt-get update && \
 	apt-get install -y python3-pip python3-apt enchant sudo
 
 RUN python3 -m pip install --upgrade pip==20.*
-RUN python2 get-pip.py pip==20.*
+RUN python2 -m pip install pip==20.*
 RUN pip --version
 RUN pip2 --version
 RUN pip3 --version
