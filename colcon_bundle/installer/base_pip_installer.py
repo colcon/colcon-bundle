@@ -51,16 +51,23 @@ class BasePipInstallerExtensionPoint(BundleInstallerExtensionPoint):
         return self.additional_requirements is not None
 
     def install(self):  # noqa: D102
+
+        print('JIKAWA_DEBUG: base_pip_installer.py 1')
+
         if len(self._packages) == 0 and self.additional_requirements is None:
             logger.info('No dependencies to install for {}'.format(
                 os.path.basename(self._python_path)
             ))
             return {'installed_packages': []}
 
+        print('JIKAWA_DEBUG: base_pip_installer.py 2')
+
         logger.info('Installing pip dependencies...')
 
         requirements_file = os.path.join(self._cache_path, 'requirements')
         metadata_file = os.path.join(self._cache_path, 'metadata')
+
+        print('JIKAWA_DEBUG: base_pip_installer.py 3')
 
         if self.additional_requirements is not None:
             logger.info('Installing additional Python requirements from'
@@ -70,6 +77,8 @@ class BasePipInstallerExtensionPoint(BundleInstallerExtensionPoint):
             with open(self.additional_requirements) as req:
                 for requirement in req.readlines():
                     self._packages.append(requirement)
+
+        print('JIKAWA_DEBUG: base_pip_installer.py 4')
 
         if os.path.exists(requirements_file) and os.path.exists(metadata_file):
             with open(requirements_file, 'r') as req:
@@ -81,7 +90,7 @@ class BasePipInstallerExtensionPoint(BundleInstallerExtensionPoint):
                         metadata = json.load(f)
                         return metadata
 
-        print('JIKAWA_DEBUG: base_pip_installer.py')
+        print('JIKAWA_DEBUG: base_pip_installer.py 5')
 
         python_pip_args = [self._python_path, '-m', 'pip']
         pip_install_args = python_pip_args + ['install']
