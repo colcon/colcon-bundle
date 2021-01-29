@@ -81,6 +81,8 @@ class BasePipInstallerExtensionPoint(BundleInstallerExtensionPoint):
                         metadata = json.load(f)
                         return metadata
 
+        print("JIKAWA_DEBUG: base_pip_installer.py")
+
         python_pip_args = [self._python_path, '-m', 'pip']
         pip_install_args = python_pip_args + ['install']
         subprocess.check_call(
