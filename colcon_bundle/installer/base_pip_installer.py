@@ -97,7 +97,7 @@ class BasePipInstallerExtensionPoint(BundleInstallerExtensionPoint):
         pip_args += (self._pip_args or [])
         pip_args += ['--default-timeout=100']
         pip_args += ['--ignore-installed', '-r', requirements_file]
-        subprocess.check_call(pip_args)
+        # subprocess.check_call(pip_args)
 
         # https://pip.pypa.io/en/stable/reference/pip_download/
         if self.context.args.include_sources:
