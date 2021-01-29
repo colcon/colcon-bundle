@@ -182,6 +182,8 @@ class BundleVerb(VerbExtensionPoint):
         installer_parameters_changed = \
             self._installer_manager.cache_invalid()
 
+        logger.info('JIKAWA_DEBUG: bundle.py')
+
         if not os.path.exists(path_context.dependencies_overlay_path()):
             self._installer_manager.run_installers(
                 include_sources=context.args.include_sources)

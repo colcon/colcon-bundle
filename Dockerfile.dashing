@@ -31,7 +31,6 @@ RUN sh -c "echo 'builduser ALL=NOPASSWD: ALL' >> /etc/sudoers"
 ENV SETUPTOOLS_USE_DISTUTILS=stdlib
 
 RUN python3 -m pip install --upgrade pip==20.*
-RUN python3 -m pip install --upgrade pip
 
 RUN pip3 install --upgrade pip setuptools
 # RUN pip3 install -r requirements.txt
