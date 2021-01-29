@@ -27,7 +27,6 @@ RUN pip3 install -r requirements.txt
 RUN pip3 install colcon-bundle
 
 WORKDIR /opt/package/integration/test_workspace
-RUN source /opt/ros/kinetic/setup.sh; colcon build
 
 RUN python3 -m pip install --upgrade pip==20.*
 RUN python2 -m pip install --upgrade pip==20.*
@@ -35,6 +34,7 @@ RUN pip --version
 RUN pip2 --version
 RUN pip3 --version
 
+RUN source /opt/ros/kinetic/setup.sh; colcon build
 RUN source /opt/ros/kinetic/setup.sh; colcon bundle --bundle-version 1 --bundle-base v1
 RUN source /opt/ros/kinetic/setup.sh; colcon bundle --bundle-version 2 --bundle-base v2
 

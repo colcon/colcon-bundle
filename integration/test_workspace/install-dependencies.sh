@@ -9,6 +9,8 @@ apt-get update && apt-get install -y python3-pip python3-apt
 # make an intermediate upgrade to pip 20, which does understand that information	
 python3 -m pip install --upgrade pip==20.*	
 python3 -m pip install --upgrade pip
+python2 -m pip install --upgrade pip==20.*
+python2 -m pip install --upgrade pip
 
 pip3 install --upgrade pip setuptools
 
