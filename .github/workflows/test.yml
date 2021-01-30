@@ -22,10 +22,6 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update && sudo apt install -y enchant
-        python3 -m pip install --upgrade pip==20.*
-        python3 -m pip install --upgrade pip
-        python2 -m pip install --upgrade pip==20.*
-        python2 -m pip install --upgrade pip
         pip install -U tox setuptools==44.0.0
     - name: Run tests
       run: tox
@@ -46,10 +42,6 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update && sudo apt install -y enchant
-        python3 -m pip install --upgrade pip==20.*
-        python3 -m pip install --upgrade pip
-        python2 -m pip install --upgrade pip==20.*
-        python2 -m pip install --upgrade pip
         pip install -U tox setuptools==44.0.0
     - name: Run tests
       run: tox
@@ -70,10 +62,6 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update && sudo apt install -y enchant
-        python3 -m pip install --upgrade pip==20.*
-        python3 -m pip install --upgrade pip
-        python2 -m pip install --upgrade pip==20.*
-        python2 -m pip install --upgrade pip
         pip install -U tox setuptools==44.0.0
     - name: Run tests
       run: tox
@@ -98,10 +86,6 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update && sudo apt install -y enchant
-        python3 -m pip install --upgrade pip==20.*
-        python3 -m pip install --upgrade pip
-        python2 -m pip install --upgrade pip==20.*
-        python2 -m pip install --upgrade pip
         pip install -U tox setuptools==44.0.0
     - name: Run tests
       run: tox
@@ -122,8 +106,6 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update && sudo apt install -y enchant
-          python3 -m pip install --upgrade pip==20.*
-          python3 -m pip install --upgrade pip
           pip install -U tox setuptools==44.0.0
       - name: Run tests
         run: tox
