@@ -30,7 +30,7 @@ def test_flake8():
     #     [str(Path(__file__).parents[1] / 'tests')])
     sys.stdout = stdout
 
-    total_errors = report.total_errors + report_tests.total_errors
+    total_errors = report.total_errors
     if total_errors:  # pragma: no cover
         # output summary with per-category counts
         print()

@@ -33,10 +33,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install python3-apt python3-pip
-          sudo python3 -m pip install --upgrade pip==20.*
-          sudo python3 -m pip install --upgrade pip
-          sudo python2 -m pip install --upgrade pip==20.*
-          sudo python2 -m pip install --upgrade pip
           sudo -H pip3 install -U setuptools==44.0.0
       - name: Install ${{ matrix.install_source }}
         run: sudo -H pip3 install -U ${{ matrix.install_source }}
@@ -65,10 +61,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install python3-apt python3-pip
-          sudo python3 -m pip install --upgrade pip==20.*
-          sudo python3 -m pip install --upgrade pip
-          sudo python2 -m pip install --upgrade pip==20.*
-          sudo python2 -m pip install --upgrade pip
           sudo -H pip3 install -U setuptools==44.0.0
       - name: Install colcon-bundle from contribution source
         run: |
