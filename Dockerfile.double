@@ -16,12 +16,6 @@ ENV SETUPTOOLS_USE_DISTUTILS=stdlib
 RUN	rosdep update && \
 	rosdep install --from-paths integration/test_workspace --ignore-src -r -y
 
-RUN python3 -m pip install --upgrade pip==20.*
-RUN python2 -m pip install --upgrade pip==20.*
-RUN pip --version
-RUN pip2 --version
-RUN pip3 --version
-
 RUN pip3 install --upgrade pip setuptools
 RUN pip3 install -r requirements.txt
 RUN pip3 install -e .
