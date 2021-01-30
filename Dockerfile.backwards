@@ -8,15 +8,7 @@ COPY . /opt/package
 WORKDIR /opt/package
 
 RUN apt-get update && \
-	apt-get install -y curl python3-pip python3-apt enchant sudo
-
-RUN curl https://bootstrap.pypa.io/2.7/get-pip.py --output get-pip.py && \
-	python2 get-pip.py pip==20.2.2
-
-RUN python3 -m pip install --upgrade pip==20.*
-RUN pip --version
-RUN pip2 --version
-RUN pip3 --version
+	apt-get install -y python3-pip python3-apt enchant sudo
 
 RUN	rosdep update && \
 	rosdep install --from-paths integration/test_workspace --ignore-src -r -y
@@ -29,13 +21,9 @@ RUN pip3 install -r requirements.txt
 RUN pip3 install colcon-bundle
 
 WORKDIR /opt/package/integration/test_workspace
-
 RUN source /opt/ros/kinetic/setup.sh; colcon build
-RUN pip --version
-RUN pip2 --version
-RUN pip3 --version
-# RUN source /opt/ros/kinetic/setup.sh; colcon bundle --bundle-version 1 --bundle-base v1
-# RUN source /opt/ros/kinetic/setup.sh; colcon bundle --bundle-version 2 --bundle-base v2
+RUN source /opt/ros/kinetic/setup.sh; colcon bundle --bundle-version 1 --bundle-base v1
+RUN source /opt/ros/kinetic/setup.sh; colcon bundle --bundle-version 2 --bundle-base v2
 
 RUN rm -rf v1/output.tar.gz
 RUN rm -rf v2/output.tar
