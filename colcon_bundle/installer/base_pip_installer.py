@@ -51,7 +51,6 @@ class BasePipInstallerExtensionPoint(BundleInstallerExtensionPoint):
         return self.additional_requirements is not None
 
     def install(self):  # noqa: D102
-
         if len(self._packages) == 0 and self.additional_requirements is None:
             logger.info('No dependencies to install for {}'.format(
                 os.path.basename(self._python_path)

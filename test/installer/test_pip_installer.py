@@ -41,8 +41,6 @@ def test_install(check_output, check_call):
         installer.remove_from_install_list('remove_me')
         result = installer.install()
 
-        print('JIKAWA_DEBUG: test_pip_installer.py')
-
         args_list = check_call.call_args_list
         args = args_list[0][0][0]
         assert args[0] == python_path
@@ -93,8 +91,6 @@ def test_install_with_additional_arguments(check_output, check_call):
         installer.add_to_install_list('remove_me')
         installer.remove_from_install_list('remove_me')
         result = installer.install()
-
-        print('JIKAWA_DEBUG: test_pip_installer.py')
 
         args_list = check_call.call_args_list
         args = args_list[0][0][0]
@@ -147,8 +143,6 @@ def test_install_not_required(check_output, check_call):
         installer.add_to_install_list('remove_me')
         installer.remove_from_install_list('remove_me')
         result = installer.install()
-
-        print('JIKAWA_DEBUG: test_pip_installer.py')
 
         args_list = check_call.call_args_list
         args = args_list[0][0][0]
@@ -216,8 +210,6 @@ def test_install_addtional_requirements(check_output, check_call):
         assert installer._packages == [
             'pkg1==3.4.5', 'pkg2==3.1.2', 'rpkg==1.2.3'
         ]
-
-        print('JIKAWA_DEBUG: test_pip_installer.py')
 
         args_list = check_call.call_args_list
         args = args_list[0][0][0]
