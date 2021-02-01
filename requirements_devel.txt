@@ -16,4 +16,3 @@ pytest-cov
 distro>=1.2.0
 snowballstemmer==2.0.0
 packaging==20.8
-coverage==5.3.1
