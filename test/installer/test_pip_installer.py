@@ -46,7 +46,7 @@ def test_install(check_output, check_call):
         assert args[0] == python_path
         # Ensure we upgrade pip/setuptools
         assert args[1:] == [
-            '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0']
+            '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0', 'pip']
 
         args = args_list[1][0][0]
         assert args[0] == python_path
@@ -97,7 +97,7 @@ def test_install_with_additional_arguments(check_output, check_call):
         assert args[0] == python_path
         # Ensure we upgrade pip/setuptools
         assert args[1:] == [
-            '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0']
+            '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0', 'pip']
 
         args = args_list[1][0][0]
         assert args[0] == python_path
@@ -149,7 +149,7 @@ def test_install_not_required(check_output, check_call):
         assert args[0] == python_path
         # Ensure we upgrade pip/setuptools
         assert args[1:] == [
-            '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0']
+            '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0', 'pip']
 
         args = args_list[1][0][0]
         assert args[0] == python_path
@@ -216,7 +216,7 @@ def test_install_addtional_requirements(check_output, check_call):
         assert args[0] == python_path
         # Ensure we upgrade pip/setuptools
         assert args[1:] == [
-            '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0']
+            '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0', 'pip']
 
         args = args_list[1][0][0]
         assert args[0] == python_path
