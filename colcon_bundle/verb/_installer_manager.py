@@ -73,15 +73,12 @@ class InstallerManager:
 
         print('Fetching and installing dependencies...')
         logger.info('Fetching and installing dependencies...')
-        print('JIKAWA_DEBUG: _installer_manager.py 1')
         installer_metadata = {}
         for name, installer in self.installers.items():
             installer_metadata[name] = installer.install()
-        print('JIKAWA_DEBUG: _installer_manager.py 2')
 
         installer_metadata_string = json.dumps(installer_metadata,
                                                sort_keys=True)
-        print('JIKAWA_DEBUG: _installer_manager.py 13')
 
         installer_metadata_path = self._path_context.installer_metadata_path()
         dependency_match = False
@@ -90,11 +87,9 @@ class InstallerManager:
                 previous_metadata = f.read()
                 if previous_metadata == installer_metadata_string:
                     dependency_match = True
-        print('JIKAWA_DEBUG: _installer_manager.py 4')
 
         with open(installer_metadata_path, 'w') as f:
             f.write(installer_metadata_string)
-        print('JIKAWA_DEBUG: _installer_manager.py 5')
 
         if include_sources:
             sources_tar_gz_path = self._path_context.sources_tar_gz_path()
@@ -110,13 +105,10 @@ class InstallerManager:
                             file_path,
                             arcname=os.path.join(
                                 name, os.path.basename(file_path)))
-        print('JIKAWA_DEBUG: _installer_manager.py 6')
 
         update_symlinks(self.prefix_path)
-        print('JIKAWA_DEBUG: _installer_manager.py 7')
         # TODO: Update pkgconfig files?
         update_shebang(self.prefix_path)
-        print('JIKAWA_DEBUG: _installer_manager.py 8')
         # TODO: Move this to colcon-ros-bundle
         rewrite_catkin_package_path(self.prefix_path)
 

@@ -170,8 +170,6 @@ class BundleVerb(VerbExtensionPoint):
         print('Checking if dependency tarball exists...')
         logger.info('Checking if dependency tarball exists...')
 
-        print('JIKAWA_DEBUG: bundle.py 1')
-
         jobs = self._get_jobs(context.args,
                               self._installer_manager.installers,
                               decorators)
@@ -179,14 +177,10 @@ class BundleVerb(VerbExtensionPoint):
         if rc != 0:
             return rc
 
-        print('JIKAWA_DEBUG: bundle.py 2')
-
         direct_dependencies_changed = package_dependencies_changed(
             path_context, decorators)
         installer_parameters_changed = \
             self._installer_manager.cache_invalid()
-
-        print('JIKAWA_DEBUG: bundle.py 3')
 
         if not os.path.exists(path_context.dependencies_overlay_path()):
             self._installer_manager.run_installers(
