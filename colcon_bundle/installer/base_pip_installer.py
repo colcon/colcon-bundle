@@ -84,7 +84,9 @@ class BasePipInstallerExtensionPoint(BundleInstallerExtensionPoint):
         python_pip_args = [self._python_path, '-m', 'pip']
         pip_install_args = python_pip_args + ['install']
         subprocess.check_call(
-            pip_install_args + ['-U', 'pip', 'setuptools==44.0.0'])
+            pip_install_args + ['-U', 'pip==20.*', 'setuptools==44.0.0'])
+        subprocess.check_call(
+            pip_install_args + ['-U', 'pip'])
 
         with open(requirements_file, 'w') as req:
             for name in self._packages:
