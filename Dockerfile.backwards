@@ -17,6 +17,7 @@ RUN	rosdep update && \
 ENV SETUPTOOLS_USE_DISTUTILS=stdlib
 
 RUN pip3 install --upgrade pip==20.* setuptools==44.0.0
+RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 RUN pip3 install -e .
 
