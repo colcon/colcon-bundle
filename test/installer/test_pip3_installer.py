@@ -51,6 +51,11 @@ def test_install(check_output, check_call):
         args = args_list[1][0][0]
         assert args[0] == python_path
         assert args[1:-1] == [
+            '-m', 'pip', 'install']
+
+        args = args_list[2][0][0]
+        assert args[0] == python_path
+        assert args[1:-1] == [
             '-m', 'pip', 'install', '--default-timeout=100',
             '--ignore-installed', '-r']
 
@@ -100,6 +105,11 @@ def test_install_with_additional_arguments(check_output, check_call):
             '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0']
 
         args = args_list[1][0][0]
+        assert args[0] == python_path
+        assert args[1:-1] == [
+            '-m', 'pip', 'install']
+
+        args = args_list[2][0][0]
         assert args[0] == python_path
         assert args[1:-1] == [
             '-m', 'pip', 'install', ' --test-arg-1',
@@ -153,6 +163,11 @@ def test_install_not_required(check_output, check_call):
             '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0']
 
         args = args_list[1][0][0]
+        assert args[0] == python_path
+        assert args[1:-1] == [
+            '-m', 'pip', 'install']
+
+        args = args_list[2][0][0]
         assert args[0] == python_path
         assert args[1:-1] == [
             '-m', 'pip', 'install',  '--default-timeout=100',
@@ -220,6 +235,11 @@ def test_install_additional_requirements(check_output, check_call):
             '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0']
 
         args = args_list[1][0][0]
+        assert args[0] == python_path
+        assert args[1:-1] == [
+            '-m', 'pip', 'install']
+
+        args = args_list[2][0][0]
         assert args[0] == python_path
         assert args[1:-1] == [
             '-m', 'pip', 'install', '--default-timeout=100',
