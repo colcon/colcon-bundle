@@ -51,7 +51,7 @@ def test_install(check_output, check_call):
         args = args_list[1][0][0]
         assert args[0] == python_path
         assert args[1:-1] == [
-            '-m', 'pip', 'install']
+            '-m', 'pip', 'install', '-U']
 
         args = args_list[2][0][0]
         assert args[0] == python_path
@@ -107,7 +107,7 @@ def test_install_with_additional_arguments(check_output, check_call):
         args = args_list[1][0][0]
         assert args[0] == python_path
         assert args[1:-1] == [
-            '-m', 'pip', 'install']
+            '-m', 'pip', 'install', '-U']
 
         args = args_list[2][0][0]
         assert args[0] == python_path
@@ -164,7 +164,7 @@ def test_install_not_required(check_output, check_call):
         args = args_list[1][0][0]
         assert args[0] == python_path
         assert args[1:-1] == [
-            '-m', 'pip', 'install']
+            '-m', 'pip', 'install', '-U']
 
         args = args_list[2][0][0]
         assert args[0] == python_path
@@ -236,7 +236,7 @@ def test_install_addtional_requirements(check_output, check_call):
         args = args_list[1][0][0]
         assert args[0] == python_path
         assert args[1:-1] == [
-            '-m', 'pip', 'install']
+            '-m', 'pip', 'install', '-U']
 
         args = args_list[2][0][0]
         assert args[0] == python_path
