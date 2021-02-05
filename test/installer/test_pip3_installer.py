@@ -189,7 +189,7 @@ def test_install_not_required(check_output, check_call):
         result_2 = installer.install()
         assert result == result_2
         # Verify we haven't called pip
-        assert check_call.call_count == 3
+        assert check_call.call_count == 4
         # Verify we haven't called pip freeze
         assert check_output.call_count == 1
     finally:
