@@ -51,6 +51,11 @@ def test_install(check_output, check_call):
         args = args_list[1][0][0]
         assert args[0] == python_path
         assert args[1:-1] == [
+            '-m', 'pip', 'install', '-U']
+
+        args = args_list[2][0][0]
+        assert args[0] == python_path
+        assert args[1:-1] == [
             '-m', 'pip', 'install', '--default-timeout=100',
             '--ignore-installed', '-r']
 
@@ -100,6 +105,11 @@ def test_install_with_additional_arguments(check_output, check_call):
             '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0']
 
         args = args_list[1][0][0]
+        assert args[0] == python_path
+        assert args[1:-1] == [
+            '-m', 'pip', 'install', '-U']
+
+        args = args_list[2][0][0]
         assert args[0] == python_path
         assert args[1:-1] == [
             '-m', 'pip', 'install', ' --test-arg-1',
@@ -155,6 +165,11 @@ def test_install_not_required(check_output, check_call):
         args = args_list[1][0][0]
         assert args[0] == python_path
         assert args[1:-1] == [
+            '-m', 'pip', 'install', '-U']
+
+        args = args_list[2][0][0]
+        assert args[0] == python_path
+        assert args[1:-1] == [
             '-m', 'pip', 'install',  '--default-timeout=100',
             '--ignore-installed', '-r']
 
@@ -174,7 +189,7 @@ def test_install_not_required(check_output, check_call):
         result_2 = installer.install()
         assert result == result_2
         # Verify we haven't called pip
-        assert check_call.call_count == 3
+        assert check_call.call_count == 4
         # Verify we haven't called pip freeze
         assert check_output.call_count == 1
     finally:
@@ -220,6 +235,11 @@ def test_install_additional_requirements(check_output, check_call):
             '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0']
 
         args = args_list[1][0][0]
+        assert args[0] == python_path
+        assert args[1:-1] == [
+            '-m', 'pip', 'install', '-U']
+
+        args = args_list[2][0][0]
         assert args[0] == python_path
         assert args[1:-1] == [
             '-m', 'pip', 'install', '--default-timeout=100',
