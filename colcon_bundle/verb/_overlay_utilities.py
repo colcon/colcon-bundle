@@ -26,22 +26,26 @@ def create_workspace_overlay(install_base: str,
     :param str workspace_staging_path: Path to stage the overlay build at
     :param str overlay_path: Name of the overlay file (.tar.gz)
     """
-    _generate_template(
-        'v2_workspace_setup.jinja2.sh',
-        'v2_workspace_setup.bash',
-        _CONTEXT_VAR_BASH
-    )
 
-    _generate_template(
-        'v2_workspace_setup.jinja2.sh',
-        'v2_workspace_setup.sh',
-        _CONTEXT_VAR_SH
-    )
     workspace_install_path = os.path.join(
         workspace_staging_path, 'opt', 'built_workspace')
     shutil.rmtree(workspace_staging_path, ignore_errors=True)
     assets_directory = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), 'assets')
+
+    _generate_template(
+        assets_directory,
+        os.path.join(assets_directory, 'v2_workspace_setup.jinja2.sh'),
+        os.path.join(assets_directory, 'v2_workspace_setup.bash'),
+        _CONTEXT_VAR_BASH
+    )
+
+    _generate_template(
+        assets_directory,
+        os.path.join(assets_directory, 'v2_workspace_setup.jinja2.sh'),
+        os.path.join(assets_directory, 'v2_workspace_setup.bash'),
+        _CONTEXT_VAR_BASH
+    )
 
     shellscript_path = os.path.join(
         assets_directory,
