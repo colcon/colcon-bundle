@@ -93,8 +93,8 @@ def create_dependencies_overlay(staging_path, overlay_path):
     )
 
     _generate_template(
-        'v2_setup.jinja2.sh',
-        'v2_setup.sh',
+        assets_path / 'v2_setup.jinja.sh',
+        dependencies_staging_path / 'setup.sh',
         _CONTEXT_VAR_SH
     )
 
@@ -135,28 +135,16 @@ def recursive_tar_gz_in_path(output_path, path):
             tar.add(some_path, arcname=os.path.basename(some_path))
 
 
-def _generate_template(template_name, script_name, context_vars):
+def _generate_template(src: Path, dest: Path, context_vars: dict):
     """
-    Generate setup.bash or setup.sh files from a template.
-
-    This assumes the template is in the assets folder.
-
-    :param template_name: Name of the template to be used
-    :param script_name: name of the script to be generated
-    :param context_vars: dictionary of values to be used for the variables in
-    the template
+    Render a jinja2 template to a location.
     """
-    template_location = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), 'assets/')
     env = Environment(
         autoescape=select_autoescape(['html', 'xml']),
         loader=FileSystemLoader(template_location),
         keep_trailing_newline=True,
     )
-    template = env.get_template(template_name)
-
-    script_location = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), 'assets/', script_name)
-    with open(script_location, 'w') as file:
+    template = env.get_template(src)
+    with open(dest, 'w') as file:
         file.write(template.render(context_vars))
     os.chmod(script_location, os.stat(script_location).st_mode | stat.S_IEXEC)
