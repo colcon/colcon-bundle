@@ -26,7 +26,6 @@ def create_workspace_overlay(install_base: str,
     :param str workspace_staging_path: Path to stage the overlay build at
     :param str overlay_path: Name of the overlay file (.tar.gz)
     """
-
     workspace_install_path = os.path.join(
         workspace_staging_path, 'opt', 'built_workspace')
     shutil.rmtree(workspace_staging_path, ignore_errors=True)
@@ -147,7 +146,7 @@ def _generate_template(asset, src, dest, context_vars: dict):
         os.path.dirname(os.path.realpath(__file__)), 'assets/')
     env = Environment(
         autoescape=select_autoescape(['html', 'xml']),
-        loader=FileSystemLoader(asset),
+        loader=FileSystemLoader(template_location),
         keep_trailing_newline=True,
     )
     template = env.get_template(template_location)
