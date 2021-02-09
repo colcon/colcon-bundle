@@ -18,7 +18,7 @@ RUN	rosdep update && \
 
 RUN pip3 install --upgrade pip setuptools
 RUN pip3 install -r requirements.txt
-RUN pip3 install -e .
+RUN sudo pip3 install -e .
 
 WORKDIR /opt/package/integration/test_workspace
 RUN source /opt/ros/melodic/setup.sh; colcon build

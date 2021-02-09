@@ -32,7 +32,7 @@ RUN rm -rf v2/output.tar
 WORKDIR /opt/package
 
 RUN pip3 uninstall -y colcon-bundle
-RUN pip3 install -e .
+RUN sudo pip3 install -e .
 
 WORKDIR /opt/package/integration/test_workspace
 RUN source /opt/ros/kinetic/setup.sh; colcon build
