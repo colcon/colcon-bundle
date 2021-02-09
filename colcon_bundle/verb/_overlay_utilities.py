@@ -86,20 +86,23 @@ def create_dependencies_overlay(staging_path, overlay_path):
         dependencies_tar_gz_path
     ))
 
+    assets_directory = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), 'assets')
+
     _generate_template(
-        'v2_setup.jinja2.sh',
-        'v2_setup.bash',
+        assets_directory,
+        os.path.join(assets_directory, 'v2_setup.jinja2.sh'),
+        os.path.join(assets_directory, 'v2_setup.bash'),
         _CONTEXT_VAR_BASH
     )
 
     _generate_template(
-        assets_path / 'v2_setup.jinja.sh',
-        dependencies_staging_path / 'setup.sh',
-        _CONTEXT_VAR_SH
+        assets_directory,
+        os.path.join(assets_directory, 'v2_setup.jinja2.sh'),
+        os.path.join(assets_directory, 'v2_setup.bash'),
+        _CONTEXT_VAR_BASH
     )
 
-    assets_directory = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), 'assets')
     shellscript_path = os.path.join(assets_directory, 'v2_setup.sh')
     shutil.copy2(shellscript_path,
                  os.path.join(dependencies_staging_path, 'setup.sh'))
@@ -135,16 +138,16 @@ def recursive_tar_gz_in_path(output_path, path):
             tar.add(some_path, arcname=os.path.basename(some_path))
 
 
-def _generate_template(src: Path, dest: Path, context_vars: dict):
+def _generate_template(asset, src, dest, context_vars: dict):
     """
     Render a jinja2 template to a location.
     """
     env = Environment(
         autoescape=select_autoescape(['html', 'xml']),
-        loader=FileSystemLoader(template_location),
+        loader=FileSystemLoader(asset),
         keep_trailing_newline=True,
     )
     template = env.get_template(src)
     with open(dest, 'w') as file:
         file.write(template.render(context_vars))
-    os.chmod(script_location, os.stat(script_location).st_mode | stat.S_IEXEC)
+    os.chmod(dest, os.stat(dest).st_mode | stat.S_IEXEC)
