@@ -157,7 +157,6 @@ def _generate_template(template_name, script_name, context_vars):
 
     script_location = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), 'assets/', script_name)
-    os.chmod(script_location, 0o777)
     with open(script_location, 'w') as file:
         file.write(template.render(context_vars))
     os.chmod(script_location, os.stat(script_location).st_mode | stat.S_IEXEC)
