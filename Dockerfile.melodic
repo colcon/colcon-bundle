@@ -21,7 +21,7 @@ RUN sh -c "echo 'builduser ALL=NOPASSWD: ALL' >> /etc/sudoers"
 
 RUN pip3 install --upgrade pip setuptools
 RUN pip3 install -r requirements.txt
-RUN pip3 install -e .
+RUN sudo pip3 install -e .
 
 RUN chown -R builduser /opt/package
 

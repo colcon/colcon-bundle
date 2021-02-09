@@ -26,6 +26,17 @@ def create_workspace_overlay(install_base: str,
     :param str workspace_staging_path: Path to stage the overlay build at
     :param str overlay_path: Name of the overlay file (.tar.gz)
     """
+    _generate_template(
+        'v2_workspace_setup.jinja2.sh',
+        'v2_workspace_setup.bash',
+        _CONTEXT_VAR_BASH
+    )
+
+    _generate_template(
+        'v2_workspace_setup.jinja2.sh',
+        'v2_workspace_setup.sh',
+        _CONTEXT_VAR_SH
+    )
 
     workspace_install_path = os.path.join(
         workspace_staging_path, 'opt', 'built_workspace')
@@ -33,6 +44,7 @@ def create_workspace_overlay(install_base: str,
     assets_directory = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), 'assets')
 
+    """
     _generate_template(
         assets_directory,
         os.path.join(assets_directory, 'v2_workspace_setup.jinja2.sh'),
@@ -46,6 +58,7 @@ def create_workspace_overlay(install_base: str,
         os.path.join(assets_directory, 'v2_workspace_setup.bash'),
         _CONTEXT_VAR_BASH
     )
+    """
 
     shellscript_path = os.path.join(
         assets_directory,
@@ -94,6 +107,19 @@ def create_dependencies_overlay(staging_path, overlay_path):
         os.path.dirname(os.path.realpath(__file__)), 'assets')
 
     _generate_template(
+        'v2_setup.jinja2.sh',
+        'v2_setup.bash',
+        _CONTEXT_VAR_BASH
+    )
+
+    _generate_template(
+        'v2_setup.jinja2.sh',
+        'v2_setup.sh',
+        _CONTEXT_VAR_SH
+    )
+
+    """
+    _generate_template(
         assets_directory,
         os.path.join(assets_directory, 'v2_setup.jinja2.sh'),
         os.path.join(assets_directory, 'v2_setup.bash'),
@@ -106,6 +132,7 @@ def create_dependencies_overlay(staging_path, overlay_path):
         os.path.join(assets_directory, 'v2_setup.bash'),
         _CONTEXT_VAR_BASH
     )
+    """
 
     shellscript_path = os.path.join(assets_directory, 'v2_setup.sh')
     shutil.copy2(shellscript_path,
@@ -142,10 +169,7 @@ def recursive_tar_gz_in_path(output_path, path):
             tar.add(some_path, arcname=os.path.basename(some_path))
 
 
-def _generate_template(asset, src, dest, context_vars: dict):
-    """
-    Render a jinja2 template to a location.
-    """
+def _generate_template2(asset, src, dest, context_vars: dict):
     env = Environment(
         autoescape=select_autoescape(['html', 'xml']),
         loader=FileSystemLoader(asset),
@@ -155,3 +179,20 @@ def _generate_template(asset, src, dest, context_vars: dict):
     with open(dest, 'w') as file:
         file.write(template.render(context_vars))
     os.chmod(dest, os.stat(dest).st_mode | stat.S_IEXEC)
+
+
+def _generate_template(template_name, script_name, context_vars):
+    template_location = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), 'assets/')
+    env = Environment(
+        autoescape=select_autoescape(['html', 'xml']),
+        loader=FileSystemLoader(template_location),
+        keep_trailing_newline=True,
+    )
+    template = env.get_template(template_name)
+
+    script_location = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), 'assets/', script_name)
+    with open(script_location, 'w') as file:
+        file.write(template.render(context_vars))
+    os.chmod(script_location, os.stat(script_location).st_mode | stat.S_IEXEC)
