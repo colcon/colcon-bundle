@@ -26,7 +26,6 @@ def create_workspace_overlay(install_base: str,
     :param str workspace_staging_path: Path to stage the overlay build at
     :param str overlay_path: Name of the overlay file (.tar.gz)
     """
-
     workspace_install_path = os.path.join(
         workspace_staging_path, 'opt', 'built_workspace')
     shutil.rmtree(workspace_staging_path, ignore_errors=True)
@@ -75,8 +74,6 @@ def create_dependencies_overlay(staging_path, overlay_path):
     logger.info('Dependencies changed, updating {}'.format(
         dependencies_tar_gz_path
     ))
-
-
 
     assets_directory = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), 'assets')
