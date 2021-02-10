@@ -27,7 +27,6 @@ def create_workspace_overlay(install_base: str,
     :param str ws_staging_path: Path to stage the overlay build at
     :param str overlay_path: Name of the overlay file (.tar.gz)
     """
-    ws_staging_path = Path(ws_input_path)
     ws_install_path = ws_staging_path / 'opt' / 'built_workspace'
 
     shutil.rmtree(str(ws_staging_path), ignore_errors=True)
@@ -113,7 +112,7 @@ def recursive_tar_gz_in_path(output_path, path):
         logger.info(
             'Creating tar of {path}'.format(path=path))
         for name in p.iterdir():
-            some_path = Path(path) / name
+            some_path = Path(p) / name
             tar.add(str(some_path), arcname=os.path.basename(str(some_path)))
 
 
