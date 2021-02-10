@@ -109,7 +109,7 @@ def recursive_tar_gz_in_path(output_path: Path, tar_path: Path):
         logger.info(
             'Creating tar of {path}'.format(path=tar_path))
         for child in tar_path.iterdir():
-            tar.add(child, arcname=child.name)
+            tar.add(str(child), arcname=str(child.name))
 
 
 def _render_template(template_name: Path,
