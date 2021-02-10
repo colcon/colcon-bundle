@@ -1,5 +1,4 @@
 import os
-import pathlib
 import shutil
 import stat
 import tarfile
@@ -11,6 +10,7 @@ from jinja2 import \
     Environment, \
     FileSystemLoader, \
     select_autoescape
+from pathlib import Path
 
 
 _CONTEXT_VAR_BASH = {'shell': 'bash'}
@@ -27,18 +27,13 @@ def create_workspace_overlay(install_base: str,
     :param str workspace_staging_path: Path to stage the overlay build at
     :param str overlay_path: Name of the overlay file (.tar.gz)
     """
-    workspace_install_path = os.path.join(
-        workspace_staging_path, 'opt', 'built_workspace')
+    workspace_install_path = Path(workspace_staging_path) / 'opt'
+    workspace_install_path = workspace_install_path / 'built_workspace'
+
     shutil.rmtree(workspace_staging_path, ignore_errors=True)
 
-    shellscript_dest = os.path.join(
-        workspace_staging_path,
-        'setup.sh'
-    )
-    shellscript_dest_bash = os.path.join(
-        workspace_staging_path,
-        'setup.bash'
-    )
+    shellscript_dest = workspace_staging_path / 'setup.sh'
+    shellscript_dest_bash = workspace_staging_path / 'setup.bash'
 
     # install_base: Directory with built artifacts from the workspace
     os.mkdir(workspace_staging_path)
@@ -67,7 +62,8 @@ def create_workspace_overlay(install_base: str,
                              workspace_staging_path)
 
 
-def create_dependencies_overlay(staging_path, overlay_path):
+def create_dependencies_overlay(staging_path: Path,
+                                overlay_path: Path):
     """
     Create the dependencies overlay from staging_path.
 
@@ -82,14 +78,8 @@ def create_dependencies_overlay(staging_path, overlay_path):
         dependencies_tar_gz_path
     ))
 
-    shellscript_dest = os.path.join(
-        dependencies_staging_path,
-        'setup.sh'
-    )
-    shellscript_dest_bash = os.path.join(
-        dependencies_staging_path,
-        'setup.bash'
-    )
+    shellscript_dest = dependencies_staging_path / 'setup.sh'
+    shellscript_dest_bash = dependencies_staging_path / 'setup.bash'
 
     _rendering_template(
         'v2_setup.jinja2.sh',
@@ -132,7 +122,7 @@ def recursive_tar_gz_in_path(output_path, path):
 
 
 def _rendering_template(template_name,
-                        script_dest: pathlib.Path,
+                        script_dest: Path,
                         context_vars):
     """
     Generate setup.bash or setup.sh files from a template.
