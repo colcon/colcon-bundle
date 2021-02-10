@@ -95,7 +95,7 @@ def create_dependencies_overlay(staging_path: str, overlay_path: str):
     recursive_tar_gz_in_path(str(dep_tar_gz_path), dep_staging_path)
 
 
-def recursive_tar_gz_in_path(output_path: str, tar_path: Path):
+def recursive_tar_gz_in_path(output_path: Path, tar_path: Path):
     """
     Create a tar.gz archive of all files inside a directory.
 
@@ -107,9 +107,9 @@ def recursive_tar_gz_in_path(output_path: str, tar_path: Path):
     """
     with tarfile.open(output_path, mode='w:gz', compresslevel=5) as tar:
         logger.info(
-            'Creating tar of {path}'.format(path=str(tar_path)))
+            'Creating tar of {path}'.format(path=tar_path))
         for child in tar_path.iterdir():
-            tar.add(str(child), arcname=str(child.name))
+            tar.add(child, arcname=child.name)
 
 
 def _render_template(template_name: Path,
@@ -128,7 +128,7 @@ def _render_template(template_name: Path,
     src = Path(__file__).parent.absolute() / 'assets' / template_name
     env = Environment(
         autoescape=select_autoescape(['html', 'xml']),
-        loader=FileSystemLoader(str(src.parent)),
+        loader=FileSystemLoader(src.parent),
         keep_trailing_newline=True,
     )
     template = env.get_template(str(src.name))
