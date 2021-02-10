@@ -132,7 +132,7 @@ def _rendering_template(template_name: str,
     template_location = Path(__file__).parent.absolute() / 'assets/'
     env = Environment(
         autoescape=select_autoescape(['html', 'xml']),
-        loader=FileSystemLoader(template_location),
+        loader=FileSystemLoader(str(template_location)),
         keep_trailing_newline=True,
     )
     template = env.get_template(template_name)
