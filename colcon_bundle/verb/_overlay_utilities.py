@@ -92,8 +92,8 @@ def create_dependencies_overlay(staging_path, overlay_path):
     )
     shellscript_dest_bash.chmod(0o755)
 
-    if dep_tar_gz_path.exists:
-        dep_tar_gz_path.unlink()
+    if os.path.exists(str(dep_tar_gz_path)):
+        os.remove(str(dep_tar_gz_path))
     recursive_tar_gz_in_path(str(dep_tar_gz_path), str(dep_staging_path))
 
 
@@ -128,8 +128,7 @@ def _rendering_template(template_name: str,
     :param context_vars: dictionary of values to be used for the variables in
     the template
     """
-    temp = os.path.dirname(os.path.realpath(__file__))
-    template_location = Path(temp) / 'assets/'
+    template_location = Path(__file__).parent.absolute() / 'assets/'
     env = Environment(
         autoescape=select_autoescape(['html', 'xml']),
         loader=FileSystemLoader(template_location),
