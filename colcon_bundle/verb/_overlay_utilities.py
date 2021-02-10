@@ -1,4 +1,5 @@
 import os
+import pathlib
 import shutil
 import stat
 import tarfile
@@ -29,20 +30,10 @@ def create_workspace_overlay(install_base: str,
     workspace_install_path = os.path.join(
         workspace_staging_path, 'opt', 'built_workspace')
     shutil.rmtree(workspace_staging_path, ignore_errors=True)
-    assets_directory = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), 'assets')
 
-    shellscript_path = os.path.join(
-        assets_directory,
-        'v2_workspace_setup.sh'
-    )
     shellscript_dest = os.path.join(
         workspace_staging_path,
         'setup.sh'
-    )
-    shellscript_path_bash = os.path.join(
-        assets_directory,
-        'v2_workspace_setup.bash'
     )
     shellscript_dest_bash = os.path.join(
         workspace_staging_path,
@@ -51,21 +42,20 @@ def create_workspace_overlay(install_base: str,
 
     # install_base: Directory with built artifacts from the workspace
     os.mkdir(workspace_staging_path)
-    os.chmod(shellscript_dest, 0o755)
 
     _rendering_template(
         'v2_workspace_setup.jinja2.sh',
         shellscript_dest,
         _CONTEXT_VAR_SH
     )
-
-    os.chmod(shellscript_dest_bash, 0o755)
+    os.chmod(shellscript_dest, 0o755)
 
     _rendering_template(
         'v2_workspace_setup.jinja2.sh',
         shellscript_dest_bash,
         _CONTEXT_VAR_BASH
     )
+    os.chmod(shellscript_dest_bash, 0o755)
 
     shutil.copytree(install_base, workspace_install_path)
 
@@ -92,29 +82,14 @@ def create_dependencies_overlay(staging_path, overlay_path):
         dependencies_tar_gz_path
     ))
 
-    assets_directory = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        'assets'
-    )
-
-    shellscript_path = os.path.join(
-        assets_directory,
-        'v2_setup.sh'
-    )
     shellscript_dest = os.path.join(
         dependencies_staging_path,
         'setup.sh'
-    )
-    shellscript_path_bash = os.path.join(
-        assets_directory,
-        'v2_setup.bash'
     )
     shellscript_dest_bash = os.path.join(
         dependencies_staging_path,
         'setup.bash'
     )
-
-    os.chmod(shellscript_dest, 0o755)
 
     _rendering_template(
         'v2_setup.jinja2.sh',
@@ -122,13 +97,15 @@ def create_dependencies_overlay(staging_path, overlay_path):
         _CONTEXT_VAR_SH
     )
 
-    os.chmod(shellscript_dest_bash, 0o755)
+    os.chmod(shellscript_dest, 0o755)
 
     _rendering_template(
         'v2_setup.jinja2.sh',
         shellscript_dest_bash,
         _CONTEXT_VAR_BASH
     )
+
+    os.chmod(shellscript_dest_bash, 0o755)
 
     if os.path.exists(dependencies_tar_gz_path):
         os.remove(dependencies_tar_gz_path)
@@ -154,7 +131,9 @@ def recursive_tar_gz_in_path(output_path, path):
             tar.add(some_path, arcname=os.path.basename(some_path))
 
 
-def _rendering_template(template_name, script_dest, context_vars):
+def _rendering_template(template_name,
+                        script_dest: pathlib.Path,
+                        context_vars):
     """
     Generate setup.bash or setup.sh files from a template.
 
