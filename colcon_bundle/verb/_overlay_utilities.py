@@ -27,7 +27,7 @@ def create_workspace_overlay(install_base: str,
     :param str ws_staging_path: Path to stage the overlay build at
     :param str overlay_path: Name of the overlay file (.tar.gz)
     """
-    ws_install_path = ws_staging_path / 'opt' / 'built_workspace'
+    ws_install_path = Path(ws_staging_path) / 'opt' / 'built_workspace'
 
     shutil.rmtree(str(ws_staging_path), ignore_errors=True)
 
