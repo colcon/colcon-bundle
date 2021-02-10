@@ -69,10 +69,10 @@ def create_dependencies_overlay(staging_path, overlay_path):
     :param str overlay_path: Path of overlay output file
     (.tar.gz)
     """
-    dep_staging_path = staging_path
-    dep_tar_gz_path = overlay_path
+    dep_staging_path = Path(staging_path)
+    dep_tar_gz_path = Path(overlay_path)
     logger.info('Dependencies changed, updating {}'.format(
-        dep_tar_gz_path
+        str(dep_tar_gz_path)
     ))
 
     shellscript_dest = Path(dep_staging_path) / 'setup.sh'
@@ -92,9 +92,9 @@ def create_dependencies_overlay(staging_path, overlay_path):
     )
     shellscript_dest_bash.chmod(0o755)
 
-    if Path(dep_tar_gz_path).exists:
-        os.remove(dep_tar_gz_path)
-    recursive_tar_gz_in_path(dep_tar_gz_path, dep_staging_path)
+    if dep_tar_gz_path.exists:
+        dep_tar_gz_path.unlink()
+    recursive_tar_gz_in_path(str(dep_tar_gz_path), str(dep_staging_path))
 
 
 def recursive_tar_gz_in_path(output_path, path):
@@ -110,7 +110,7 @@ def recursive_tar_gz_in_path(output_path, path):
     with tarfile.open(output_path, mode='w:gz', compresslevel=5) as tar:
         logger.info(
             'Creating tar of {path}'.format(path=path))
-        for name in os.listdir(path):
+        for name in Path(path).iterdir:
             some_path = Path(path) / name
             tar.add(some_path, arcname=os.path.basename(some_path))
 
@@ -128,8 +128,7 @@ def _rendering_template(template_name: str,
     :param context_vars: dictionary of values to be used for the variables in
     the template
     """
-    template_location = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)), 'assets/')
+    template_location = os.path.dirname(os.path.realpath(__file__)) / 'assets/'
     env = Environment(
         autoescape=select_autoescape(['html', 'xml']),
         loader=FileSystemLoader(template_location),
