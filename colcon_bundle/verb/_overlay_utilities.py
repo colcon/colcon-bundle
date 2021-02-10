@@ -110,7 +110,7 @@ def recursive_tar_gz_in_path(output_path, path):
     with tarfile.open(output_path, mode='w:gz', compresslevel=5) as tar:
         logger.info(
             'Creating tar of {path}'.format(path=path))
-        for name in Path(path).iterdir:
+        for name in os.listdir(path):
             some_path = Path(path) / name
             tar.add(some_path, arcname=os.path.basename(some_path))
 
