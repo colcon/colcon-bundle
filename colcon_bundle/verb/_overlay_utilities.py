@@ -49,18 +49,12 @@ def create_workspace_overlay(install_base: str,
     shutil.copy2(shellscript_path, shellscript_dest)
     os.chmod(shellscript_dest, 0o755)
     
-    _generate_template(
-        os.path.join(dep_staging_path, 'setup.sh'),
-        _CONTEXT_VAR_SH
-    )
+    _generate_template_new(shellscript_dest, _CONTEXT_VAR_SH)
 
     shutil.copy2(shellscript_path_bash, shellscript_dest_bash)
     os.chmod(shellscript_dest_bash, 0o755)
     
-    _generate_template(
-        os.path.join(dep_staging_path, 'setup.bash'),
-        _CONTEXT_VAR_BASH
-    )
+    _generate_template_new(shellscript_dest_bash, _CONTEXT_VAR_BASH)
 
     shutil.copytree(install_base, workspace_install_path)
 
@@ -102,12 +96,12 @@ def create_dependencies_overlay(staging_path, overlay_path):
     shutil.copy2(shellscript_path, shellscript_dest)
     os.chmod(shellscript_dest, 0o755)
     
-    _generate_template(shellscript_dest, _CONTEXT_VAR_SH)
+    _generate_template_new(shellscript_dest, _CONTEXT_VAR_SH)
 
     shutil.copy2(shellscript_path_bash, shellscript_dest_bash)
     os.chmod(shellscript_dest_bash, 0o755)
     
-    _generate_template(shellscript_dest_bash, _CONTEXT_VAR_BASH)
+    _generate_template_new(shellscript_dest_bash, _CONTEXT_VAR_BASH)
 
     if os.path.exists(dep_tar_gz_path):
         os.remove(dep_tar_gz_path)
