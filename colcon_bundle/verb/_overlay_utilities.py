@@ -18,8 +18,8 @@ _CONTEXT_VAR_SH = {'shell': 'sh'}
 
 
 def create_workspace_overlay(install_base: str,
-                             ws_staging_path: Path,
-                             overlay_path: Path):
+                             ws_staging_path: str,
+                             overlay_path: str):
     """
     Create overlay from user's built workspace install directory.
 
@@ -29,13 +29,13 @@ def create_workspace_overlay(install_base: str,
     """
     ws_install_path = Path(ws_staging_path) / 'opt' / 'built_workspace'
 
-    shutil.rmtree(str(ws_staging_path), ignore_errors=True)
+    shutil.rmtree(ws_staging_path, ignore_errors=True)
 
     shellscript_dest = Path(ws_staging_path) / 'setup.sh'
     shellscript_dest_bash = Path(ws_staging_path) / 'setup.bash'
 
     # install_base: Directory with built artifacts from the workspace
-    os.mkdir(str(ws_staging_path))
+    os.mkdir(ws_staging_path)
 
     _rendering_template(
         'v2_workspace_setup.jinja2.sh',
@@ -55,12 +55,12 @@ def create_workspace_overlay(install_base: str,
 
     # This is required because python3 shell scripts use a hard
     # coded shebang
-    update_shebang(str(ws_staging_path))
+    update_shebang(ws_staging_path)
 
-    recursive_tar_gz_in_path(str(overlay_path), str(ws_staging_path))
+    recursive_tar_gz_in_path(overlay_path, ws_staging_path)
 
 
-def create_dependencies_overlay(staging_path, overlay_path):
+def create_dependencies_overlay(staging_path: str, overlay_path: str):
     """
     Create the dependencies overlay from staging_path.
 
@@ -97,7 +97,7 @@ def create_dependencies_overlay(staging_path, overlay_path):
     recursive_tar_gz_in_path(str(dep_tar_gz_path), str(dep_staging_path))
 
 
-def recursive_tar_gz_in_path(output_path, path):
+def recursive_tar_gz_in_path(output_path: str, path: str):
     """
     Create a tar.gz archive of all files inside a directory.
 
