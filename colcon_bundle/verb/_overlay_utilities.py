@@ -6,11 +6,11 @@ import tarfile
 from colcon_bundle.verb import logger
 from colcon_bundle.verb.utilities import \
     update_shebang
+from pathlib import Path
 from jinja2 import \
     Environment, \
     FileSystemLoader, \
     select_autoescape
-from pathlib import Path
 
 
 _CONTEXT_VAR_BASH = {'shell': 'bash'}
@@ -28,12 +28,18 @@ def create_workspace_overlay(install_base: str,
     :param str overlay_path: Name of the overlay file (.tar.gz)
     """
     workspace_install_path = Path(workspace_staging_path) / 'opt'
-    workspace_install_path = workspace_install_path / 'built_workspace'
+    workspace_install_path = workspace_install_path / 'built_worspace'
 
     shutil.rmtree(workspace_staging_path, ignore_errors=True)
 
-    shellscript_dest = workspace_staging_path / 'setup.sh'
-    shellscript_dest_bash = workspace_staging_path / 'setup.bash'
+    shellscript_dest = os.path.join(
+        workspace_staging_path,
+        'setup.sh'
+    )
+    shellscript_dest_bash = os.path.join(
+        workspace_staging_path,
+        'setup.bash'
+    )
 
     # install_base: Directory with built artifacts from the workspace
     os.mkdir(workspace_staging_path)
@@ -122,15 +128,15 @@ def recursive_tar_gz_in_path(output_path, path):
 
 
 def _rendering_template(template_name,
-                        script_dest: Path,
+                        script_dest,
                         context_vars):
     """
-    Generate setup.bash or setup.sh files from a template.
+    Render setup.bash or setup.sh files from template.
 
     This assumes the template is in the assets folder.
 
     :param template_name: Name of the template to be used
-    :param script_dest: path of the script to be generated
+    :param script_dest: path of the script to be rendered
     :param context_vars: dictionary of values to be used for the variables in
     the template
     """
