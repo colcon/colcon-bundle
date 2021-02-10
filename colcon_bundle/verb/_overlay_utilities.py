@@ -84,8 +84,14 @@ def create_dependencies_overlay(staging_path: Path,
         dependencies_tar_gz_path
     ))
 
-    shellscript_dest = dependencies_staging_path / 'setup.sh'
-    shellscript_dest_bash = dependencies_staging_path / 'setup.bash'
+    shellscript_dest = os.path.join(
+        dependencies_staging_path,
+        'setup.sh'
+    )
+    shellscript_dest_bash = os.path.join(
+        dependencies_staging_path,
+        'setup.bash'
+    )
 
     _rendering_template(
         'v2_setup.jinja2.sh',
