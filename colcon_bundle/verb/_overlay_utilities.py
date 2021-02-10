@@ -36,13 +36,18 @@ def create_workspace_overlay(install_base: str,
         assets_directory,
         'v2_workspace_setup.sh'
     )
-    shellscript_dest = os.path.join(workspace_staging_path, 'setup.sh')
-
+    shellscript_dest = os.path.join(
+        workspace_staging_path,
+        'setup.sh'
+    )
     shellscript_path_bash = os.path.join(
         assets_directory,
         'v2_workspace_setup.bash'
     )
-    shellscript_dest_bash = os.path.join(workspace_staging_path, 'setup.bash')
+    shellscript_dest_bash = os.path.join(
+        workspace_staging_path,
+        'setup.bash'
+    )
 
     # install_base: Directory with built artifacts from the workspace
     os.mkdir(workspace_staging_path)
@@ -83,23 +88,31 @@ def create_dependencies_overlay(staging_path, overlay_path):
     :param str overlay_path: Path of overlay output file
     (.tar.gz)
     """
-    dep_staging_path = staging_path
-    dep_tar_gz_path = overlay_path
+    dependencies_staging_path = staging_path
+    dependencies_tar_gz_path = overlay_path
     logger.info('Dependencies changed, updating {}'.format(
-        dep_tar_gz_path
+        dependencies_tar_gz_path
     ))
 
     assets_directory = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), 'assets')
 
-    shellscript_path = os.path.join(assets_directory, 'v2_setup.sh')
-    shellscript_dest = os.path.join(dep_staging_path, 'setup.sh')
-
+    shellscript_path = os.path.join(
+        assets_directory,
+        'v2_setup.sh'
+    )
+    shellscript_dest = os.path.join(
+        dependencies_staging_path,
+        'setup.sh'
+    )
     shellscript_path_bash = os.path.join(
         assets_directory,
         'v2_setup.bash'
     )
-    shellscript_dest_bash = os.path.join(dep_staging_path, 'setup.bash')
+    shellscript_dest_bash = os.path.join(
+        dependencies_staging_path,
+        'setup.bash'
+    )
 
     shutil.copy2(shellscript_path, shellscript_dest)
     os.chmod(shellscript_dest, 0o755)
@@ -119,10 +132,10 @@ def create_dependencies_overlay(staging_path, overlay_path):
         _CONTEXT_VAR_BASH
     )
 
-    if os.path.exists(dep_tar_gz_path):
-        os.remove(dep_tar_gz_path)
-    recursive_tar_gz_in_path(dep_tar_gz_path,
-                             dep_staging_path)
+    if os.path.exists(dependencies_tar_gz_path):
+        os.remove(dependencies_tar_gz_path)
+    recursive_tar_gz_in_path(dependencies_tar_gz_path,
+                             dependencies_staging_path)
 
 
 def recursive_tar_gz_in_path(output_path, path):
@@ -156,13 +169,11 @@ def _generate_template(template_name, dest, context_vars):
     """
     template_location = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), 'assets/')
-
     env = Environment(
         autoescape=select_autoescape(['html', 'xml']),
         loader=FileSystemLoader(template_location),
         keep_trailing_newline=True,
     )
-
     template = env.get_template(template_name)
 
     with open(dest, 'w') as file:
