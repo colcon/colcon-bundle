@@ -34,11 +34,9 @@ def create_workspace_overlay(install_base: str,
     # install_base: Directory with built artifacts from the workspace
     os.mkdir(workspace_staging_path)
 
-    assets_path = Path(__file__).parent.absolute() / 'assets'
-
     shellscript_dest = Path(workspace_staging_path) / 'setup.sh'
     _render_template(
-        assets_path / 'v2_workspace_setup.jinja2.sh',
+        'v2_workspace_setup.jinja2.sh',
         shellscript_dest,
         _CONTEXT_VAR_SH
     )
@@ -46,7 +44,7 @@ def create_workspace_overlay(install_base: str,
 
     shellscript_dest_bash = Path(workspace_staging_path) / 'setup.bash'
     _render_template(
-        assets_path / 'v2_workspace_setup.jinja2.sh',
+        'v2_workspace_setup.jinja2.sh',
         shellscript_dest_bash,
         _CONTEXT_VAR_BASH
     )
@@ -76,11 +74,9 @@ def create_dependencies_overlay(staging_path: str, overlay_path: str):
         str(dep_tar_gz_path)
     ))
 
-    assets_path = Path(__file__).parent.absolute() / 'assets'
-
     shellscript_dest = Path(dep_staging_path) / 'setup.sh'
     _render_template(
-        assets_path / 'v2_setup.jinja2.sh',
+        'v2_setup.jinja2.sh',
         shellscript_dest,
         _CONTEXT_VAR_SH
     )
@@ -88,7 +84,7 @@ def create_dependencies_overlay(staging_path: str, overlay_path: str):
 
     shellscript_dest_bash = Path(dep_staging_path) / 'setup.bash'
     _render_template(
-        assets_path / 'v2_setup.jinja2.sh',
+        'v2_setup.jinja2.sh',
         shellscript_dest_bash,
         _CONTEXT_VAR_BASH
     )
@@ -118,7 +114,7 @@ def recursive_tar_gz_in_path(output_path: str, path: str):
             tar.add(str(some_path), arcname=str(some_path.name))
 
 
-def _render_template(template_path: Path,
+def _render_template(template_name: Path,
                      script_dest: Path,
                      context_vars: dict):
     """
@@ -131,12 +127,13 @@ def _render_template(template_path: Path,
     :param context_vars: dictionary of values to be used for the variables in
     the template
     """
+    src = Path(__file__).parent.absolute() / 'assets' / template_name
     env = Environment(
         autoescape=select_autoescape(['html', 'xml']),
-        loader=FileSystemLoader(str(template_path)),
+        loader=FileSystemLoader(str(src)),
         keep_trailing_newline=True,
     )
-    template = env.get_template(template_path.name)
+    template = env.get_template(str(src.name))
 
     with script_dest.open('w') as file:
         file.write(template.render(context_vars))
