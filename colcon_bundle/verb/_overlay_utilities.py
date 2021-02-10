@@ -48,13 +48,21 @@ def create_workspace_overlay(install_base: str,
     os.mkdir(workspace_staging_path)
     shutil.copy2(shellscript_path, shellscript_dest)
     os.chmod(shellscript_dest, 0o755)
-    
-    _generate_template_new('v2_workspace_setup.jinja2.sh', shellscript_dest, _CONTEXT_VAR_SH)
+
+    _generate_template_new(
+        'v2_workspace_setup.jinja2.sh',
+        shellscript_dest,
+        _CONTEXT_VAR_SH
+    )
 
     shutil.copy2(shellscript_path_bash, shellscript_dest_bash)
     os.chmod(shellscript_dest_bash, 0o755)
-    
-    _generate_template_new('v2_workspace_setup.jinja2.sh', shellscript_dest_bash, _CONTEXT_VAR_BASH)
+
+    _generate_template_new(
+        'v2_workspace_setup.jinja2.sh',
+        shellscript_dest_bash,
+        _CONTEXT_VAR_BASH
+    )
 
     shutil.copytree(install_base, workspace_install_path)
 
@@ -95,13 +103,21 @@ def create_dependencies_overlay(staging_path, overlay_path):
 
     shutil.copy2(shellscript_path, shellscript_dest)
     os.chmod(shellscript_dest, 0o755)
-    
-    _generate_template_new('v2_setup.jinja2.sh', shellscript_dest, _CONTEXT_VAR_SH)
+
+    _generate_template_new(
+        'v2_setup.jinja2.sh',
+        shellscript_dest,
+        _CONTEXT_VAR_SH
+    )
 
     shutil.copy2(shellscript_path_bash, shellscript_dest_bash)
     os.chmod(shellscript_dest_bash, 0o755)
-    
-    _generate_template_new('v2_setup.jinja2.sh', shellscript_dest_bash, _CONTEXT_VAR_BASH)
+
+    _generate_template_new(
+        'v2_setup.jinja2.sh',
+        shellscript_dest_bash,
+        _CONTEXT_VAR_BASH
+    )
 
     if os.path.exists(dep_tar_gz_path):
         os.remove(dep_tar_gz_path)
@@ -169,4 +185,3 @@ def _generate_template(template_name, script_name, context_vars):
     with open(script_location, 'w') as file:
         file.write(template.render(context_vars))
     os.chmod(script_location, os.stat(script_location).st_mode | stat.S_IEXEC)
-
