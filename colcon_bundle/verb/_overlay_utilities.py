@@ -102,15 +102,14 @@ def recursive_tar_gz_in_path(output_path: str, tar_path: Path):
     This function includes all sub-folders of path in the root of the tarfile
 
     :param output_path: Name of archive file to create
-    :param path: path to recursively collect all files and include in
+    :param tar_path: path to recursively collect all files and include in
     tar.gz. These will be included with path as the root of the archive.
     """
     with tarfile.open(output_path, mode='w:gz', compresslevel=5) as tar:
         logger.info(
             'Creating tar of {path}'.format(path=str(tar_path)))
-        for name in tar_path.iterdir():
-            some_path = Path(tar_path) / name
-            tar.add(str(some_path), arcname=str(some_path.name))
+        for child in tar_path.iterdir():
+            tar.add(str(child), arcname=str(child.name))
 
 
 def _render_template(template_name: Path,
