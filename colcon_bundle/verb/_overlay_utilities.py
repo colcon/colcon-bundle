@@ -146,6 +146,7 @@ def recursive_tar_gz_in_path(output_path, path):
 def _generate_template(template_name, dest, context_vars):
     """
     Generate setup.bash or setup.sh files from a template.
+
     This assumes the template is in the assets folder.
 
     :param template_name: Name of the template to be used
