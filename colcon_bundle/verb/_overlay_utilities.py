@@ -36,19 +36,31 @@ def create_workspace_overlay(install_base: str,
         assets_directory,
         'v2_workspace_setup.sh'
     )
+    shellscript_dest = os.path.join(workspace_staging_path, 'setup.sh')
+
     shellscript_path_bash = os.path.join(
         assets_directory,
         'v2_workspace_setup.bash'
     )
+    shellscript_dest_bash = os.path.join(workspace_staging_path, 'setup.bash')
 
     # install_base: Directory with built artifacts from the workspace
     os.mkdir(workspace_staging_path)
-    shutil.copy2(shellscript_path,
-                 os.path.join(workspace_staging_path, 'setup.sh'))
-    os.chmod(os.path.join(workspace_staging_path, 'setup.sh'), 0o755)
-    shutil.copy2(shellscript_path_bash,
-                 os.path.join(workspace_staging_path, 'setup.bash'))
-    os.chmod(os.path.join(workspace_staging_path, 'setup.bash'), 0o755)
+    shutil.copy2(shellscript_path, shellscript_dest)
+    os.chmod(shellscript_dest, 0o755)
+    
+    _generate_template(
+        os.path.join(dep_staging_path, 'setup.sh'),
+        _CONTEXT_VAR_SH
+    )
+
+    shutil.copy2(shellscript_path_bash, shellscript_dest_bash)
+    os.chmod(shellscript_dest_bash, 0o755)
+    
+    _generate_template(
+        os.path.join(dep_staging_path, 'setup.bash'),
+        _CONTEXT_VAR_BASH
+    )
 
     shutil.copytree(install_base, workspace_install_path)
 
@@ -81,27 +93,21 @@ def create_dependencies_overlay(staging_path, overlay_path):
     shellscript_path = os.path.join(assets_directory, 'v2_setup.sh')
     shellscript_dest = os.path.join(dep_staging_path, 'setup.sh')
 
-    shutil.copy2(shellscript_path, shellscript_dest)
-    os.chmod(os.path.join(dep_staging_path, 'setup.sh'), 0o755)
-    
-    _generate_template(
-        os.path.join(dep_staging_path, 'setup.sh'),
-        _CONTEXT_VAR_BASH
-    )
-
     shellscript_path_bash = os.path.join(
         assets_directory,
         'v2_setup.bash'
     )
     shellscript_dest_bash = os.path.join(dep_staging_path, 'setup.bash')
 
-    shutil.copy2(shellscript_path_bash, shellscript_dest_bash)
-    os.chmod(os.path.join(dep_staging_path, 'setup.bash'), 0o755)
+    shutil.copy2(shellscript_path, shellscript_dest)
+    os.chmod(shellscript_dest, 0o755)
     
-    _generate_template(
-        os.path.join(dep_staging_path, 'setup.bash'),
-        _CONTEXT_VAR_BASH
-    )
+    _generate_template(shellscript_dest, _CONTEXT_VAR_SH)
+
+    shutil.copy2(shellscript_path_bash, shellscript_dest_bash)
+    os.chmod(shellscript_dest_bash, 0o755)
+    
+    _generate_template(shellscript_dest_bash, _CONTEXT_VAR_BASH)
 
     if os.path.exists(dep_tar_gz_path):
         os.remove(dep_tar_gz_path)
