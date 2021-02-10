@@ -49,12 +49,12 @@ def create_workspace_overlay(install_base: str,
     shutil.copy2(shellscript_path, shellscript_dest)
     os.chmod(shellscript_dest, 0o755)
     
-    _generate_template_new(shellscript_dest, _CONTEXT_VAR_SH)
+    _generate_template_new('v2_workspace_setup.jinja2.sh', shellscript_dest, _CONTEXT_VAR_SH)
 
     shutil.copy2(shellscript_path_bash, shellscript_dest_bash)
     os.chmod(shellscript_dest_bash, 0o755)
     
-    _generate_template_new(shellscript_dest_bash, _CONTEXT_VAR_BASH)
+    _generate_template_new('v2_workspace_setup.jinja2.sh', shellscript_dest_bash, _CONTEXT_VAR_BASH)
 
     shutil.copytree(install_base, workspace_install_path)
 
@@ -96,12 +96,12 @@ def create_dependencies_overlay(staging_path, overlay_path):
     shutil.copy2(shellscript_path, shellscript_dest)
     os.chmod(shellscript_dest, 0o755)
     
-    _generate_template_new(shellscript_dest, _CONTEXT_VAR_SH)
+    _generate_template_new('v2_setup.jinja2.sh', shellscript_dest, _CONTEXT_VAR_SH)
 
     shutil.copy2(shellscript_path_bash, shellscript_dest_bash)
     os.chmod(shellscript_dest_bash, 0o755)
     
-    _generate_template_new(shellscript_dest_bash, _CONTEXT_VAR_BASH)
+    _generate_template_new('v2_setup.jinja2.sh', shellscript_dest_bash, _CONTEXT_VAR_BASH)
 
     if os.path.exists(dep_tar_gz_path):
         os.remove(dep_tar_gz_path)
@@ -127,7 +127,18 @@ def recursive_tar_gz_in_path(output_path, path):
             tar.add(some_path, arcname=os.path.basename(some_path))
 
 
-def _generate_template_new(dest, context_vars):
+def _generate_template_new(template_name, dest, context_vars):
+    template_location = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), 'assets/')
+
+    env = Environment(
+        autoescape=select_autoescape(['html', 'xml']),
+        loader=FileSystemLoader(template_location),
+        keep_trailing_newline=True,
+    )
+
+    template = env.get_template(template_name)
+
     with open(dest, 'w') as file:
         file.write(template.render(context_vars))
     os.chmod(dest, os.stat(dest).st_mode | stat.S_IEXEC)
