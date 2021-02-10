@@ -42,14 +42,14 @@ def create_workspace_overlay(install_base: str,
         shellscript_dest,
         _CONTEXT_VAR_SH
     )
-    os.chmod(str(shellscript_dest), 0o755)
+    shellscript_dest.chmod(0o755)
 
     _rendering_template(
         'v2_workspace_setup.jinja2.sh',
         shellscript_dest_bash,
         _CONTEXT_VAR_BASH
     )
-    os.chmod(str(shellscript_dest_bash), 0o755)
+    shellscript_dest_bash.chdmod(0o755)
 
     shutil.copytree(install_base, str(ws_install_path))
 
@@ -83,16 +83,14 @@ def create_dependencies_overlay(staging_path, overlay_path):
         shellscript_dest,
         _CONTEXT_VAR_SH
     )
-
-    os.chmod(str(shellscript_dest), 0o755)
+    shellscript_dest.chmod(0o755)
 
     _rendering_template(
         'v2_setup.jinja2.sh',
         shellscript_dest_bash,
         _CONTEXT_VAR_BASH
     )
-
-    os.chmod(str(shellscript_dest_bash), 0o755)
+    shellscript_dest_bash.chdmod(0o755)
 
     if os.path.exists(dep_tar_gz_path):
         os.remove(dep_tar_gz_path)
@@ -113,7 +111,7 @@ def recursive_tar_gz_in_path(output_path, path):
         logger.info(
             'Creating tar of {path}'.format(path=path))
         for name in os.listdir(path):
-            some_path = os.path.join(path, name)
+            some_path = Path(path) / name
             tar.add(some_path, arcname=os.path.basename(some_path))
 
 
@@ -139,6 +137,6 @@ def _rendering_template(template_name,
     )
     template = env.get_template(template_name)
 
-    with open(str(script_dest), 'w') as file:
+    with script_dest.open('w') as file:
         file.write(template.render(context_vars))
-    os.chmod(str(script_dest), os.stat(str(script_dest)).st_mode | stat.S_IEXEC)
+    script_dest.chmod(script_dest.stat().st_mode | stat.S_IEXEC)
