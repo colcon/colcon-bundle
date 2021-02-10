@@ -56,7 +56,7 @@ def create_workspace_overlay(install_base: str,
     # coded shebang
     update_shebang(workspace_staging_path)
 
-    recursive_tar_gz_in_path(overlay_path, workspace_staging_path)
+    recursive_tar_gz_in_path(overlay_path, Path(workspace_staging_path))
 
 
 def create_dependencies_overlay(staging_path: str, overlay_path: str):
@@ -92,10 +92,10 @@ def create_dependencies_overlay(staging_path: str, overlay_path: str):
 
     if dep_tar_gz_path.exists():
         dep_tar_gz_path.unlink()
-    recursive_tar_gz_in_path(str(dep_tar_gz_path), str(dep_staging_path))
+    recursive_tar_gz_in_path(str(dep_tar_gz_path), dep_staging_path)
 
 
-def recursive_tar_gz_in_path(output_path: str, path: str):
+def recursive_tar_gz_in_path(output_path: str, tar_path: Path):
     """
     Create a tar.gz archive of all files inside a directory.
 
@@ -105,7 +105,6 @@ def recursive_tar_gz_in_path(output_path: str, path: str):
     :param path: path to recursively collect all files and include in
     tar.gz. These will be included with path as the root of the archive.
     """
-    tar_path = Path(path)
     with tarfile.open(output_path, mode='w:gz', compresslevel=5) as tar:
         logger.info(
             'Creating tar of {path}'.format(path=str(tar_path)))
@@ -128,9 +127,10 @@ def _render_template(template_name: Path,
     the template
     """
     src = Path(__file__).parent.absolute() / 'assets' / template_name
+    template_location = Path(__file__).parent.absolute() / 'assets/'
     env = Environment(
         autoescape=select_autoescape(['html', 'xml']),
-        loader=FileSystemLoader(src.parent),
+        loader=FileSystemLoader(str(template_location)),
         keep_trailing_newline=True,
     )
     template = env.get_template(str(src.name))
