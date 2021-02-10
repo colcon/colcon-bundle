@@ -3,10 +3,11 @@ import shutil
 import stat
 import tarfile
 
+from pathlib import Path
+
 from colcon_bundle.verb import logger
 from colcon_bundle.verb.utilities import \
     update_shebang
-from pathlib import Path
 from jinja2 import \
     Environment, \
     FileSystemLoader, \
@@ -27,8 +28,8 @@ def create_workspace_overlay(install_base: str,
     :param str workspace_staging_path: Path to stage the overlay build at
     :param str overlay_path: Name of the overlay file (.tar.gz)
     """
-    workspace_install_path = Path(workspace_staging_path) / 'opt'
-    workspace_install_path = workspace_install_path / 'built_worspace'
+    workspace_install_path = os.path.join(
+        workspace_staging_path, 'opt', 'built_workspace')
 
     shutil.rmtree(workspace_staging_path, ignore_errors=True)
 
@@ -68,8 +69,7 @@ def create_workspace_overlay(install_base: str,
                              workspace_staging_path)
 
 
-def create_dependencies_overlay(staging_path: Path,
-                                overlay_path: Path):
+def create_dependencies_overlay(staging_path, overlay_path):
     """
     Create the dependencies overlay from staging_path.
 
