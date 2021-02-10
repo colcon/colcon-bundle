@@ -18,7 +18,7 @@ _CONTEXT_VAR_SH = {'shell': 'sh'}
 
 
 def create_workspace_overlay(install_base: str,
-                             ws_input_path: Path,
+                             ws_staging_path: Path,
                              overlay_path: Path):
     """
     Create overlay from user's built workspace install directory.
