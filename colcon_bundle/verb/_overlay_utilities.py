@@ -18,8 +18,8 @@ _CONTEXT_VAR_SH = {'shell': 'sh'}
 
 
 def create_workspace_overlay(install_base: str,
-                             ws_staging_path: str,
-                             overlay_path: str):
+                             ws_staging_path: Path,
+                             overlay_path: Path):
     """
     Create overlay from user's built workspace install directory.
 
@@ -27,15 +27,15 @@ def create_workspace_overlay(install_base: str,
     :param str ws_staging_path: Path to stage the overlay build at
     :param str overlay_path: Name of the overlay file (.tar.gz)
     """
-    ws_install_path = Path(ws_staging_path) / 'opt' / 'built_workspace'
+    ws_install_path = ws_staging_path / 'opt' / 'built_workspace'
 
-    shutil.rmtree(ws_staging_path, ignore_errors=True)
+    shutil.rmtree(str(ws_staging_path), ignore_errors=True)
 
-    shellscript_dest = Path(ws_staging_path) / 'setup.sh'
-    shellscript_dest_bash = Path(ws_staging_path) / 'setup.bash'
+    shellscript_dest = ws_staging_path / 'setup.sh'
+    shellscript_dest_bash = ws_staging_path / 'setup.bash'
 
     # install_base: Directory with built artifacts from the workspace
-    os.mkdir(ws_staging_path)
+    os.mkdir(str(ws_staging_path))
 
     _rendering_template(
         'v2_workspace_setup.jinja2.sh',
@@ -49,15 +49,15 @@ def create_workspace_overlay(install_base: str,
         shellscript_dest_bash,
         _CONTEXT_VAR_BASH
     )
-    shellscript_dest_bash.chdmod(0o755)
+    shellscript_dest_bash.chmod(0o755)
 
     shutil.copytree(install_base, str(ws_install_path))
 
     # This is required because python3 shell scripts use a hard
     # coded shebang
-    update_shebang(ws_staging_path)
+    update_shebang(str(ws_staging_path))
 
-    recursive_tar_gz_in_path(overlay_path, ws_staging_path)
+    recursive_tar_gz_in_path(str(overlay_path), str(ws_staging_path))
 
 
 def create_dependencies_overlay(staging_path, overlay_path):
@@ -90,9 +90,9 @@ def create_dependencies_overlay(staging_path, overlay_path):
         shellscript_dest_bash,
         _CONTEXT_VAR_BASH
     )
-    shellscript_dest_bash.chdmod(0o755)
+    shellscript_dest_bash.chmod(0o755)
 
-    if os.path.exists(dep_tar_gz_path):
+    if Path(dep_tar_gz_path).exists:
         os.remove(dep_tar_gz_path)
     recursive_tar_gz_in_path(dep_tar_gz_path, dep_staging_path)
 
@@ -115,9 +115,9 @@ def recursive_tar_gz_in_path(output_path, path):
             tar.add(some_path, arcname=os.path.basename(some_path))
 
 
-def _rendering_template(template_name,
+def _rendering_template(template_name: str,
                         script_dest: Path,
-                        context_vars):
+                        context_vars: dict):
     """
     Render setup.bash or setup.sh files from template.
 
