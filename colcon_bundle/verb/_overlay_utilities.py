@@ -28,8 +28,8 @@ def create_workspace_overlay(install_base: str,
     :param str workspace_staging_path: Path to stage the overlay build at
     :param str overlay_path: Name of the overlay file (.tar.gz)
     """
-    workspace_install_path = os.path.join(
-        workspace_staging_path, 'opt', 'built_workspace')
+    workspace_install_path = Path(workspace_staging_path) / 'opt'
+    workspace_install_path = workspace_install_path / 'built_workspace'
 
     shutil.rmtree(workspace_staging_path, ignore_errors=True)
 
@@ -59,7 +59,7 @@ def create_workspace_overlay(install_base: str,
     )
     os.chmod(shellscript_dest_bash, 0o755)
 
-    shutil.copytree(install_base, workspace_install_path)
+    shutil.copytree(install_base, str(workspace_install_path))
 
     # This is required because python3 shell scripts use a hard
     # coded shebang
