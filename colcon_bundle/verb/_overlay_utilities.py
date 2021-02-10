@@ -27,12 +27,12 @@ def create_workspace_overlay(install_base: str,
     :param str ws_staging_path: Path to stage the overlay build at
     :param str overlay_path: Name of the overlay file (.tar.gz)
     """
-    ws_install_path = ws_staging_path / 'opt' / 'built_workspace'
+    ws_install_path = Path(ws_staging_path) / 'opt' / 'built_workspace'
 
     shutil.rmtree(str(ws_staging_path), ignore_errors=True)
 
-    shellscript_dest = ws_staging_path / 'setup.sh'
-    shellscript_dest_bash = ws_staging_path / 'setup.bash'
+    shellscript_dest = Path(ws_staging_path) / 'setup.sh'
+    shellscript_dest_bash = Path(ws_staging_path) / 'setup.bash'
 
     # install_base: Directory with built artifacts from the workspace
     os.mkdir(str(ws_staging_path))
