@@ -128,7 +128,8 @@ def _rendering_template(template_name: str,
     :param context_vars: dictionary of values to be used for the variables in
     the template
     """
-    template_location = os.path.dirname(os.path.realpath(__file__)) / 'assets/'
+    temp = os.path.dirname(os.path.realpath(__file__))
+    template_location = Path(temp) / 'assets/'
     env = Environment(
         autoescape=select_autoescape(['html', 'xml']),
         loader=FileSystemLoader(template_location),
