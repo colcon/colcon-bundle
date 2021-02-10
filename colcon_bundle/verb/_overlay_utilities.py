@@ -18,7 +18,7 @@ _CONTEXT_VAR_SH = {'shell': 'sh'}
 
 
 def create_workspace_overlay(install_base: str,
-                             ws_staging_path: Path,
+                             ws_input_path: Path,
                              overlay_path: Path):
     """
     Create overlay from user's built workspace install directory.
@@ -27,7 +27,8 @@ def create_workspace_overlay(install_base: str,
     :param str ws_staging_path: Path to stage the overlay build at
     :param str overlay_path: Name of the overlay file (.tar.gz)
     """
-    ws_install_path = Path(ws_staging_path) / 'opt' / 'built_workspace'
+    ws_staging_path = Path(ws_input_path)
+    ws_install_path = ws_staging_path / 'opt' / 'built_workspace'
 
     shutil.rmtree(str(ws_staging_path), ignore_errors=True)
 
@@ -92,8 +93,8 @@ def create_dependencies_overlay(staging_path, overlay_path):
     )
     shellscript_dest_bash.chmod(0o755)
 
-    if os.path.exists(str(dep_tar_gz_path)):
-        os.remove(str(dep_tar_gz_path))
+    if dep_tar_gz_path.exists():
+        dep_tar_gz_path.unlink()
     recursive_tar_gz_in_path(str(dep_tar_gz_path), str(dep_staging_path))
 
 
@@ -107,10 +108,11 @@ def recursive_tar_gz_in_path(output_path, path):
     :param path: path to recursively collect all files and include in
     tar.gz. These will be included with path as the root of the archive.
     """
+    p = Path(path)
     with tarfile.open(output_path, mode='w:gz', compresslevel=5) as tar:
         logger.info(
             'Creating tar of {path}'.format(path=path))
-        for name in os.listdir(path):
+        for name in p.iterdir():
             some_path = Path(path) / name
             tar.add(some_path, arcname=os.path.basename(some_path))
 
