@@ -56,7 +56,7 @@ def create_workspace_overlay(install_base: str,
     # coded shebang
     update_shebang(workspace_staging_path)
 
-    recursive_tar_gz_in_path(overlay_path, Path(workspace_staging_path))
+    recursive_tar_gz_in_path(Path(overlay_path), Path(workspace_staging_path))
 
 
 def create_dependencies_overlay(staging_path: str, overlay_path: str):
@@ -92,7 +92,7 @@ def create_dependencies_overlay(staging_path: str, overlay_path: str):
 
     if dep_tar_gz_path.exists():
         dep_tar_gz_path.unlink()
-    recursive_tar_gz_in_path(str(dep_tar_gz_path), dep_staging_path)
+    recursive_tar_gz_in_path(dep_tar_gz_path, dep_staging_path)
 
 
 def recursive_tar_gz_in_path(output_path: Path, tar_path: Path):
