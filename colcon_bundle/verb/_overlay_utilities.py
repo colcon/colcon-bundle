@@ -105,7 +105,7 @@ def recursive_tar_gz_in_path(output_path: Path, tar_path: Path):
     :param tar_path: path to recursively collect all files and include in
     tar.gz. These will be included with path as the root of the archive.
     """
-    with tarfile.open(output_path, mode='w:gz', compresslevel=5) as tar:
+    with tarfile.open(str(output_path), mode='w:gz', compresslevel=5) as tar:
         logger.info(
             'Creating tar of {path}'.format(path=tar_path))
         for child in tar_path.iterdir():
