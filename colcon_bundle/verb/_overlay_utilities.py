@@ -114,7 +114,7 @@ def recursive_tar_gz_in_path(output_path, path):
             'Creating tar of {path}'.format(path=path))
         for name in p.iterdir():
             some_path = Path(path) / name
-            tar.add(some_path, arcname=os.path.basename(some_path))
+            tar.add(str(some_path), arcname=os.path.basename(str(some_path)))
 
 
 def _rendering_template(template_name: str,
