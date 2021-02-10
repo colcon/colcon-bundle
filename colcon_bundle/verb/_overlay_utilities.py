@@ -26,17 +26,7 @@ def create_workspace_overlay(install_base: str,
     :param str workspace_staging_path: Path to stage the overlay build at
     :param str overlay_path: Name of the overlay file (.tar.gz)
     """
-    _generate_template(
-        'v2_workspace_setup.jinja2.sh',
-        'v2_workspace_setup.bash',
-        _CONTEXT_VAR_BASH
-    )
 
-    _generate_template(
-        'v2_workspace_setup.jinja2.sh',
-        'v2_workspace_setup.sh',
-        _CONTEXT_VAR_SH
-    )
     workspace_install_path = os.path.join(
         workspace_staging_path, 'opt', 'built_workspace')
     shutil.rmtree(workspace_staging_path, ignore_errors=True)
@@ -86,17 +76,7 @@ def create_dependencies_overlay(staging_path, overlay_path):
         dependencies_tar_gz_path
     ))
 
-    _generate_template(
-        'v2_setup.jinja2.sh',
-        'v2_setup.bash',
-        _CONTEXT_VAR_BASH
-    )
 
-    _generate_template(
-        'v2_setup.jinja2.sh',
-        'v2_setup.sh',
-        _CONTEXT_VAR_SH
-    )
 
     assets_directory = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), 'assets')
@@ -152,10 +132,13 @@ def _generate_template(template_name, script_name, context_vars):
         loader=FileSystemLoader(template_location),
         keep_trailing_newline=True,
     )
+
     template = env.get_template(template_name)
 
     script_location = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), 'assets/', script_name)
+
     with open(script_location, 'w') as file:
         file.write(template.render(context_vars))
     os.chmod(script_location, os.stat(script_location).st_mode | stat.S_IEXEC)
+
