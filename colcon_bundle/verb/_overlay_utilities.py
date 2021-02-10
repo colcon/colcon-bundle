@@ -36,7 +36,7 @@ def create_workspace_overlay(install_base: str,
 
     shellscript_dest = Path(workspace_staging_path) / 'setup.sh'
     _render_template(
-        'v2_workspace_setup.jinja2.sh',
+        Path('v2_workspace_setup.jinja2.sh'),
         shellscript_dest,
         _CONTEXT_VAR_SH
     )
@@ -44,7 +44,7 @@ def create_workspace_overlay(install_base: str,
 
     shellscript_dest_bash = Path(workspace_staging_path) / 'setup.bash'
     _render_template(
-        'v2_workspace_setup.jinja2.sh',
+        Path('v2_workspace_setup.jinja2.sh'),
         shellscript_dest_bash,
         _CONTEXT_VAR_BASH
     )
@@ -76,7 +76,7 @@ def create_dependencies_overlay(staging_path: str, overlay_path: str):
 
     shellscript_dest = Path(dep_staging_path) / 'setup.sh'
     _render_template(
-        'v2_setup.jinja2.sh',
+        Path('v2_setup.jinja2.sh'),
         shellscript_dest,
         _CONTEXT_VAR_SH
     )
@@ -84,7 +84,7 @@ def create_dependencies_overlay(staging_path: str, overlay_path: str):
 
     shellscript_dest_bash = Path(dep_staging_path) / 'setup.bash'
     _render_template(
-        'v2_setup.jinja2.sh',
+        Path('v2_setup.jinja2.sh'),
         shellscript_dest_bash,
         _CONTEXT_VAR_BASH
     )
@@ -127,10 +127,9 @@ def _render_template(template_name: Path,
     the template
     """
     src = Path(__file__).parent.absolute() / 'assets' / template_name
-    template_location = Path(__file__).parent.absolute() / 'assets/'
     env = Environment(
         autoescape=select_autoescape(['html', 'xml']),
-        loader=FileSystemLoader(str(template_location)),
+        loader=FileSystemLoader(str(src.parent)),
         keep_trailing_newline=True,
     )
     template = env.get_template(str(src.name))
