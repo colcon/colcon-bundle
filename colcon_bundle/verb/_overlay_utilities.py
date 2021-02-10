@@ -1,9 +1,9 @@
+from pathlib import Path
+
 import os
 import shutil
 import stat
 import tarfile
-
-from pathlib import Path
 
 from colcon_bundle.verb import logger
 from colcon_bundle.verb.utilities import \
@@ -33,31 +33,25 @@ def create_workspace_overlay(install_base: str,
 
     shutil.rmtree(workspace_staging_path, ignore_errors=True)
 
-    shellscript_dest = os.path.join(
-        workspace_staging_path,
-        'setup.sh'
-    )
-    shellscript_dest_bash = os.path.join(
-        workspace_staging_path,
-        'setup.bash'
-    )
+    shellscript_dest = Path(workspace_staging_path) / 'setup.sh'
+    shellscript_dest_bash = Path(workspace_staging_path) / 'setup.bash'
 
     # install_base: Directory with built artifacts from the workspace
     os.mkdir(workspace_staging_path)
 
     _rendering_template(
         'v2_workspace_setup.jinja2.sh',
-        shellscript_dest,
+        str(shellscript_dest),
         _CONTEXT_VAR_SH
     )
-    os.chmod(shellscript_dest, 0o755)
+    os.chmod(str(shellscript_dest), 0o755)
 
     _rendering_template(
         'v2_workspace_setup.jinja2.sh',
-        shellscript_dest_bash,
+        str(shellscript_dest_bash),
         _CONTEXT_VAR_BASH
     )
-    os.chmod(shellscript_dest_bash, 0o755)
+    os.chmod(str(shellscript_dest_bash), 0o755)
 
     shutil.copytree(install_base, str(workspace_install_path))
 
@@ -84,30 +78,24 @@ def create_dependencies_overlay(staging_path, overlay_path):
         dependencies_tar_gz_path
     ))
 
-    shellscript_dest = os.path.join(
-        dependencies_staging_path,
-        'setup.sh'
-    )
-    shellscript_dest_bash = os.path.join(
-        dependencies_staging_path,
-        'setup.bash'
-    )
+    shellscript_dest = Path(dependencies_staging_path) / 'setup.sh'
+    shellscript_dest_bash = Path(dependencies_staging_path) / 'setup.bash'
 
     _rendering_template(
         'v2_setup.jinja2.sh',
-        shellscript_dest,
+        str(shellscript_dest),
         _CONTEXT_VAR_SH
     )
 
-    os.chmod(shellscript_dest, 0o755)
+    os.chmod(str(shellscript_dest), 0o755)
 
     _rendering_template(
         'v2_setup.jinja2.sh',
-        shellscript_dest_bash,
+        str(shellscript_dest_bash),
         _CONTEXT_VAR_BASH
     )
 
-    os.chmod(shellscript_dest_bash, 0o755)
+    os.chmod(str(shellscript_dest_bash), 0o755)
 
     if os.path.exists(dependencies_tar_gz_path):
         os.remove(dependencies_tar_gz_path)
