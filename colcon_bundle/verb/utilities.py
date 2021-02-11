@@ -252,5 +252,5 @@ def filechecksum(filename, algorithm='sha256', printing=False):
         if printing:
             print(filename + ' - ' + checksum)
         return checksum
-    except Exception as e: # noqa B902
+    except Exception as e:
         raise RuntimeError(e)
