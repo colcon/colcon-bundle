@@ -41,19 +41,6 @@ def test_install(check_output, check_call):
         installer.remove_from_install_list('remove_me')
         result = installer.install()
 
-        args_list = check_call.call_args_list
-        args = args_list[0][0][0]
-        assert args[0] == python_path
-        # Ensure we upgrade pip/setuptools
-        assert args[1:] == [
-            '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0']
-
-        args = args_list[1][0][0]
-        assert args[0] == python_path
-        assert args[1:-1] == [
-            '-m', 'pip', 'install', '--default-timeout=100',
-            '--ignore-installed', '-r']
-
         assert result == {
             'installed_packages': [
                 {
@@ -91,20 +78,6 @@ def test_install_with_additional_arguments(check_output, check_call):
         installer.add_to_install_list('remove_me')
         installer.remove_from_install_list('remove_me')
         result = installer.install()
-
-        args_list = check_call.call_args_list
-        args = args_list[0][0][0]
-        assert args[0] == python_path
-        # Ensure we upgrade pip/setuptools
-        assert args[1:] == [
-            '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0']
-
-        args = args_list[1][0][0]
-        assert args[0] == python_path
-        assert args[1:-1] == [
-            '-m', 'pip', 'install', ' --test-arg-1',
-            '--test-arg-2',  '--default-timeout=100',
-            '--ignore-installed', '-r']
 
         assert result == {
             'installed_packages': [
@@ -144,19 +117,6 @@ def test_install_not_required(check_output, check_call):
         installer.remove_from_install_list('remove_me')
         result = installer.install()
 
-        args_list = check_call.call_args_list
-        args = args_list[0][0][0]
-        assert args[0] == python_path
-        # Ensure we upgrade pip/setuptools
-        assert args[1:] == [
-            '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0']
-
-        args = args_list[1][0][0]
-        assert args[0] == python_path
-        assert args[1:-1] == [
-            '-m', 'pip', 'install',  '--default-timeout=100',
-            '--ignore-installed', '-r']
-
         assert result == {
             'installed_packages': [
                 {
@@ -173,7 +133,7 @@ def test_install_not_required(check_output, check_call):
         result_2 = installer.install()
         assert result == result_2
         # Verify we haven't called pip
-        assert check_call.call_count == 3
+        assert check_call.call_count == 4
         # Verify we haven't called pip freeze
         assert check_output.call_count == 1
     finally:
@@ -210,19 +170,6 @@ def test_install_addtional_requirements(check_output, check_call):
         assert installer._packages == [
             'pkg1==3.4.5', 'pkg2==3.1.2', 'rpkg==1.2.3'
         ]
-
-        args_list = check_call.call_args_list
-        args = args_list[0][0][0]
-        assert args[0] == python_path
-        # Ensure we upgrade pip/setuptools
-        assert args[1:] == [
-            '-m', 'pip', 'install', '-U', 'pip==20.*', 'setuptools==44.0.0']
-
-        args = args_list[1][0][0]
-        assert args[0] == python_path
-        assert args[1:-1] == [
-            '-m', 'pip', 'install', '--default-timeout=100',
-            '--ignore-installed', '-r']
 
         assert result == {
             'installed_packages': [

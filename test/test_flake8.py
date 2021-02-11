@@ -27,7 +27,7 @@ def test_flake8():
     report = style_guide.check_files(
         [str(Path(__file__).parents[1] / 'colcon_bundle')])
     report_tests = style_guide_tests.check_files(
-        [str(Path(__file__).parents[1] / 'tests')])
+        [str(Path(__file__).parents[1] / 'test')])
     sys.stdout = stdout
 
     total_errors = report.total_errors + report_tests.total_errors
