@@ -150,7 +150,7 @@ def add_installer_arguments(parser):
         try:
             retval = extension.add_arguments(parser=group)
             assert retval is None, 'add_arguments() should return None'
-        except Exception as e: # noqa B902
+        except Exception as e:
             # catch exceptions raised in task extension
             exc = traceback.format_exc()
             logger.error(
