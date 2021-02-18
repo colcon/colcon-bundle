@@ -2,9 +2,9 @@
 
 set -ex
 
-if [[ ${ROS_DISTRO} = "dashing" ]]
+if [[ ${ROS_DISTRO} = "dashing" || ${ROS_DISTRO} = "foxy" ]]
 then
-	./run_ros2_integration_test.sh
+	./run_ros2_integration_test.sh ${ROS_DISTRO}
 	exit 0
 fi
 

@@ -10,10 +10,8 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     zip_safe=True,
     install_requires=[
-        'annoy<=1.8.5',
-        'annoy==1.8.3',
-        'numpy==1.13.3',
-        'numpy>=1.13.0'
+        'annoy',
+        'numpy'
     ],
     entry_points={
         'console_scripts': [

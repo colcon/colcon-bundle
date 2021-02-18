@@ -92,9 +92,12 @@ jobs:
 
   ros2_tests:
     runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        ros_distro: [dashing, foxy]
     env:
       TOXENV: py35-pypi
-      ROS_DISTRO: dashing
+      ROS_DISTRO: ${{ matrix.ros_distro }}
       TEST: create
     steps:
       - name: Checkout sources
