@@ -106,3 +106,7 @@ libignition-fuel-tools1-1
 libignition-math4
 libignition-msgs
 libignition-transport4
+gazebo11
+gazebo11-common
+gazebo11-plugin-base
+libgazebo11
