@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-18.04
     env:
       TOXENV: py35-pypi
-      ROS_DISTRO: kinetic
+      ROS_DISTRO: melodic
       TEST: backwards
     steps:
     - name: Checkout sources
@@ -71,7 +71,7 @@ jobs:
     strategy:
       matrix:
         toxenv: [py35-pypi, py35-github]
-        ros_distro: [melodic, kinetic]
+        ros_distro: [melodic]
     env:
       TOXENV: ${{ matrix.toxenv }}
       ROS_DISTRO: ${{ matrix.ros_distro }}

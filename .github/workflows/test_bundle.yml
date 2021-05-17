@@ -16,7 +16,7 @@ jobs:
           - "git+https://github.com/colcon/colcon-bundle.git@master#egg=colcon-bundle git+https://github.com/colcon/colcon-ros-bundle.git@master#egg=colcon-ros-bundle"
     runs-on: ubuntu-latest
     container:
-      image: rostooling/setup-ros-docker:ubuntu-xenial-ros-kinetic-ros-base-latest
+      image: rostooling/setup-ros-docker:ubuntu-bionic-ros-melodic-ros-base-latest
     steps:
        # needed to access the vcs repos file from the workspace
        # ensures a contribution does not break scheduled tests
@@ -25,10 +25,10 @@ jobs:
       - uses: ros-tooling/action-ros-ci@0.1.0
         id: build-from-repos
         with:
-          target-ros1-distro: kinetic
+          target-ros1-distro: melodic
           vcs-repo-file-url: "${{ github.workspace }}/.github/workflows/test_bundle.repos"
-          package-name: ros_tutorials navigation
-          source-ros-binary-installation: kinetic
+          package-name: roslint
+          source-ros-binary-installation: melodic
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -38,25 +38,26 @@ jobs:
         run: sudo -H pip3 install -U ${{ matrix.install_source }}
       - name: Run colcon bundle
         run: |
+          wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
           cd "${{ steps.build-from-repos.outputs.ros-workspace-directory-name }}"
-          bash -c 'source /opt/ros/kinetic/setup.sh && colcon bundle'
+          bash -c 'source /opt/ros/melodic/setup.sh && colcon bundle'
 
   # Test the changes from a contribution
   contribution_bundle_integration_test:
     name: "Contribution Integration Test"
     runs-on: ubuntu-latest
     container:
-      image: rostooling/setup-ros-docker:ubuntu-xenial-ros-kinetic-ros-base-latest
+      image: rostooling/setup-ros-docker:ubuntu-bionic-ros-melodic-ros-base-latest
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
       - uses: ros-tooling/action-ros-ci@0.1.0
         id: build-from-repos
         with:
-          target-ros1-distro: kinetic
+          target-ros1-distro: melodic
           vcs-repo-file-url: "${{ github.workspace }}/.github/workflows/test_bundle.repos"
-          package-name: ros_tutorials navigation
-          source-ros-binary-installation: kinetic
+          package-name: roslint
+          source-ros-binary-installation: melodic
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -69,5 +70,6 @@ jobs:
         run: sudo pip3 install -U git+https://github.com/colcon/colcon-ros-bundle.git@master#egg=colcon-ros-bundle
       - name: Run colcon bundle
         run: |
+          wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
           cd "${{ steps.build-from-repos.outputs.ros-workspace-directory-name }}"
-          bash -c 'source /opt/ros/kinetic/setup.sh && colcon bundle'
+          bash -c 'source /opt/ros/melodic/setup.sh && colcon bundle'

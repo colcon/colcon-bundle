@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-apt-get update && apt-get install -y python3-pip python3-apt
+apt-get update && apt-get install -y python3-pip python3-apt wget
+
+wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
 
 pip3 install --upgrade pip setuptools
 
