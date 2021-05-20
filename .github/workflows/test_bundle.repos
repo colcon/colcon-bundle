@@ -1,14 +1,5 @@
 repositories:
-  ros_tutorials:
+  roslint:
     type: git
-    url: https://github.com/ros/ros_tutorials
-    version: 98753d885775a3347ba6d149afae0ac3df7be772
-  navigation:
-    type: git
-    url: https://github.com/ros-planning/navigation
-    version: 0332151fd7628dddce5df1b1e69e1e251b4c4dec
-  perception_pcl:
-    type: git
-    url: https://github.com/ros-perception/perception_pcl
-    version: 539b5a78b2fb0f0004911c8f85d43a3cc0472625
-
+    url: https://github.com/ros-gbp/roslint-release.git
+    version: release/melodic/roslint/0.11.2-0
