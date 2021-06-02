@@ -2,6 +2,9 @@ FROM ros:melodic
 
 SHELL ["/bin/bash", "-c"]
 
+RUN (apt-get update || true) && apt-get install --no-install-recommends --yes curl
+RUN curl --fail --show-error --silent --location https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
+
 RUN apt-get update && \
         apt-get install -y wget && \
 	wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add - && \
