@@ -7,8 +7,7 @@ RUN echo "yaml https://s3-us-west-2.amazonaws.com/rosdep/base.yaml" > /etc/ros/r
 COPY . /opt/package
 WORKDIR /opt/package
 
-RUN apt-get install curl
-RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+RUN apt update || apt install -y curl && curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
 
 RUN apt-get update && \
 	apt-get install -y python3-pip python3-apt python-pip enchant sudo wget
