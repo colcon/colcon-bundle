@@ -48,7 +48,7 @@ The simplest way to get up and running without affecting your local development 
 
 The contents of an example Dockerfile are below. Create the Dockerfile in your workspace and then execute:
 
-`docker build -t colcon-docker .` 
+`docker build -t colcon-docker .`
 
 Once your docker image is built you can then run it with your local workspace mounted into the container by executing `docker run -it -v <PATH_TO_WORKSPACE>:/workspace colcon-docker bash`. Once inside the docker container `/workspace` will be bound to your local directory.
 
@@ -65,7 +65,7 @@ RUN pip3 install colcon-ros-bundle
 
 # Bundle Usage
 
-When `colcon bundle` is executed in a ROS workspace it will create `bundle/output.tar` that follows the specification located [here](BUNDLE_FORMAT.md). 
+When `colcon bundle` is executed in a ROS workspace it will create `bundle/output.tar` that follows the specification located [here](BUNDLE_FORMAT.md).
 
 A bundle is an entire application. In order to execute inside the bundle context follow the following steps:
 
@@ -75,12 +75,12 @@ A bundle is an entire application. In order to execute inside the bundle context
 1. In order execute `BUNDLE_CURRENT_PREFIX=<path to extracted overlay> source <path to extracted overlay>/setup.sh`
 1. The bundle is now activated in your shell's environment.
 
-# Package Blacklist
+# Package Skip List
 
 When we create the bundle we choose not to include certain packages that are included by default in most
-Linux distributions. To create this blacklist for Ubuntu `apt list --installed | sed 's/^\(.*\)\/.*$/\1/'` was run on a base ubuntu:xenial container.
+Linux distributions. To create this skiplist for Ubuntu `apt list --installed | sed 's/^\(.*\)\/.*$/\1/'` was run on a base ubuntu:xenial container.
 
-You can override this blacklist by using the `--apt-package-blacklist` argument.
+You can override this list by using the `--apt-package-skiplist` argument.
 
 # `colcon-bundle` Development
 

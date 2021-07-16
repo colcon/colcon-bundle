@@ -40,8 +40,8 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
     def add_arguments(self, *, parser):  # noqa: D102
         assets_directory = os.path.join(
             os.path.dirname(os.path.realpath(__file__)), 'assets')
-        blacklist_path = os.path.join(
-            assets_directory, 'apt_package_blacklist.txt')
+        skiplist_path = os.path.join(
+            assets_directory, 'apt_package_skiplist.txt')
         sources_list_path = os.path.join(assets_directory,
                                          'xenial.sources.list')
 
@@ -53,7 +53,7 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
                                              'focal.sources.list')
 
         parser.add_argument(
-            '--apt-package-blacklist', default=blacklist_path,
+            '--apt-package-skiplist', default=skiplist_path,
             help='A file with newline separated names of packages that should'
                  'not be installed into the bundle')
 
@@ -238,10 +238,10 @@ class AptBundleInstallerExtension(BundleInstallerExtensionPoint):
         # come with the
         # base distribution of the OS. We remove them from the install list
         # here.
-        with open(self.context.args.apt_package_blacklist, 'rt') as blacklist:
-            blacklisted_packages = [line.rstrip('\n') for line in blacklist]
+        with open(self.context.args.apt_package_skiplist, 'rt') as skiplist:
+            skip_packages = [line.rstrip('\n') for line in skiplist]
 
-        for package_name in blacklisted_packages:
+        for package_name in skip_packages:
             try:
                 self.remove_from_install_list(package_name)
             except KeyError:
