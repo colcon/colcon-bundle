@@ -1,12 +1,12 @@
 # colcon-bundle [![GitHub Action Status][action-badge]][action-workflow]
 
-**NOTE:** `colcon-bundle` only supports Ubuntu Xenial and Ubuntu Bionic operating systems and x86, ARMHF, and ARM64 architectures. All other operating systems and architectures are currently not supported.
+**NOTE:** `colcon-bundle` only supports Ubuntu Xenial, Ubuntu Bionic, and Ubuntu Focla operating systems and x86, ARMHF, and ARM64 architectures. All other operating systems and architectures are currently not supported.
 
 This package is a plugin to [colcon-core](https://github.com/colcon/colcon-core.git). It provides functionality to bundle a built
 workspace. A bundle is a portable environment which can be moved to a different linux system and executed
 as if the contents of the bundle were installed locally.
 
-Currently, ROS Kinetic is supported by installing the `colcon-ros-bundle` package.
+Currently, ROS Kinetic, Noetic, and Foxy is supported by installing the `colcon-ros-bundle` package.
 
 # Installation
 
@@ -26,7 +26,6 @@ sudo pip3 install colcon-ros-bundle
 1. Add dependencies to the install list for each installer.
 1. Run installs in the following order:
     1. `apt`
-    1. `pip`
     1. `pip3`
 1. Run the following transforms:
     1. Update the shebangs of scripts to use `#!/usr/bin/env`.
