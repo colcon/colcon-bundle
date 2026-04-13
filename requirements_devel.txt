@@ -11,6 +11,6 @@ flake8-quotes
 pep8-naming
 pyenchant
 pylint
-pytest==4.0.0
+pytest==9.0.3
 pytest-cov
 distro>=1.2.0
